@@ -36,7 +36,13 @@ describe('TextObjectFactory', () => {
             fontFamily: 'Arial',
             fontSize: 14,
             color: '#ff0000',
-        } as Partial<BaseObject> & { x: number; y: number; width: number; height: number; content: string });
+        } as Partial<BaseObject> & {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            content: string;
+        });
         expect(txt.fontFamily).toBe('Arial');
         expect(txt.fontSize).toBe(14);
         expect(txt.color).toBe('#ff0000');
@@ -63,7 +69,13 @@ describe('TextObjectFactory', () => {
     });
 
     it('does not mutate input params and returns a new object', () => {
-        const params: Partial<BaseObject> & { x: number; y: number; width: number; height: number; content?: string } = {
+        const params: Partial<BaseObject> & {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            content?: string;
+        } = {
             x: 2,
             y: 4,
             width: 8,

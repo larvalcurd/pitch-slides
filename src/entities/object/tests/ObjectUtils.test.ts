@@ -1,13 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { moveObject, resizeObject, setObjectZIndex } from '../utils/ObjectUtils';
-import {
-    createMinimalImage,
-    createMaximalImage,
-} from '../factory/ImageObjectFactory';
-import {
-    createMinimalText,
-    createMaximalText,
-} from '../factory/TextObjectFactory';
+import { createMinimalImage, createMaximalImage } from '../factory/ImageObjectFactory';
+import { createMinimalText, createMaximalText } from '../factory/TextObjectFactory';
 import type { ImageObject, TextObject } from '../types/ObjectTypes';
 
 describe('ObjectUtils - ImageObject', () => {

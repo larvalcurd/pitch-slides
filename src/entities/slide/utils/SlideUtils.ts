@@ -36,4 +36,3 @@ export function updateSlideBackground(slide: Slide, background: Slide['backgroun
         background,
     };
 }
-

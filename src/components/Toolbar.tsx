@@ -32,9 +32,9 @@ export default function Toolbar({
                                     onUpdateText,
                                     onUpdateImage,
                                 }: ToolbarProps) {
-    const handle = (name: string, cb?: () => void) => {
+    const handle = (name: string, onClick?: () => void) => {
         console.log(`Action: ${name}`);
-        cb?.();
+        onClick?.();
     };
 
     const btnStyle: React.CSSProperties = {
@@ -60,17 +60,12 @@ export default function Toolbar({
 
     return (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
-            {items.map((it, idx) => {
-                if (it.kind === 'divider') {
+            {items.map((item, idx) => {
+                if (item.kind === 'divider') {
                     return (
                         <div
-                            key={`div-${idx}`}
-                            style={{
-                                width: 1,
-                                height: 28,
-                                background: '#e5e7eb',
-                                margin: '0 8px',
-                            }}
+                            key={`divider-${idx}`}
+                            style={{ width: 1, height: 28, background: '#e5e7eb', margin: '0 8px' }}
                         />
                     );
                 }
@@ -79,10 +74,10 @@ export default function Toolbar({
                     <button
                         key={`btn-${idx}`}
                         type="button"
-                        onClick={() => handle(it.action, it.onClick)}
                         style={btnStyle}
+                        onClick={() => handle(item.action, item.onClick)}
                     >
-                        {it.label}
+                        {item.label}
                     </button>
                 );
             })}

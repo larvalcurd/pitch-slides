@@ -8,14 +8,8 @@ import {
     setSelectedSlide,
     updateSlideInPresentation,
 } from '../utils/PresentationUtils';
-import {
-    createMinimalImage,
-    createMaximalImage,
-} from '../../object/factory/ImageObjectFactory';
-import {
-    createMinimalText,
-    createMaximalText,
-} from '../../object/factory/TextObjectFactory';
+import { createMinimalImage, createMaximalImage } from '../../object/factory/ImageObjectFactory';
+import { createMinimalText, createMaximalText } from '../../object/factory/TextObjectFactory';
 import type { Presentation } from '../types/PresentationTypes';
 import type { Slide } from '../../slide/types/SlideTypes';
 
@@ -316,7 +310,12 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
         const s1 = createMaximalSlide('s1');
         const s2 = createMaximalSlide('s2');
         const s3 = createMaximalSlide('s3');
-        const pres: Presentation = { id: 'p-move', title: 'T', slides: [s1, s2, s3], selectedSlideId: s1.id };
+        const pres: Presentation = {
+            id: 'p-move',
+            title: 'T',
+            slides: [s1, s2, s3],
+            selectedSlideId: s1.id,
+        };
         const snap = deepClone(pres);
 
         // move last to -5 => clamped to 0
@@ -333,7 +332,12 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
         const s1 = createMaximalSlide('s1x');
         const s2 = createMaximalSlide('s2x');
         const s3 = createMaximalSlide('s3x');
-        const pres: Presentation = { id: 'p-move-2', title: 'T', slides: [s1, s2, s3], selectedSlideId: s1.id };
+        const pres: Presentation = {
+            id: 'p-move-2',
+            title: 'T',
+            slides: [s1, s2, s3],
+            selectedSlideId: s1.id,
+        };
         const snap = deepClone(pres);
 
         const res = moveSlide(pres, s1.id, 9999);
@@ -363,7 +367,7 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
 
         const res = removeSlide(pres, pres.selectedSlideId as string);
         expect(res).not.toBe(pres);
-        expect(res.slides.some(s => s.id === pres.selectedSlideId)).toBe(false);
+        expect(res.slides.some((s) => s.id === pres.selectedSlideId)).toBe(false);
         expect(res.selectedObjects).toBeNull();
         expect(pres).toEqual(snap);
     });
@@ -421,4 +425,3 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
         expect(pres).toEqual(snap);
     });
 });
-

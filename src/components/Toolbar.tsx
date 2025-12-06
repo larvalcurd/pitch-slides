@@ -13,25 +13,25 @@ type ToolbarProps = {
 
 type BtnDef =
     | {
-    kind: 'button';
-    label: string;
-    action: string;
-    onClick?: () => void;
-}
+          kind: 'button';
+          label: string;
+          action: string;
+          onClick?: () => void;
+      }
     | {
-    kind: 'divider';
-};
+          kind: 'divider';
+      };
 
 export default function Toolbar({
-                                    onAddText,
-                                    onAddImage,
-                                    onMoveObject,
-                                    onResizeObject,
-                                    onBringForward,
-                                    onSendBackward,
-                                    onUpdateText,
-                                    onUpdateImage,
-                                }: ToolbarProps) {
+    onAddText,
+    onAddImage,
+    onMoveObject,
+    onResizeObject,
+    onBringForward,
+    onSendBackward,
+    onUpdateText,
+    onUpdateImage,
+}: ToolbarProps) {
     const handle = (name: string, onClick?: () => void) => {
         console.log(`Action: ${name}`);
         onClick?.();
@@ -46,20 +46,63 @@ export default function Toolbar({
     };
 
     const items: BtnDef[] = [
-        { kind: 'button', label: '✏️ Add Text', action: 'add-default-text-object', onClick: onAddText },
-        { kind: 'button', label: '🖼️ Add Image', action: 'add-default-image-object', onClick: onAddImage },
+        {
+            kind: 'button',
+            label: '✏️ Add Text',
+            action: 'add-default-text-object',
+            onClick: onAddText,
+        },
+        {
+            kind: 'button',
+            label: '🖼️ Add Image',
+            action: 'add-default-image-object',
+            onClick: onAddImage,
+        },
         { kind: 'divider' },
         { kind: 'button', label: '⤴ Move', action: 'move-selected-object', onClick: onMoveObject },
-        { kind: 'button', label: '⤦ Resize', action: 'resize-selected-object', onClick: onResizeObject },
-        { kind: 'button', label: '⬆ Bring Forward', action: 'bring-selected-forward', onClick: onBringForward },
-        { kind: 'button', label: '⬇ Send Backward', action: 'send-selected-backward', onClick: onSendBackward },
+        {
+            kind: 'button',
+            label: '⤦ Resize',
+            action: 'resize-selected-object',
+            onClick: onResizeObject,
+        },
+        {
+            kind: 'button',
+            label: '⬆ Bring Forward',
+            action: 'bring-selected-forward',
+            onClick: onBringForward,
+        },
+        {
+            kind: 'button',
+            label: '⬇ Send Backward',
+            action: 'send-selected-backward',
+            onClick: onSendBackward,
+        },
         { kind: 'divider' },
-        { kind: 'button', label: '🅰 Update Text', action: 'update-text-content', onClick: onUpdateText },
-        { kind: 'button', label: '🌄 Update Image', action: 'update-image-source', onClick: onUpdateImage },
+        {
+            kind: 'button',
+            label: '🅰 Update Text',
+            action: 'update-text-content',
+            onClick: onUpdateText,
+        },
+        {
+            kind: 'button',
+            label: '🌄 Update Image',
+            action: 'update-image-source',
+            onClick: onUpdateImage,
+        },
     ];
 
     return (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+        <div
+            style={{
+                display: 'flex',
+                gap: 8,
+                alignItems: 'center',
+                marginBottom: 16,
+                flexWrap: 'wrap',
+            }}
+        >
             {items.map((item, idx) => {
                 if (item.kind === 'divider') {
                     return (

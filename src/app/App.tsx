@@ -63,7 +63,7 @@ function App() {
 
     const updateImageHandler = () => {
         const obj = createMinimalImage();
-        const updated = { ...obj, src: 'https://placekitten.com/200/300' };
+        const updated = { ...obj, src: '../../../newImage.png' };
         console.log('Updated image object:', { before: obj, after: updated });
     };
 

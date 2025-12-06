@@ -29,7 +29,12 @@ describe('createBaseObject', () => {
     });
 
     it('does not mutate the params object and returns a new object', () => {
-        const params: Partial<BaseObject> & { x: number; y: number; width: number; height: number } = {
+        const params: Partial<BaseObject> & {
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+        } = {
             x: 2,
             y: 4,
             width: 8,

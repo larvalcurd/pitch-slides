@@ -8,7 +8,7 @@ import {
     createMaximalText,
 } from '../factory/TextObjectFactory.ts';
 import { DEFAULT_BASE } from '../factory/defaults.ts';
-import type { BaseObject } from '../types/ObjectTypes.ts';
+import type { BaseObject, TextObject } from '../types/ObjectTypes.ts';
 
 describe('TextObjectFactory', () => {
     const baseArgs = { x: 5, y: 6, width: 120, height: 80, content: 'Hello' };
@@ -70,7 +70,7 @@ describe('TextObjectFactory', () => {
             height: 16,
         };
         const copy = { ...params };
-        const obj = createTextObject({ ...params, content: 'a' } as any);
+        const obj = createTextObject({ ...params, content: 'a' } as TextObject);
         expect(params).toEqual(copy);
         expect(obj).not.toBe(params as unknown as BaseObject);
     });

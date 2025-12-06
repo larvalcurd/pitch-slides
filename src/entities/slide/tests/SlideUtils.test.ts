@@ -75,7 +75,7 @@ describe('SlideUtils (deep immutability)', () => {
         const targetId = slide.objects[1].id;
         const res = removeObjectFromSlide(slide, targetId);
 
-        expect(res.objects.some(o => o.id === targetId)).toBe(false);
+        expect(res.objects.some((o) => o.id === targetId)).toBe(false);
         expect(res.objects.length).toBe(slide.objects.length - 1);
 
         expect(res).not.toBe(slide);
@@ -94,7 +94,7 @@ describe('SlideUtils (deep immutability)', () => {
         const res = updateObjectInSlide(slide, target.id, updated);
 
         // replaced correctly
-        const found = res.objects.find(o => o.id === target.id);
+        const found = res.objects.find((o) => o.id === target.id);
         expect(found).toEqual(updated);
 
         // untouched others

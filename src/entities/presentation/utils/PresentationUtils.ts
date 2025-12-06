@@ -37,7 +37,9 @@ export function removeSlide(presentation: Presentation, slideId: string): Presen
     if (newSlides.length === presentation.slides.length) return presentation;
 
     const newSelectedSlideId =
-        presentation.selectedSlideId === slideId ? newSlides[0]?.id || null : presentation.selectedSlideId;
+        presentation.selectedSlideId === slideId
+            ? newSlides[0]?.id || null
+            : presentation.selectedSlideId;
 
     return {
         ...presentation,

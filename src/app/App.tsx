@@ -1,7 +1,7 @@
 import type { Presentation } from '../entities/presentation/types/PresentationTypes';
 import { createPresentation } from '../entities/presentation/utils/PresentationUtils';
 import { useState } from 'react';
-import PresentationTitle from '../components/PresentationTitle/PresentationTitle.tsx';
+import { PresentationTitle } from '../components/PresentationTitle/PresentationTitle.tsx';
 import Toolbar from '../components/Toolbar.tsx';
 import { createMinimalText } from '../entities/object/factory/TextObjectFactory';
 import { createMinimalImage } from '../entities/object/factory/ImageObjectFactory';

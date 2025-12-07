@@ -9,14 +9,8 @@ export function PresentationTitle({ title, onTitleChange }: PresentationTitlePro
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newTitle = e.target.value;
         onTitleChange(newTitle);
-        console.log(newTitle);  
+        console.log(newTitle);
     };
 
-    return (
-            <input
-                value={title}
-                onChange={handleChange}
-                placeholder="Enter Presentation title"
-            />
-    );
+    return <input value={title} onChange={handleChange} placeholder="Enter Presentation title" />;
 }

@@ -1,129 +1,38 @@
-import React from 'react';
-
 type ToolbarProps = {
-    onAddText?: () => void;
-    onAddImage?: () => void;
-    onMoveObject?: () => void;
-    onResizeObject?: () => void;
-    onBringForward?: () => void;
-    onSendBackward?: () => void;
-    onUpdateText?: () => void;
-    onUpdateImage?: () => void;
+    actions: Record<string, () => void>;
 };
 
-type BtnDef =
-    | {
-          kind: 'button';
-          label: string;
-          action: string;
-          onClick?: () => void;
-      }
-    | {
-          kind: 'divider';
-      };
+type BtnDef = {
+    label: string;
+    action: string;
+    onClick?: () => void;
+};
 
-export default function Toolbar({
-    onAddText,
-    onAddImage,
-    onMoveObject,
-    onResizeObject,
-    onBringForward,
-    onSendBackward,
-    onUpdateText,
-    onUpdateImage,
-}: ToolbarProps) {
-    const handle = (name: string, onClick?: () => void) => {
-        console.log(`Action: ${name}`);
-        onClick?.();
-    };
-
-    const btnStyle: React.CSSProperties = {
-        padding: '8px 12px',
-        borderRadius: 8,
-        border: '1px solid #e5e7eb',
-        background: '#ffffff',
-        cursor: 'pointer',
-    };
-
+export default function Toolbar({ actions }: ToolbarProps) {
     const items: BtnDef[] = [
-        {
-            kind: 'button',
-            label: '✏️ Add Text',
-            action: 'add-default-text-object',
-            onClick: onAddText,
-        },
-        {
-            kind: 'button',
-            label: '🖼️ Add Image',
-            action: 'add-default-image-object',
-            onClick: onAddImage,
-        },
-        { kind: 'divider' },
-        { kind: 'button', label: '⤴ Move', action: 'move-selected-object', onClick: onMoveObject },
-        {
-            kind: 'button',
-            label: '⤦ Resize',
-            action: 'resize-selected-object',
-            onClick: onResizeObject,
-        },
-        {
-            kind: 'button',
-            label: '⬆ Bring Forward',
-            action: 'bring-selected-forward',
-            onClick: onBringForward,
-        },
-        {
-            kind: 'button',
-            label: '⬇ Send Backward',
-            action: 'send-selected-backward',
-            onClick: onSendBackward,
-        },
-        { kind: 'divider' },
-        {
-            kind: 'button',
-            label: '🅰 Update Text',
-            action: 'update-text-content',
-            onClick: onUpdateText,
-        },
-        {
-            kind: 'button',
-            label: '🌄 Update Image',
-            action: 'update-image-source',
-            onClick: onUpdateImage,
-        },
+        { label: 'Add Text', action: 'addText' },
+        { label: 'Add Image', action: 'addImage' },
+        { label: 'Move', action: 'moveObject' },
+        { label: 'Resize', action: 'resizeObject' },
+        { label: 'Bring Forward', action: 'bringForward' },
+        { label: 'Send Backward', action: 'sendBackward' },
+        { label: 'Update Text', action: 'updateText' },
     ];
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-                marginBottom: 16,
-                flexWrap: 'wrap',
-            }}
-        >
-            {items.map((item, idx) => {
-                if (item.kind === 'divider') {
-                    return (
-                        <div
-                            key={`divider-${idx}`}
-                            style={{ width: 1, height: 28, background: '#e5e7eb', margin: '0 8px' }}
-                        />
-                    );
-                }
-
-                return (
-                    <button
-                        key={`btn-${idx}`}
-                        type="button"
-                        style={btnStyle}
-                        onClick={() => handle(item.action, item.onClick)}
-                    >
-                        {item.label}
-                    </button>
-                );
-            })}
+        <div>
+            {items.map((item, idx) => (
+                <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                        console.log(`Action: ${item.action}`);
+                        actions[item.action]?.();
+                    }}
+                >
+                    {item.label}
+                </button>
+            ))}
         </div>
     );
 }

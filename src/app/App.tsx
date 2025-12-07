@@ -21,66 +21,61 @@ function App() {
         });
     };
 
-    const addText = () => {
+    const handleAddText = () => {
         const obj = createMinimalText();
         console.log('Created minimal text object:', obj);
     };
 
-    const addImage = () => {
+    const handleAddImage = () => {
         const obj = createMinimalImage();
         console.log('Created minimal image object:', obj);
     };
 
-    const moveObjectHandler = () => {
+    const handleMoveObject = () => {
         const obj = createMinimalText();
         const moved = moveObject(obj, obj.x + 10, obj.y + 10);
         console.log('Moved object:', { before: obj, after: moved });
     };
 
-    const resizeObjectHandler = () => {
+    const handleResizeObject = () => {
         const obj = createMinimalImage();
         const resized = resizeObject(obj, obj.width + 20, obj.height + 20);
         console.log('Resized object:', { before: obj, after: resized });
     };
 
-    const bringForward = () => {
+    const handleBringForward = () => {
         const obj = createMinimalText();
         const bumped = setObjectZIndex(obj, obj.zIndex + 1);
         console.log('Brought forward:', { before: obj, after: bumped });
     };
 
-    const sendBackward = () => {
+    const handleSendBackward = () => {
         const obj = createMinimalText();
         const bumped = setObjectZIndex(obj, Math.max(0, obj.zIndex - 1));
         console.log('Sent backward:', { before: obj, after: bumped });
     };
 
-    const updateTextHandler = () => {
+    const handleUpdateText = () => {
         const obj = createMinimalText();
         const updated = updateTextContent(obj, obj.content === '' ? 'Hello' : obj.content + '!');
         console.log('Updated text object:', { before: obj, after: updated });
     };
 
-    const updateImageHandler = () => {
-        const obj = createMinimalImage();
-        const updated = { ...obj, src: '../../../newImage.png' };
-        console.log('Updated image object:', { before: obj, after: updated });
+    const actions = {
+        addText: handleAddText,
+        addImage: handleAddImage,
+        moveObject: handleMoveObject,
+        resizeObject: handleResizeObject,
+        bringForward: handleBringForward,
+        sendBackward: handleSendBackward,
+        updateText: handleUpdateText,
     };
 
     return (
         <div>
             <PresentationTitle title={presentation.title} onTitleChange={changeTitle} />
 
-            <Toolbar
-                onAddText={addText}
-                onAddImage={addImage}
-                onMoveObject={moveObjectHandler}
-                onResizeObject={resizeObjectHandler}
-                onBringForward={bringForward}
-                onSendBackward={sendBackward}
-                onUpdateText={updateTextHandler}
-                onUpdateImage={updateImageHandler}
-            />
+            <Toolbar actions={actions} />
         </div>
     );
 }

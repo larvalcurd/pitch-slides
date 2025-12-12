@@ -1,6 +1,10 @@
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
-import type { SlideObject } from '../../entities/object/types/ObjectTypes.ts';
 import React from 'react';
+import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type {
+    SlideObject,
+    TextObject,
+    ImageObject,
+} from '../../entities/object/types/ObjectTypes.ts';
 
 type Props = {
     slide?: Slide | null;
@@ -24,49 +28,103 @@ export default function SlideCanvas({ slide, slideWidth = 960, slideHeight = 540
         backgroundPosition: 'center',
     };
 
+    const handleObjectClick = (id: string, backgroundColor: string) => {
+        console.log(id, backgroundColor);
+    };
+
     const renderObject = (obj: SlideObject) => {
         const baseStyle: React.CSSProperties = {
             position: 'absolute',
             left: obj.x,
             top: obj.y,
+            width: obj.width,
+            height: obj.height,
+            zIndex: obj.zIndex,
+            boxSizing: 'border-box',
+            cursor: 'pointer',
         };
 
         if (obj.type === 'text') {
+            const text = obj as TextObject;
+            const textStyle: React.CSSProperties = {
+                ...baseStyle,
+                padding: '4px 8px',
+                background: 'rgba(255,255,255,0.8)',
+                borderRadius: 4,
+                fontSize: text.fontSize ?? 16,
+                color: text.color ?? '#111',
+                overflow: 'hidden',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+            };
+
+            const bg =
+                (textStyle.background as string) ??
+                (slide?.background?.type === 'color' ? slide.background.value : 'transparent');
+
             return (
                 <div
-                    key={obj.id}
-                    style={{
-                        ...baseStyle,
-                        padding: '4px 8px',
-                        background: 'rgba(255,255,255,0.8)',
-                        borderRadius: 4,
-                        fontSize: obj.fontSize ?? 16,
-                        color: obj.color ?? '#111',
+                    key={text.id}
+                    style={textStyle}
+                    data-object-id={text.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleObjectClick(text.id, bg)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            handleObjectClick(text.id, bg);
+                            e.preventDefault();
+                        }
                     }}
+                    aria-label={`Text object ${text.id}`}
                 >
-                    {obj.content}
+                    {text.content}
                 </div>
             );
         }
 
         if (obj.type === 'image') {
+            const image = obj as ImageObject;
+            const imgWrapperStyle: React.CSSProperties = {
+                ...baseStyle,
+                display: 'block',
+                overflow: 'hidden',
+            };
+
+            const bg =
+                (imgWrapperStyle.background as string) ??
+                (slide?.background?.type === 'color' ? slide.background.value : 'transparent');
+
             return (
-                <img
-                    key={obj.id}
-                    src={obj.src}
-                    alt=""
-                    style={{
-                        ...baseStyle,
-                        width: obj.width ?? 120,
-                        height: obj.height ?? 90,
-                        objectFit: 'cover',
-                        borderRadius: 4,
+                <div
+                    key={image.id}
+                    style={imgWrapperStyle}
+                    data-object-id={image.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleObjectClick(image.id, bg)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            handleObjectClick(image.id, bg);
+                            e.preventDefault();
+                        }
                     }}
-                />
+                    aria-label={`Image object ${image.id}`}
+                >
+                    <img
+                        src={image.src}
+                        alt={image.src ? 'Slide image' : ''}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            display: 'block',
+                            border: 'none',
+                        }}
+                    />
+                </div>
             );
         }
-
-        return null;
     };
 
     return (

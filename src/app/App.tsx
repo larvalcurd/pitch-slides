@@ -1,17 +1,17 @@
+import { useState } from 'react';
 import type { Presentation } from '../entities/presentation/types/PresentationTypes.ts';
 import type { Slide } from '../entities/slide/types/SlideTypes.ts';
 import {
-    createPresentation,
-    updatePresentationTitle,
-    setSelectedSlide,
     addSlide,
+    createPresentation,
     deleteSlide,
+    setSelectedSlide,
+    updatePresentationTitle,
 } from '../entities/presentation/utils/PresentationUtils';
+import { createSlide } from '../entities/slide/factory/SlideFactory.ts';
 import { PresentationTitle } from '../components/PresentationTitle/PresentationTitle.tsx';
-import { useState } from 'react';
 import Toolbar, { ToolbarActions } from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideLIst.tsx';
-import { createSlide } from '../entities/slide/factory/SlideFactory.ts';
 import SlideCanvas from '../components/SlideCanvas/SlideCanvas.tsx';
 
 function App() {

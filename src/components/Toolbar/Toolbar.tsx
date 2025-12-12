@@ -65,6 +65,8 @@ export const ToolbarActions = {
 
 export default function Toolbar({ actions }: ToolbarProps) {
     const ToolbarButtons: ToolbarButton[] = [
+        { label: 'Add Slide', action: 'addSlide' },
+        { label: 'Delete Slide', action: 'deleteSlide' },
         { label: 'Add Text', action: 'addText' },
         { label: 'Add Image', action: 'addImage' },
         { label: 'Move', action: 'moveObject' },

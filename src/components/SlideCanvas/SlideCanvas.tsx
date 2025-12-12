@@ -21,11 +21,10 @@ export default function SlideCanvas({ slide, slideWidth = 960, slideHeight = 540
         boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
         position: 'relative',
         overflow: 'hidden',
-        background: slide?.background?.type === 'color' ? slide.background.value : undefined,
+        backgroundColor: slide?.background?.type === 'color' ? slide.background.value : undefined,
+        backgroundImage: slide?.background?.type === 'image' ? `url(${slide.background.value})` : undefined,
         backgroundSize: slide?.background?.type === 'image' ? 'cover' : undefined,
-        backgroundImage:
-            slide?.background?.type === 'image' ? `url(${slide.background.value})` : undefined,
-        backgroundPosition: 'center',
+        backgroundPosition: slide?.background?.type === 'image' ? 'center' : undefined,
     };
 
     const handleObjectClick = (id: string, backgroundColor: string) => {

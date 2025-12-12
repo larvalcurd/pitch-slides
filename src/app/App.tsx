@@ -81,7 +81,7 @@ function App() {
                 content: 'New text',
             })
         );
-    
+
     const handleAddImage = () =>
         handleAddObject(() => {
             const imgW = 240;

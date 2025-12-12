@@ -12,5 +12,13 @@ export function PresentationTitle({ title, onTitleChange }: PresentationTitlePro
         console.log(newTitle);
     };
 
-    return <input value={title} onChange={handleChange} placeholder="Enter Presentation title" />;
+    return (
+        <input
+            id="presentation-title"
+            name="presentationTitle"
+            value={title}
+            onChange={handleChange}
+            placeholder="Enter Presentation title"
+        />
+    );
 }

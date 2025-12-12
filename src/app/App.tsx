@@ -15,13 +15,12 @@ import { PresentationTitle } from '../components/PresentationTitle/PresentationT
 import Toolbar, { ToolbarActions } from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideLIst.tsx';
 import SlideCanvas from '../components/SlideCanvas/SlideCanvas.tsx';
-import {
-    createTextObject,
-} from '../entities/object/factory/TextObjectFactory.ts';
-import { createMinimalImage } from '../entities/object/factory/ImageObjectFactory.ts';
+import { createTextObject } from '../entities/object/factory/TextObjectFactory.ts';
+import { createImageObject } from '../entities/object/factory/ImageObjectFactory.ts';
 import { addObjectToSlide } from '../entities/slide/utils/SlideUtils.ts';
 
 function App() {
+    const SLIDE_WIDTH = 960; // match SlideCanvas default
     const [presentation, setPresentation] = useState<Presentation>(() =>
         createPresentation('p1', 'Untitled presentation', [])
     );
@@ -82,7 +81,22 @@ function App() {
                 content: 'New text',
             })
         );
-    const handleAddImage = () => handleAddObject(() => createMinimalImage({ x: 30, y: 30 }));
+    
+    const handleAddImage = () =>
+        handleAddObject(() => {
+            const imgW = 240;
+            const imgH = 160;
+            const paddingFromEdge = 30;
+            const x = SLIDE_WIDTH - imgW - paddingFromEdge;
+            const y = 20;
+            return createImageObject({
+                x,
+                y,
+                width: imgW,
+                height: imgH,
+                src: 'public/images/scale_1200.jpg',
+            });
+        });
 
     const actions = {
         ...ToolbarActions,
@@ -125,7 +139,7 @@ function App() {
                         justifyContent: 'center',
                     }}
                 >
-                    <SlideCanvas slide={selectedSlide} slideWidth={960} slideHeight={540} />
+                    <SlideCanvas slide={selectedSlide} slideWidth={SLIDE_WIDTH} slideHeight={540} />
                 </div>
             </main>
         </div>

@@ -3,7 +3,7 @@ import {
     createPresentation,
     updatePresentationTitle,
     addSlide,
-    removeSlide,
+    deleteSlide,
     moveSlide,
     setSelectedSlide,
     updateSlideInPresentation,
@@ -136,7 +136,7 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
         const pres = createMinimalPresentation();
         const snap = deepClone(pres);
 
-        const res = removeSlide(pres, 'no-id');
+        const res = deleteSlide(pres, 'no-id');
 
         // nothing removed
         expect(res).toBe(pres);
@@ -148,7 +148,7 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
         const snap = deepClone(pres);
 
         // remove currently selected slide (s1)
-        const res = removeSlide(pres, pres.selectedSlideId as string);
+        const res = deleteSlide(pres, pres.selectedSlideId as string);
 
         expect(res.slides.some((s) => s.id === pres.selectedSlideId)).toBe(false);
         // selection moved to first remaining slide or null
@@ -365,7 +365,7 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
         const pres = createMaximalPresentation();
         const snap = deepClone(pres);
 
-        const res = removeSlide(pres, pres.selectedSlideId as string);
+        const res = deleteSlide(pres, pres.selectedSlideId as string);
         expect(res).not.toBe(pres);
         expect(res.slides.some((s) => s.id === pres.selectedSlideId)).toBe(false);
         expect(res.selectedObjects).toBeNull();

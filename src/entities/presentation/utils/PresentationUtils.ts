@@ -26,19 +26,20 @@ export function addSlide(presentation: Presentation, slide: Slide): Presentation
     return {
         ...presentation,
         slides: [...presentation.slides, slide],
-        selectedSlideId: presentation.selectedSlideId ?? slide.id,
+        selectedSlideId: slide.id,
     };
 }
 
-export function removeSlide(presentation: Presentation, slideId: string): Presentation {
+export function deleteSlide(presentation: Presentation, slideId: string): Presentation {
     const newSlides = presentation.slides.filter((s) => s.id !== slideId);
 
     // if nothing removed, return original
     if (newSlides.length === presentation.slides.length) return presentation;
 
+    const deletedIndex = presentation.slides.findIndex((s) => s.id === slideId);
     const newSelectedSlideId =
         presentation.selectedSlideId === slideId
-            ? newSlides[0]?.id || null
+            ? newSlides[Math.max(0, deletedIndex - 1)]?.id || null
             : presentation.selectedSlideId;
 
     return {

@@ -1,18 +1,25 @@
 import { useState } from 'react';
 import type { Presentation } from '../entities/presentation/types/PresentationTypes.ts';
 import type { Slide } from '../entities/slide/types/SlideTypes.ts';
+import type { SlideObject } from '../entities/object/types/ObjectTypes.ts';
 import {
     addSlide,
     createPresentation,
     deleteSlide,
     setSelectedSlide,
     updatePresentationTitle,
+    updateSlideInPresentation,
 } from '../entities/presentation/utils/PresentationUtils';
 import { createSlide } from '../entities/slide/factory/SlideFactory.ts';
 import { PresentationTitle } from '../components/PresentationTitle/PresentationTitle.tsx';
 import Toolbar, { ToolbarActions } from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideLIst.tsx';
 import SlideCanvas from '../components/SlideCanvas/SlideCanvas.tsx';
+import {
+    createTextObject,
+} from '../entities/object/factory/TextObjectFactory.ts';
+import { createMinimalImage } from '../entities/object/factory/ImageObjectFactory.ts';
+import { addObjectToSlide } from '../entities/slide/utils/SlideUtils.ts';
 
 function App() {
     const [presentation, setPresentation] = useState<Presentation>(() =>
@@ -49,7 +56,41 @@ function App() {
         });
     };
 
-    const actions = { ...ToolbarActions, addSlide: handleAddSlide, deleteSlide: handleDeleteSlide };
+    const handleAddObject = (createFn: () => SlideObject) => {
+        setPresentation((prev) => {
+            const slide = prev.slides.find((s) => s.id === prev.selectedSlideId);
+            if (!slide) {
+                console.log('No slide selected — cannot add object');
+                return prev;
+            }
+
+            const obj = createFn();
+            console.log(`Adding object ${obj.id} to slide ${slide.id}`);
+
+            const updatedSlide = addObjectToSlide(slide, obj);
+            return updateSlideInPresentation(prev, slide.id, updatedSlide);
+        });
+    };
+
+    const handleAddText = () =>
+        handleAddObject(() =>
+            createTextObject({
+                x: 20,
+                y: 20,
+                width: 300,
+                height: 80,
+                content: 'New text',
+            })
+        );
+    const handleAddImage = () => handleAddObject(() => createMinimalImage({ x: 30, y: 30 }));
+
+    const actions = {
+        ...ToolbarActions,
+        addSlide: handleAddSlide,
+        deleteSlide: handleDeleteSlide,
+        addText: handleAddText,
+        addImage: handleAddImage,
+    };
 
     const selectedSlide =
         presentation.slides.find((s) => s.id === presentation.selectedSlideId) ?? null;
@@ -75,7 +116,6 @@ function App() {
                 <PresentationTitle title={presentation.title} onTitleChange={changeTitle} />
                 <Toolbar actions={actions} />
 
-                {/* Slide preview area — centers the selected slide */}
                 <div
                     style={{
                         flex: 1,

@@ -1,5 +1,6 @@
-import React from 'react';
 import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type { SlideObject } from '../../entities/object/types/ObjectTypes.ts';
+import React from 'react';
 
 type Props = {
     slide?: Slide | null;
@@ -16,76 +17,100 @@ export default function SlideCanvas({ slide, slideWidth = 960, slideHeight = 540
         boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
         position: 'relative',
         overflow: 'hidden',
-        background: '#ffffff',
-        display: 'flex',
-        flexDirection: 'column',
+        background: slide?.background?.type === 'color' ? slide.background.value : undefined,
+        backgroundSize: slide?.background?.type === 'image' ? 'cover' : undefined,
+        backgroundImage:
+            slide?.background?.type === 'image' ? `url(${slide.background.value})` : undefined,
+        backgroundPosition: 'center',
     };
 
-    const renderBackground = () => {
-        if (!slide?.background) return {};
-        if (slide.background.type === 'color') return { backgroundColor: slide.background.value };
-        if (slide.background.type === 'image')
-            return {
-                backgroundImage: `url(${slide.background.value})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            };
-        return {};
-    };
+    const renderObject = (obj: SlideObject) => {
+        const baseStyle: React.CSSProperties = {
+            position: 'absolute',
+            left: obj.x,
+            top: obj.y,
+        };
 
-    const wrapperStyle: React.CSSProperties = {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '100%',
-        padding: 16,
-        boxSizing: 'border-box',
-    };
+        if (obj.type === 'text') {
+            return (
+                <div
+                    key={obj.id}
+                    style={{
+                        ...baseStyle,
+                        padding: '4px 8px',
+                        background: 'rgba(255,255,255,0.8)',
+                        borderRadius: 4,
+                        fontSize: obj.fontSize ?? 16,
+                        color: obj.color ?? '#111',
+                    }}
+                >
+                    {obj.content}
+                </div>
+            );
+        }
 
-    const titleStyle: React.CSSProperties = {
-        padding: '8px 12px',
-        background: 'rgba(255,255,255,0.8)',
-        margin: 12,
-        borderRadius: 4,
-        alignSelf: 'flex-start',
-        fontSize: 18,
-        fontWeight: 600,
-        color: '#111827',
-    };
+        if (obj.type === 'image') {
+            return (
+                <img
+                    key={obj.id}
+                    src={obj.src}
+                    alt=""
+                    style={{
+                        ...baseStyle,
+                        width: obj.width ?? 120,
+                        height: obj.height ?? 90,
+                        objectFit: 'cover',
+                        borderRadius: 4,
+                    }}
+                />
+            );
+        }
 
-    const objectsPlaceholderStyle: React.CSSProperties = {
-        position: 'absolute',
-        bottom: 12,
-        left: 12,
-        padding: '6px 8px',
-        background: 'rgba(0,0,0,0.5)',
-        color: '#fff',
-        fontSize: 12,
-        borderRadius: 4,
+        return null;
     };
 
     return (
-        <div style={wrapperStyle} aria-label="Slide preview area">
-            <div
-                style={{ ...viewportStyle, ...renderBackground() }}
-                role="region"
-                aria-label="Slide viewport"
-            >
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+            <div style={viewportStyle} role="region" aria-label="Slide viewport">
                 {slide ? (
                     <>
-                        <div style={titleStyle}>{slide.title ?? 'Untitled slide'}</div>
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: 12,
+                                left: 12,
+                                padding: '8px 12px',
+                                background: 'rgba(255,255,255,0.8)',
+                                borderRadius: 4,
+                                fontSize: 18,
+                                fontWeight: 600,
+                                color: '#111827',
+                            }}
+                        >
+                            {slide.title ?? 'Untitled slide'}
+                        </div>
 
-                        {/* Basic objects placeholder — replace with real object rendering later */}
-                        {slide.objects && slide.objects.length > 0 ? (
-                            <div
-                                style={objectsPlaceholderStyle}
-                            >{`${slide.objects.length} object(s)`}</div>
-                        ) : (
+                        {slide.objects.map(renderObject)}
+
+                        {slide.objects.length === 0 && (
                             <div
                                 style={{
-                                    ...objectsPlaceholderStyle,
+                                    position: 'absolute',
+                                    bottom: 12,
+                                    left: 12,
+                                    padding: '6px 8px',
                                     background: 'rgba(0,0,0,0.35)',
+                                    color: '#fff',
+                                    fontSize: 12,
+                                    borderRadius: 4,
                                 }}
                             >
                                 No objects

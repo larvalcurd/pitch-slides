@@ -100,7 +100,10 @@ export function deleteObject(editor: Editor): Editor {
   const slide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
   if (!slide) return editor;
 
-  const updatedSlide = removeObjectFromSlide(slide, editor.selection.objectIds[0]);
+  const updatedSlide = editor.selection.objectIds.reduce(
+    (currentSlide, objectId) => removeObjectFromSlide(currentSlide, objectId),
+    slide
+  );
   const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
   return {
     ...editor,

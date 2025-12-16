@@ -39,7 +39,6 @@ function createMaximalSlide(id = 'slide-max'): Slide {
 }
 
 function createMinimalPresentation(): Presentation {
-  // minimal: omit optional fields (selectedSlideId, selectedObjects), empty slides
   return {
     id: 'pres-min',
     title: 'Minimal',
@@ -63,7 +62,6 @@ function createMaximalPresentation(): Presentation {
 describe('PresentationUtils (deep immutability + behavior)', () => {
   it('createPresentation - minimal (no slides) sets selectedSlideId null and no mutation', () => {
     const p = createPresentation('p1', 'T'); // using exported factory
-    // ensure basic shape
     expect(p.id).toBe('p1');
     expect(p.title).toBe('T');
     expect(p.slides).toEqual([]);
@@ -94,7 +92,6 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     const res = updatePresentationTitle(pres, pres.title);
 
-    // should return original reference when unchanged
     expect(res).toBe(pres);
     expect(pres).toEqual(snap);
   });
@@ -124,7 +121,6 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     expect(res.slides.length).toBe(pres.slides.length + 1);
     expect(res.slides.at(-1)).toEqual(newSlide);
-    // current implementation selects the newly added slide
     expect(res.selectedSlideId).toBe(newSlide.id);
 
     expect(res).not.toBe(pres);
@@ -138,7 +134,6 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     const res = deleteSlide(pres, 'no-id');
 
-    // nothing removed
     expect(res).toBe(pres);
     expect(pres).toEqual(snap);
   });
@@ -147,14 +142,13 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     const pres = createMaximalPresentation();
     const snap = deepClone(pres);
 
-    // remove currently selected slide (s1)
     const res = deleteSlide(pres, pres.selectedSlideId as string);
 
     expect(res.slides.some(s => s.id === pres.selectedSlideId)).toBe(false);
-    // selection moved to first remaining slide or null
+
     const expectedSelected = res.slides[0]?.id ?? null;
     expect(res.selectedSlideId).toBe(expectedSelected);
-    // selectedObjects cleared because removed slide was selected
+
     expect(res.selectedObjects).toBeNull();
 
     expect(res).not.toBe(pres);
@@ -192,13 +186,11 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     const pres = createMinimalPresentation();
     const snap = deepClone(pres);
 
-    // set to null (clears selection)
     const resNull = setSelectedSlide(pres, null);
     expect(resNull.selectedSlideId).toBeNull();
     expect(resNull).not.toBe(pres);
     expect(pres).toEqual(snap);
 
-    // set to non-existing id should return original
     const resInvalid = setSelectedSlide(pres, 'no-id');
     expect(resInvalid).toBe(pres);
   });
@@ -211,7 +203,7 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     const res = setSelectedSlide(pres, otherId);
 
     expect(res.selectedSlideId).toBe(otherId);
-    expect(res.selectedObjects).toBeNull(); // must be cleared when selection changes
+    expect(res.selectedObjects).toBeNull();
     expect(res).not.toBe(pres);
     expect(pres).toEqual(snap);
   });
@@ -238,10 +230,10 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     expect(res).not.toBe(pres);
     expect(res.slides).not.toBe(pres.slides);
-    // replaced
+
     const found = res.slides.find(s => s.id === targetId);
     expect(found).toEqual(updated);
-    // other slides unchanged and same references
+
     pres.slides.forEach(s => {
       if (s.id !== targetId) {
         const r = res.slides.find(rs => rs.id === s.id);
@@ -277,7 +269,7 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
   it('addSlide - when presentation.selectedSlideId is undefined: sets to new slide id', () => {
     const s1 = createMaximalSlide('a');
     const s2 = createMaximalSlide('b');
-    // omit selectedSlideId explicitly
+
     const pres: Presentation = { id: 'p-undef', title: 'T', slides: [s1, s2] };
     const snap = deepClone(pres);
 
@@ -285,8 +277,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     const res = addSlide(pres, newSlide);
 
     expect(res.slides.length).toBe(3);
-    // current implementation uses `presentation.selectedSlideId ?? slide.id`
-    // so undefined -> new slide id
     expect(res.selectedSlideId).toBe(newSlide.id);
 
     expect(res).not.toBe(pres);
@@ -318,11 +308,9 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     };
     const snap = deepClone(pres);
 
-    // move last to -5 => clamped to 0
     const res = moveSlide(pres, s3.id, -5);
     expect(res).not.toBe(pres);
     expect(res.slides[0].id).toBe(s3.id);
-    // other slides preserved content
     expect(res.slides[1]).toEqual(s1);
     expect(res.slides[2]).toEqual(s2);
     expect(pres).toEqual(snap);
@@ -343,7 +331,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     const res = moveSlide(pres, s1.id, 9999);
     expect(res).not.toBe(pres);
     expect(res.slides[2].id).toBe(s1.id);
-    // other slides preserved
     expect(res.slides[0]).toEqual(s2);
     expect(res.slides[1]).toEqual(s3);
     expect(pres).toEqual(snap);
@@ -356,7 +343,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
 
     expect(res.title).toBe('New Title');
     expect(res).not.toBe(pres);
-    // check full shape (important fields present)
     expect(Object.keys(res).sort()).toEqual(Object.keys(pres).sort());
     expect(pres).toEqual(snap);
   });

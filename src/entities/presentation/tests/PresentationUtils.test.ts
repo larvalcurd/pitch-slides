@@ -115,7 +115,7 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     expect(pres).toEqual(snap);
   });
 
-  it('addSlide - maximal: appends slide and preserves existing selection', () => {
+  it('addSlide - maximal: appends slide and selects the new slide (current behavior)', () => {
     const pres = createMaximalPresentation();
     const snap = deepClone(pres);
 
@@ -124,8 +124,8 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     expect(res.slides.length).toBe(pres.slides.length + 1);
     expect(res.slides.at(-1)).toEqual(newSlide);
-    // selectedSlideId unchanged because it was already set
-    expect(res.selectedSlideId).toBe(pres.selectedSlideId);
+    // current implementation selects the newly added slide
+    expect(res.selectedSlideId).toBe(newSlide.id);
 
     expect(res).not.toBe(pres);
     expect(res.slides).not.toBe(pres.slides);

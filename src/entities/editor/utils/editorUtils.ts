@@ -6,7 +6,6 @@ import {
   setSelectedSlide,
   updatePresentationTitle,
   updateSlideInPresentation,
-  type Presentation,
 } from '../../presentation';
 import { addObjectToSlide, createSlide, removeObjectFromSlide, type Slide } from '../../slide';
 import { createImageObject, createTextObject, type SlideObject } from '../../object';

@@ -1,5 +1,5 @@
 import type { Slide } from '../types/SlideTypes.ts';
-import type { SlideObject } from '../../object/types/ObjectTypes.ts';
+import type { SlideObject } from '../../object';
 
 export function addObjectToSlide(slide: Slide, object: SlideObject): Slide {
   return {

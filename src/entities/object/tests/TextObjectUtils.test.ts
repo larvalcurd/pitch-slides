@@ -10,7 +10,9 @@ import type { TextObject } from '../types/ObjectTypes';
 describe('TextObjectUtils', () => {
   it('updateTextContent with minimal text: sets content, preserves other fields, original unchanged', () => {
     const minimal: TextObject = createMinimalText();
-    const snapshot: TextObject = { ...minimal };
+    const snapshot: TextObject = {
+      ...minimal,
+    };
 
     const updated = updateTextContent(minimal, 'New content');
 
@@ -25,7 +27,9 @@ describe('TextObjectUtils', () => {
 
   it('updateTextContent with maximal text: sets content, preserves other fields, original unchanged', () => {
     const maximal: TextObject = createMaximalText();
-    const snapshot: TextObject = { ...maximal };
+    const snapshot: TextObject = {
+      ...maximal,
+    };
 
     const updated = updateTextContent(maximal, 'Overridden content');
 
@@ -38,7 +42,9 @@ describe('TextObjectUtils', () => {
 
   it('updateTextFontSize with minimal text: adds fontSize, original unchanged', () => {
     const minimal: TextObject = createMinimalText();
-    const snapshot: TextObject = { ...minimal };
+    const snapshot: TextObject = {
+      ...minimal,
+    };
 
     // minimal should not have fontSize set
     expect(minimal.fontSize).toBeUndefined();
@@ -54,7 +60,9 @@ describe('TextObjectUtils', () => {
 
   it('updateTextFontSize with maximal text: updates fontSize, original unchanged', () => {
     const maximal: TextObject = createMaximalText();
-    const snapshot: TextObject = { ...maximal };
+    const snapshot: TextObject = {
+      ...maximal,
+    };
 
     const updated = updateTextFontSize(maximal, 32);
 
@@ -66,7 +74,9 @@ describe('TextObjectUtils', () => {
 
   it('updateTextFontFamily with minimal text: adds fontFamily, original unchanged', () => {
     const minimal: TextObject = createMinimalText();
-    const snapshot: TextObject = { ...minimal };
+    const snapshot: TextObject = {
+      ...minimal,
+    };
 
     expect(minimal.fontFamily).toBeUndefined();
 
@@ -79,7 +89,9 @@ describe('TextObjectUtils', () => {
 
   it('updateTextFontFamily with maximal text: updates fontFamily, original unchanged', () => {
     const maximal: TextObject = createMaximalText();
-    const snapshot: TextObject = { ...maximal };
+    const snapshot: TextObject = {
+      ...maximal,
+    };
 
     const updated = updateTextFontFamily(maximal, 'Times New Roman');
 

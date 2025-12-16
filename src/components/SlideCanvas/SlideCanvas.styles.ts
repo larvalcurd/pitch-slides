@@ -1,6 +1,6 @@
 import type React from 'react';
-import type { BaseObject } from '../../entities/object/types/ObjectTypes.ts';
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type { BaseObject } from '../../entities/object';
+import type { Slide } from '../../entities/slide';
 
 const SLIDE_WIDTH = 960;
 const SLIDE_HEIGHT = 540;

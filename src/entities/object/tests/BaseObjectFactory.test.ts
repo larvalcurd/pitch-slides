@@ -4,7 +4,12 @@ import type { BaseObject } from '../types/ObjectTypes';
 
 describe('createBaseObject', () => {
   it('creates object with required fields and defaults', () => {
-    const params = { x: 5, y: 10, width: 200, height: 150 };
+    const params = {
+      x: 5,
+      y: 10,
+      width: 200,
+      height: 150,
+    };
     const obj = createBaseObject(params);
     expect(obj.x).toBe(5);
     expect(obj.y).toBe(10);
@@ -17,13 +22,25 @@ describe('createBaseObject', () => {
   });
 
   it('uses provided id when present', () => {
-    const params = { id: 'custom-id', x: 0, y: 0, width: 10, height: 10 };
+    const params = {
+      id: 'custom-id',
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+    };
     const obj = createBaseObject(params);
     expect(obj.id).toBe('custom-id');
   });
 
   it('overrides default fields when provided', () => {
-    const params = { x: 1, y: 2, width: 3, height: 4, zIndex: 7 };
+    const params = {
+      x: 1,
+      y: 2,
+      width: 3,
+      height: 4,
+      zIndex: 7,
+    };
     const obj = createBaseObject(params);
     expect(obj.zIndex).toBe(7);
   });
@@ -40,15 +57,27 @@ describe('createBaseObject', () => {
       width: 8,
       height: 16,
     };
-    const paramsCopy = { ...params };
+    const paramsCopy = {
+      ...params,
+    };
     const obj = createBaseObject(params);
     expect(params).toEqual(paramsCopy);
     expect(obj).not.toBe(params as unknown as BaseObject);
   });
 
   it('multiple creations without id produce string ids', () => {
-    const a = createBaseObject({ x: 0, y: 0, width: 1, height: 1 });
-    const b = createBaseObject({ x: 0, y: 0, width: 1, height: 1 });
+    const a = createBaseObject({
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+    });
+    const b = createBaseObject({
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+    });
     expect(typeof a.id).toBe('string');
     expect(typeof b.id).toBe('string');
     expect(a.id.length).toBeGreaterThan(0);

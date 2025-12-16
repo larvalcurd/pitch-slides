@@ -33,7 +33,10 @@ function createMaximalSlide(id = 'slide-max'): Slide {
   return {
     id,
     title: 'Slide ' + id,
-    background: { type: 'image', value: `bg-${id}.png` },
+    background: {
+      type: 'image',
+      value: `bg-${id}.png`,
+    },
     objects: [img1, img2, txt1, txt2],
   };
 }
@@ -55,7 +58,10 @@ function createMaximalPresentation(): Presentation {
     title: 'Full Presentation',
     slides: [s1, s2],
     selectedSlideId: s1.id,
-    selectedObjects: { slideId: s1.id, objectIds: [s1.objects[0].id, s1.objects[1].id] },
+    selectedObjects: {
+      slideId: s1.id,
+      objectIds: [s1.objects[0].id, s1.objects[1].id],
+    },
   };
 }
 
@@ -224,7 +230,10 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     const snap = deepClone(pres);
 
     const targetId = pres.slides[0].id;
-    const updated = { ...pres.slides[0], title: 'Updated Title' };
+    const updated = {
+      ...pres.slides[0],
+      title: 'Updated Title',
+    };
 
     const res = updateSlideInPresentation(pres, targetId, updated);
 
@@ -270,7 +279,11 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     const s1 = createMaximalSlide('a');
     const s2 = createMaximalSlide('b');
 
-    const pres: Presentation = { id: 'p-undef', title: 'T', slides: [s1, s2] };
+    const pres: Presentation = {
+      id: 'p-undef',
+      title: 'T',
+      slides: [s1, s2],
+    };
     const snap = deepClone(pres);
 
     const newSlide = createMinimalSlide('ns');
@@ -285,7 +298,12 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
   });
 
   it('addSlide - when selectedSlideId is null (explicit): sets to new slide id', () => {
-    const pres: Presentation = { id: 'p-null', title: 'T', slides: [], selectedSlideId: null };
+    const pres: Presentation = {
+      id: 'p-null',
+      title: 'T',
+      slides: [],
+      selectedSlideId: null,
+    };
     const snap = deepClone(pres);
     const newSlide = createMinimalSlide('ns-null');
     const res = addSlide(pres, newSlide);
@@ -394,7 +412,10 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     const snap = deepClone(pres);
 
     const targetId = pres.slides[0].id;
-    const updated = { ...pres.slides[0], title: 'Updated Title' };
+    const updated = {
+      ...pres.slides[0],
+      title: 'Updated Title',
+    };
 
     const res = updateSlideInPresentation(pres, targetId, updated);
     expect(res).not.toBe(pres);

@@ -1,5 +1,5 @@
-import type { Slide } from '../../slide/types/SlideTypes.ts';
-import type { ObjectSelection } from '../../object/types/ObjectTypes.ts';
+import type { Slide } from '../../slide';
+import type { ObjectSelection } from '../../object';
 
 export type Presentation = {
   id: string;

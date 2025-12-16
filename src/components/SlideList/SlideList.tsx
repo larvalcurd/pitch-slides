@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type { Slide } from '../../entities/slide';
 import {
   containerStyle,
   defaultBorderColor,

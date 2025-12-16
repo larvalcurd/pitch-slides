@@ -1,6 +1,6 @@
 import React from 'react';
-import type { ImageObject } from '../../entities/object/types/ObjectTypes.ts';
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type { ImageObject } from '../../entities/object';
+import type { Slide } from '../../entities/slide';
 import { baseObjectStyle } from './SlideCanvas.styles.ts';
 
 type Props = {

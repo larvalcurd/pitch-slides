@@ -4,7 +4,7 @@ import Toolbar from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideList/SlideList.tsx';
 import { SlideCanvas } from '../components/SlideCanvas';
 
-import { getRandomColor } from '../entities/slide/factory/SlideFactory.ts';
+import { getRandomColor } from '../entities/slide';
 
 function App() {
   const {
@@ -26,11 +26,21 @@ function App() {
     addText: () => handleAddObject('text'),
     addImage: () => handleAddObject('image'),
     deleteObject: handleDeleteObject,
-    changeBackground: () => handleChangeSlideBackground({ type: 'color', value: getRandomColor() }),
+    changeBackground: () =>
+      handleChangeSlideBackground({
+        type: 'color',
+        value: getRandomColor(),
+      }),
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }} className="app">
+    <div
+      style={{
+        display: 'flex',
+        height: '100vh',
+      }}
+      className="app"
+    >
       <SlideList
         slides={presentation.slides}
         selectedSlideId={presentation.selectedSlideId}

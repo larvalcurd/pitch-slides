@@ -1,6 +1,6 @@
 import React from 'react';
-import type { TextObject } from '../../entities/object/types/ObjectTypes.ts';
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type { TextObject } from '../../entities/object';
+import type { Slide } from '../../entities/slide';
 import { baseObjectStyle } from './SlideCanvas.styles.ts';
 
 type Props = {

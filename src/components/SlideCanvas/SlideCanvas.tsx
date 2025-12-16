@@ -66,7 +66,14 @@ export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }
           </div>
         </div>
       ) : (
-        <div style={{ margin: 'auto', color: '#6b7280' }}>No slide selected</div>
+        <div
+          style={{
+            margin: 'auto',
+            color: '#6b7280',
+          }}
+        >
+          No slide selected
+        </div>
       )}
     </div>
   );

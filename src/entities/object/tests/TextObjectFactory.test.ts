@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('nanoid', () => ({ nanoid: () => 'fixed-nanoid' }));
+vi.mock('nanoid', () => ({
+  nanoid: () => 'fixed-nanoid',
+}));
 
 import {
   createTextObject,
@@ -11,7 +13,13 @@ import { DEFAULT_BASE } from '../factory/defaults.ts';
 import type { BaseObject, TextObject } from '../types/ObjectTypes.ts';
 
 describe('TextObjectFactory', () => {
-  const baseArgs = { x: 5, y: 6, width: 120, height: 80, content: 'Hello' };
+  const baseArgs = {
+    x: 5,
+    y: 6,
+    width: 120,
+    height: 80,
+    content: 'Hello',
+  };
 
   it('generates id when none provided and applies base defaults', () => {
     const txt = createTextObject(baseArgs);
@@ -26,7 +34,10 @@ describe('TextObjectFactory', () => {
   });
 
   it('preserves provided id', () => {
-    const txt = createTextObject({ ...baseArgs, id: 'custom-id' });
+    const txt = createTextObject({
+      ...baseArgs,
+      id: 'custom-id',
+    });
     expect(txt.id).toBe('custom-id');
   });
 
@@ -49,7 +60,10 @@ describe('TextObjectFactory', () => {
   });
 
   it('createMinimalText applies minimal defaults and merges overrides', () => {
-    const created = createMinimalText({ fontFamily: 'Times', zIndex: 9 });
+    const created = createMinimalText({
+      fontFamily: 'Times',
+      zIndex: 9,
+    });
     expect(created.content).toBe('');
     expect(created.x).toBe(0);
     expect(created.y).toBe(0);
@@ -60,7 +74,10 @@ describe('TextObjectFactory', () => {
   });
 
   it('createMaximalText returns maximal instance and accepts overrides', () => {
-    const maximal = createMaximalText({ content: 'Over', zIndex: 7 });
+    const maximal = createMaximalText({
+      content: 'Over',
+      zIndex: 7,
+    });
     expect(maximal.content).toBe('Over');
     expect(maximal.zIndex).toBe(7);
     expect(maximal.x).toBe(10);
@@ -81,15 +98,32 @@ describe('TextObjectFactory', () => {
       width: 8,
       height: 16,
     };
-    const copy = { ...params };
-    const obj = createTextObject({ ...params, content: 'a' } as TextObject);
+    const copy = {
+      ...params,
+    };
+    const obj = createTextObject({
+      ...params,
+      content: 'a',
+    } as TextObject);
     expect(params).toEqual(copy);
     expect(obj).not.toBe(params as unknown as BaseObject);
   });
 
   it('multiple creations without id produce non-empty string ids', () => {
-    const a = createTextObject({ x: 0, y: 0, width: 1, height: 1, content: '' });
-    const b = createTextObject({ x: 0, y: 0, width: 1, height: 1, content: '' });
+    const a = createTextObject({
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+      content: '',
+    });
+    const b = createTextObject({
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+      content: '',
+    });
     expect(typeof a.id).toBe('string');
     expect(typeof b.id).toBe('string');
     expect(a.id.length).toBeGreaterThan(0);

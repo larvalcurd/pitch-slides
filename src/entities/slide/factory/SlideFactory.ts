@@ -11,6 +11,9 @@ export function createSlide(params: Partial<Slide> = {}): Slide {
     id: params.id ?? nanoid(),
     title: params.title ?? 'New Slide',
     objects: params.objects ?? [],
-    background: params.background ?? { type: 'color', value: getRandomColor() },
+    background: params.background ?? {
+      type: 'color',
+      value: getRandomColor(),
+    },
   };
 }

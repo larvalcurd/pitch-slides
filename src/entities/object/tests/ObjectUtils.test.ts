@@ -7,7 +7,9 @@ import type { ImageObject, TextObject } from '../types/ObjectTypes';
 describe('ObjectUtils - ImageObject', () => {
   it('moveObject with minimal image: updates position, returns new object, original unchanged', () => {
     const minimal: ImageObject = createMinimalImage();
-    const snapshot: ImageObject = { ...minimal };
+    const snapshot: ImageObject = {
+      ...minimal,
+    };
 
     const moved = moveObject(minimal, 10, 20);
 
@@ -26,7 +28,9 @@ describe('ObjectUtils - ImageObject', () => {
 
   it('moveObject with maximal image: updates position, returns new object, original unchanged', () => {
     const maximal: ImageObject = createMaximalImage();
-    const snapshot: ImageObject = { ...maximal };
+    const snapshot: ImageObject = {
+      ...maximal,
+    };
 
     const moved = moveObject(maximal, 999, 888);
 
@@ -47,7 +51,9 @@ describe('ObjectUtils - ImageObject', () => {
 
   it('resizeObject with minimal image: updates size, returns new object, original unchanged', () => {
     const minimal: ImageObject = createMinimalImage();
-    const snapshot: ImageObject = { ...minimal };
+    const snapshot: ImageObject = {
+      ...minimal,
+    };
 
     const resized = resizeObject(minimal, 55, 66);
 
@@ -65,7 +71,9 @@ describe('ObjectUtils - ImageObject', () => {
 
   it('resizeObject with maximal image: updates size, returns new object, original unchanged', () => {
     const maximal: ImageObject = createMaximalImage();
-    const snapshot: ImageObject = { ...maximal };
+    const snapshot: ImageObject = {
+      ...maximal,
+    };
 
     const resized = resizeObject(maximal, 301, 302);
 
@@ -85,7 +93,9 @@ describe('ObjectUtils - ImageObject', () => {
 
   it('setObjectZIndex with minimal image: updates zIndex, returns new object, original unchanged', () => {
     const minimal: ImageObject = createMinimalImage();
-    const snapshot: ImageObject = { ...minimal };
+    const snapshot: ImageObject = {
+      ...minimal,
+    };
 
     const updated = setObjectZIndex(minimal, 42);
 
@@ -102,7 +112,9 @@ describe('ObjectUtils - ImageObject', () => {
 
   it('setObjectZIndex with maximal image: updates zIndex, returns new object, original unchanged', () => {
     const maximal: ImageObject = createMaximalImage();
-    const snapshot: ImageObject = { ...maximal };
+    const snapshot: ImageObject = {
+      ...maximal,
+    };
 
     const updated = setObjectZIndex(maximal, -7);
 
@@ -122,7 +134,9 @@ describe('ObjectUtils - ImageObject', () => {
 describe('ObjectUtils - TextObject', () => {
   it('moveObject with minimal text: updates position, returns new object, original unchanged', () => {
     const minimal: TextObject = createMinimalText();
-    const snapshot: TextObject = { ...minimal };
+    const snapshot: TextObject = {
+      ...minimal,
+    };
 
     const moved = moveObject(minimal, 15, 25);
 
@@ -139,7 +153,9 @@ describe('ObjectUtils - TextObject', () => {
 
   it('moveObject with maximal text: updates position, returns new object, original unchanged', () => {
     const maximal: TextObject = createMaximalText();
-    const snapshot: TextObject = { ...maximal };
+    const snapshot: TextObject = {
+      ...maximal,
+    };
 
     const moved = moveObject(maximal, 777, 666);
 
@@ -159,7 +175,9 @@ describe('ObjectUtils - TextObject', () => {
 
   it('resizeObject with minimal text: updates size, returns new object, original unchanged', () => {
     const minimal: TextObject = createMinimalText();
-    const snapshot: TextObject = { ...minimal };
+    const snapshot: TextObject = {
+      ...minimal,
+    };
 
     const resized = resizeObject(minimal, 120, 80);
 
@@ -176,7 +194,9 @@ describe('ObjectUtils - TextObject', () => {
 
   it('resizeObject with maximal text: updates size, returns new object, original unchanged', () => {
     const maximal: TextObject = createMaximalText();
-    const snapshot: TextObject = { ...maximal };
+    const snapshot: TextObject = {
+      ...maximal,
+    };
 
     const resized = resizeObject(maximal, 400, 200);
 
@@ -195,7 +215,9 @@ describe('ObjectUtils - TextObject', () => {
 
   it('setObjectZIndex with minimal text: updates zIndex, returns new object, original unchanged', () => {
     const minimal: TextObject = createMinimalText();
-    const snapshot: TextObject = { ...minimal };
+    const snapshot: TextObject = {
+      ...minimal,
+    };
 
     const updated = setObjectZIndex(minimal, 11);
 
@@ -211,7 +233,9 @@ describe('ObjectUtils - TextObject', () => {
 
   it('setObjectZIndex with maximal text: updates zIndex, returns new object, original unchanged', () => {
     const maximal: TextObject = createMaximalText();
-    const snapshot: TextObject = { ...maximal };
+    const snapshot: TextObject = {
+      ...maximal,
+    };
 
     const updated = setObjectZIndex(maximal, -11);
 

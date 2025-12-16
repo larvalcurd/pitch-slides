@@ -1,8 +1,14 @@
 import type { BaseObject, ImageObject, TextObject } from '../types/ObjectTypes.ts';
 
 export function shallowMergePatch<T extends object>(original: T, patch?: Partial<T>): T {
-  if (!patch) return { ...original };
-  return { ...original, ...patch };
+  if (!patch)
+    return {
+      ...original,
+    };
+  return {
+    ...original,
+    ...patch,
+  };
 }
 
 export function applyPatchBase(original: BaseObject, patch?: Partial<BaseObject>): BaseObject {

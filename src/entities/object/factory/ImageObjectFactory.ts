@@ -23,7 +23,13 @@ export function createImageObject(params: CreateImageObjectParams): ImageObject 
 
 export function createMinimalImage(overrides?: Partial<ImageObject>) {
   return applyPatchImage(
-    createImageObject({ x: 0, y: 0, width: 100, height: 100, src: '' }),
+    createImageObject({
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+      src: '',
+    }),
     overrides,
   );
 }

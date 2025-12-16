@@ -1,4 +1,4 @@
-import type { SlideObject } from '../../object/types/ObjectTypes.ts';
+import type { SlideObject } from '../../object';
 
 export type Slide = {
   id: string;

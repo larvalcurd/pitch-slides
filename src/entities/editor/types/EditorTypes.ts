@@ -1,5 +1,5 @@
-import type { Presentation } from '../../presentation/types/PresentationTypes.ts';
-import type { ObjectSelection } from '../../object/types/ObjectTypes.ts';
+import type { Presentation } from '../../presentation';
+import type { ObjectSelection } from '../../object';
 
 export type Editor = {
   presentation: Presentation;

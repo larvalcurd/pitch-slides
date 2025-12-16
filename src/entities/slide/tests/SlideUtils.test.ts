@@ -30,7 +30,10 @@ function createMaximalSlide(): Slide {
   return {
     id: 'slide-max',
     title: 'Full Slide',
-    background: { type: 'image', value: 'bg-full.png' },
+    background: {
+      type: 'image',
+      value: 'bg-full.png',
+    },
     objects: [imgMin, imgMax, txtMin, txtMax],
   };
 }
@@ -89,7 +92,10 @@ describe('SlideUtils (deep immutability)', () => {
     const snapshot = deepClone(slide);
 
     const target = slide.objects[2];
-    const updated = { ...target, x: (target.x ?? 0) + 100 };
+    const updated = {
+      ...target,
+      x: (target.x ?? 0) + 100,
+    };
 
     const res = updateObjectInSlide(slide, target.id, updated);
 
@@ -123,7 +129,10 @@ describe('SlideUtils (deep immutability)', () => {
     const slide = createMaximalSlide();
     const snapshot = deepClone(slide);
 
-    const newBg: SlideBackground = { type: 'color', value: '#ff0000' };
+    const newBg: SlideBackground = {
+      type: 'color',
+      value: '#ff0000',
+    };
     const res = updateSlideBackground(slide, newBg);
 
     expect(res.background).toEqual(newBg);

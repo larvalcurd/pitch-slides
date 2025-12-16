@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import type { Editor } from '../entities/editor/types/EditorTypes.ts';
-import type { Slide } from '../entities/slide/types/SlideTypes.ts';
+import type { Editor } from '../entities/editor';
+import type { Slide } from '../entities/slide';
 import {
   createEditor,
   addSlide,

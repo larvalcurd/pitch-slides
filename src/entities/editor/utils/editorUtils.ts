@@ -1,18 +1,15 @@
 import type { Editor } from '../types/EditorTypes.ts';
-import type { Slide } from '../../slide/types/SlideTypes.ts';
-import type { SlideObject } from '../../object/types/ObjectTypes.ts';
 import {
-  createPresentation,
   addSlideToPresentation,
+  createPresentation,
   deleteSlideFromPresentation,
   setSelectedSlide,
   updatePresentationTitle,
   updateSlideInPresentation,
-} from '../../presentation/utils/PresentationUtils.ts';
-import { createSlide } from '../../slide/factory/SlideFactory.ts';
-import { createTextObject } from '../../object/factory/TextObjectFactory.ts';
-import { createImageObject } from '../../object/factory/ImageObjectFactory.ts';
-import { addObjectToSlide, removeObjectFromSlide } from '../../slide/utils/SlideUtils.ts';
+} from '../../presentation';
+import { addObjectToSlide, createSlide, removeObjectFromSlide, type Slide } from '../../slide';
+import  { createImageObject, createTextObject, type SlideObject } from '../../object';
+
 
 export function createEditor(): Editor {
   const presentation = createPresentation('p1', 'Untitled presentation', [createSlide()]);
@@ -102,7 +99,7 @@ export function deleteObject(editor: Editor): Editor {
 
   const updatedSlide = editor.selection.objectIds.reduce(
     (currentSlide, objectId) => removeObjectFromSlide(currentSlide, objectId),
-    slide
+    slide,
   );
   const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
   return {
@@ -116,7 +113,10 @@ export function changeSlideBackground(editor: Editor, background: Slide['backgro
   const slide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
   if (!slide) return editor;
 
-  const updatedSlide = { ...slide, background };
+  const updatedSlide = {
+    ...slide,
+    background,
+  };
   const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
   return {
     ...editor,

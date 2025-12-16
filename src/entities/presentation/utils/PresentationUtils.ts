@@ -1,4 +1,4 @@
-import type { Slide } from '../../slide/types/SlideTypes.ts';
+import type { Slide } from '../../slide';
 import type { Presentation } from '../types/PresentationTypes.ts';
 
 export function createPresentation(id: string, title: string, slides: Slide[] = []): Presentation {

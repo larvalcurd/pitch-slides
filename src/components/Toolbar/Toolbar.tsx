@@ -36,6 +36,8 @@ export default function Toolbar({ actions }: ToolbarProps) {
     { label: 'Delete Slide', action: 'deleteSlide' },
     { label: 'Add Text', action: 'addText' },
     { label: 'Add Image', action: 'addImage' },
+    { label: 'Delete Object', action: 'deleteObject' },
+    { label: 'Change Background', action: 'changeBackground' },
     { label: 'Move', action: 'moveObject' },
     { label: 'Resize', action: 'resizeObject' },
     { label: 'Bring Forward', action: 'bringForward' },

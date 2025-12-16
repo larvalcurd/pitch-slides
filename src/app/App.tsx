@@ -4,6 +4,8 @@ import Toolbar from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideList/SlideList.tsx';
 import { SlideCanvas } from '../components/SlideCanvas';
 
+import { getRandomColor } from '../entities/slide/factory/SlideFactory.ts';
+
 function App() {
   const {
     presentation,
@@ -12,6 +14,10 @@ function App() {
     handleDeleteSlide,
     handleSelectSlide,
     handleAddObject,
+    handleDeleteObject,
+    handleSelectObject,
+    selectedObjectIds,
+    handleChangeSlideBackground,
   } = usePresentation();
 
   const toolbarActions = {
@@ -19,6 +25,8 @@ function App() {
     deleteSlide: handleDeleteSlide,
     addText: () => handleAddObject('text'),
     addImage: () => handleAddObject('image'),
+    deleteObject: handleDeleteObject,
+    changeBackground: () => handleChangeSlideBackground({ type: 'color', value: getRandomColor() }),
   };
 
   return (
@@ -53,6 +61,8 @@ function App() {
         >
           <SlideCanvas
             slide={presentation.slides.find(s => s.id === presentation.selectedSlideId) ?? null}
+            onSelectObject={handleSelectObject}
+            selectedObjectIds={selectedObjectIds}
           />
         </div>
       </main>

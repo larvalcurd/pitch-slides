@@ -22,7 +22,7 @@ export function updatePresentationTitle(
   };
 }
 
-export function addSlide(presentation: Presentation, slide: Slide): Presentation {
+export function addSlideToPresentation(presentation: Presentation, slide: Slide): Presentation {
   return {
     ...presentation,
     slides: [...presentation.slides, slide],
@@ -30,7 +30,7 @@ export function addSlide(presentation: Presentation, slide: Slide): Presentation
   };
 }
 
-export function deleteSlide(presentation: Presentation, slideId: string): Presentation {
+export function deleteSlideFromPresentation(presentation: Presentation, slideId: string): Presentation {
   const newSlides = presentation.slides.filter(s => s.id !== slideId);
 
   if (newSlides.length === presentation.slides.length) return presentation;

@@ -6,10 +6,10 @@ import {
   setSelectedSlide,
   updatePresentationTitle,
   updateSlideInPresentation,
+  type Presentation,
 } from '../../presentation';
 import { addObjectToSlide, createSlide, removeObjectFromSlide, type Slide } from '../../slide';
-import  { createImageObject, createTextObject, type SlideObject } from '../../object';
-
+import { createImageObject, createTextObject, type SlideObject } from '../../object';
 
 export function createEditor(): Editor {
   const presentation = createPresentation('p1', 'Untitled presentation', [createSlide()]);
@@ -37,6 +37,7 @@ export function deleteSlide(editor: Editor): Editor {
     ...editor,
     presentation: newPresentation,
     selectedSlideId: newPresentation.selectedSlideId,
+    selection: editor.selection?.slideId === editor.selectedSlideId ? null : editor.selection,
   };
 }
 
@@ -46,6 +47,7 @@ export function selectSlide(editor: Editor, slideId: string): Editor {
     ...editor,
     presentation: newPresentation,
     selectedSlideId: slideId,
+    selection: slideId !== editor.selectedSlideId ? null : editor.selection,
   };
 }
 

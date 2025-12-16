@@ -7,7 +7,6 @@ export function createPresentation(id: string, title: string, slides: Slide[] = 
     title,
     slides,
     selectedSlideId: slides[0]?.id || null,
-    selectedObjects: null,
   };
 }
 
@@ -48,8 +47,6 @@ export function deleteSlideFromPresentation(
     ...presentation,
     slides: newSlides,
     selectedSlideId: newSelectedSlideId,
-    selectedObjects:
-      presentation.selectedObjects?.slideId === slideId ? null : presentation.selectedObjects,
   };
 }
 
@@ -87,7 +84,6 @@ export function setSelectedSlide(presentation: Presentation, slideId: string | n
   return {
     ...presentation,
     selectedSlideId: slideId,
-    selectedObjects: null,
   };
 }
 

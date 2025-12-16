@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { Editor } from '../entities/editor/EditorTypes.ts';
+import type { Editor } from '../entities/editor/types/EditorTypes.ts';
 import type { Slide } from '../entities/slide/types/SlideTypes.ts';
 import {
   createEditor,
@@ -11,7 +11,7 @@ import {
   deleteObject,
   changeSlideBackground,
   selectObject,
-} from '../entities/editor/editor.ts';
+} from '../entities/editor';
 
 export default function usePresentation() {
   const [editor, setEditor] = useState<Editor>(() => createEditor());

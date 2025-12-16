@@ -1,4 +1,4 @@
-import type { Editor } from '../EditorTypes.ts';
+import type { Editor } from '../types/EditorTypes.ts';
 import type { Slide } from '../../slide/types/SlideTypes.ts';
 import type { SlideObject } from '../../object/types/ObjectTypes.ts';
 import {

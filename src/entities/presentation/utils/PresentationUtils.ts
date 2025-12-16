@@ -30,7 +30,10 @@ export function addSlideToPresentation(presentation: Presentation, slide: Slide)
   };
 }
 
-export function deleteSlideFromPresentation(presentation: Presentation, slideId: string): Presentation {
+export function deleteSlideFromPresentation(
+  presentation: Presentation,
+  slideId: string,
+): Presentation {
   const newSlides = presentation.slides.filter(s => s.id !== slideId);
 
   if (newSlides.length === presentation.slides.length) return presentation;

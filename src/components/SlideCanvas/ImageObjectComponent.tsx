@@ -7,13 +7,22 @@ type Props = {
   image: ImageObject;
   slide?: Slide | null;
   onObjectClick: (id: string, backgroundColor: string) => void;
+  onSelectObject?: (id: string) => void;
+  isSelected?: boolean;
 };
 
-export default function ImageObjectComponent({ image, slide, onObjectClick }: Props) {
+export default function ImageObjectComponent({
+  image,
+  slide,
+  onObjectClick,
+  onSelectObject,
+  isSelected,
+}: Props) {
   const imgWrapperStyle: React.CSSProperties = {
     ...baseObjectStyle(image),
     display: 'block',
     overflow: 'hidden',
+    border: isSelected ? '2px solid #007bff' : 'none',
   };
 
   const bg =
@@ -25,7 +34,10 @@ export default function ImageObjectComponent({ image, slide, onObjectClick }: Pr
       key={image.id}
       style={imgWrapperStyle}
       data-object-id={image.id}
-      onClick={() => onObjectClick(image.id, bg)}
+      onClick={() => {
+        onObjectClick(image.id, bg);
+        onSelectObject?.(image.id);
+      }}
     >
       <img
         src={image.src}

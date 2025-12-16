@@ -7,9 +7,17 @@ type Props = {
   text: TextObject;
   slide?: Slide | null;
   onObjectClick: (id: string, backgroundColor: string) => void;
+  onSelectObject?: (id: string) => void;
+  isSelected?: boolean;
 };
 
-export default function TextObjectComponent({ text, slide, onObjectClick }: Props) {
+export default function TextObjectComponent({
+  text,
+  slide,
+  onObjectClick,
+  onSelectObject,
+  isSelected,
+}: Props) {
   const baseStyle = baseObjectStyle(text);
   const textStyle: React.CSSProperties = {
     ...baseStyle,
@@ -22,6 +30,7 @@ export default function TextObjectComponent({ text, slide, onObjectClick }: Prop
     borderRadius: 4,
     fontSize: text.fontSize ?? 16,
     color: text.color ?? '#111',
+    border: isSelected ? '2px solid #007bff' : 'none',
   };
 
   const bg =
@@ -33,7 +42,10 @@ export default function TextObjectComponent({ text, slide, onObjectClick }: Prop
       key={text.id}
       style={textStyle}
       data-object-id={text.id}
-      onClick={() => onObjectClick(text.id, bg)}
+      onClick={() => {
+        onObjectClick(text.id, bg);
+        onSelectObject?.(text.id);
+      }}
     >
       {text.content}
     </div>

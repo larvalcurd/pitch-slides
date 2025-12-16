@@ -6,14 +6,24 @@ import ImageObjectComponent from './ImageObjectComponent.tsx';
 
 type Props = {
   slide?: Slide | null;
+  onSelectObject?: (objectId: string) => void;
+  selectedObjectIds?: string[];
 };
 
-export default function SlideCanvas({ slide }: Props) {
+export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }: Props) {
   const handleObjectClick = (id: string, backgroundColor: string) => {
     console.log(id, backgroundColor);
   };
 
+  const handleSelectObject = (id: string) => {
+    if (onSelectObject) {
+      onSelectObject(id);
+    }
+  };
+
   const renderObject = (obj: SlideObject) => {
+    const isSelected = selectedObjectIds?.includes(obj.id);
+
     if (obj.type === 'text') {
       return (
         <TextObjectComponent
@@ -21,6 +31,8 @@ export default function SlideCanvas({ slide }: Props) {
           text={obj}
           slide={slide}
           onObjectClick={handleObjectClick}
+          onSelectObject={handleSelectObject}
+          isSelected={isSelected}
         />
       );
     }
@@ -32,6 +44,8 @@ export default function SlideCanvas({ slide }: Props) {
           image={obj}
           slide={slide}
           onObjectClick={handleObjectClick}
+          onSelectObject={handleSelectObject}
+          isSelected={isSelected}
         />
       );
     }

@@ -1,4 +1,4 @@
-import { wrapperStyle, buttonStyle } from './Toolbar.styles.ts';
+import styles from './Toolbar.module.css';
 
 import {
   handleAddText,
@@ -79,13 +79,13 @@ export default function Toolbar({ actions }: ToolbarProps) {
   ];
 
   return (
-    <div style={wrapperStyle} role="toolbar" aria-label="Editor toolbar">
+    <div className={styles.toolbar} role="toolbar" aria-label="Editor toolbar">
       {ToolbarButtons.map((button, idx) => {
         return (
           <button
             key={idx}
             type="button"
-            style={buttonStyle}
+            className={styles.button}
             onClick={() => {
               console.log(`Action: ${button.action}`);
               actions[button.action]?.();

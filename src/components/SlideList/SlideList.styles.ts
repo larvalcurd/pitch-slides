@@ -30,6 +30,7 @@ export const itemStyleBase: React.CSSProperties = {
   borderStyle: 'solid',
   borderColor: 'rgba(0,0,0,0.06)',
   background: '#ffffff',
+  flexShrink: 0,
 };
 
 export const thumbnailInnerStyle: React.CSSProperties = {

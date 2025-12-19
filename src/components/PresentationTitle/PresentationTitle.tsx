@@ -1,10 +1,5 @@
-import React, { useState } from 'react';
-import {
-  wrapperStyle,
-  inputStyle,
-  inputFocusStyle,
-  inputDisabledStyle,
-} from './PresentationTitle.styles.ts';
+import React from 'react';
+import styles from './PresentationTitle.module.css';
 
 type PresentationTitleProps = {
   title: string;
@@ -17,30 +12,20 @@ export function PresentationTitle({
   onTitleChange,
   disabled = false,
 }: PresentationTitleProps) {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const mergedInputStyle: React.CSSProperties = {
-    ...inputStyle,
-    ...(isFocused ? inputFocusStyle : {}),
-    ...(disabled ? inputDisabledStyle : {}),
-  };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onTitleChange(e.target.value);
     console.log(e.target.value);
   };
 
   return (
-    <div style={wrapperStyle}>
+    <div className={styles.wrapper}>
       <input
         id="presentation-title"
         name="presentationTitle"
         value={title}
         onChange={handleChange}
         placeholder="Enter Presentation title"
-        style={mergedInputStyle}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        className={styles.input}
         disabled={disabled}
         aria-disabled={disabled}
       />

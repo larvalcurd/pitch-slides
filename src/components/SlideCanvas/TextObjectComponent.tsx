@@ -42,7 +42,7 @@ export default function TextObjectComponent({
       key={text.id}
       style={textStyle}
       data-object-id={text.id}
-      onClick={(e) => {
+      onClick={e => {
         onObjectClick(text.id, bg);
         onSelectObject?.(text.id, e.shiftKey);
       }}

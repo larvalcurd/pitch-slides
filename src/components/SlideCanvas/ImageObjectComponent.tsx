@@ -1,7 +1,6 @@
-import React from 'react';
 import type { ImageObject } from '../../entities/object';
 import type { Slide } from '../../entities/slide';
-import { baseObjectStyle } from './SlideCanvas.styles.ts';
+import styles from './SlideCanvas.module.css';
 
 type Props = {
   image: ImageObject;
@@ -18,38 +17,26 @@ export default function ImageObjectComponent({
   onSelectObject,
   isSelected,
 }: Props) {
-  const imgWrapperStyle: React.CSSProperties = {
-    ...baseObjectStyle(image),
-    display: 'block',
-    overflow: 'hidden',
-    border: isSelected ? '2px solid #007bff' : 'none',
-  };
-
-  const bg =
-    (imgWrapperStyle.background as string) ??
-    (slide?.background?.type === 'color' ? slide.background.value : 'none');
+  const bg = slide?.background?.type === 'color' ? slide.background.value : 'none';
 
   return (
     <div
       key={image.id}
-      style={imgWrapperStyle}
+      className={`${styles['base-object']} ${styles['image-object']} ${isSelected ? styles.selected : ''}`}
+      style={{
+        left: image.x,
+        top: image.y,
+        width: image.width,
+        height: image.height,
+        zIndex: image.zIndex,
+      }}
       data-object-id={image.id}
       onClick={e => {
         onObjectClick(image.id, bg);
         onSelectObject?.(image.id, e.shiftKey);
       }}
     >
-      <img
-        src={image.src}
-        alt={image.src ? 'Slide image' : ''}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          display: 'block',
-          border: 'none',
-        }}
-      />
+      <img src={image.src} alt={image.src ? 'Slide image' : ''} />
     </div>
   );
 }

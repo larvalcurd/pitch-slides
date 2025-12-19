@@ -1,7 +1,6 @@
-import React from 'react';
 import type { TextObject } from '../../entities/object';
 import type { Slide } from '../../entities/slide';
-import { baseObjectStyle } from './SlideCanvas.styles.ts';
+import styles from './SlideCanvas.module.css';
 
 type Props = {
   text: TextObject;
@@ -18,29 +17,21 @@ export default function TextObjectComponent({
   onSelectObject,
   isSelected,
 }: Props) {
-  const baseStyle = baseObjectStyle(text);
-  const textStyle: React.CSSProperties = {
-    ...baseStyle,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    padding: '4px 8px',
-    background: 'rgba(255,255,255,0.8)',
-    borderRadius: 4,
-    fontSize: text.fontSize ?? 16,
-    color: text.color ?? '#111',
-    border: isSelected ? '2px solid #007bff' : 'none',
-  };
-
-  const bg =
-    (textStyle.background as string) ??
-    (slide?.background?.type === 'color' ? slide.background.value : 'transparent');
+  const bg = slide?.background?.type === 'color' ? slide.background.value : 'transparent';
 
   return (
     <div
       key={text.id}
-      style={textStyle}
+      className={`${styles['base-object']} ${styles['text-object']} ${isSelected ? styles.selected : ''}`}
+      style={{
+        left: text.x,
+        top: text.y,
+        width: text.width,
+        height: text.height,
+        zIndex: text.zIndex,
+        fontSize: text.fontSize ?? 16,
+        color: text.color ?? '#111',
+      }}
       data-object-id={text.id}
       onClick={e => {
         onObjectClick(text.id, bg);

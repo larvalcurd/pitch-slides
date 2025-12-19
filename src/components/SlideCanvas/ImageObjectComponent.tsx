@@ -34,7 +34,7 @@ export default function ImageObjectComponent({
       key={image.id}
       style={imgWrapperStyle}
       data-object-id={image.id}
-      onClick={(e) => {
+      onClick={e => {
         onObjectClick(image.id, bg);
         onSelectObject?.(image.id, e.shiftKey);
       }}

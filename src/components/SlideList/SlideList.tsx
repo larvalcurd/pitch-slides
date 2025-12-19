@@ -1,14 +1,5 @@
-import React from 'react';
 import type { Slide } from '../../entities/slide';
-import {
-  containerStyle,
-  defaultBorderColor,
-  emptyStateText,
-  emptyStateWrapper,
-  itemStyleBase,
-  selectedBorderColor,
-  thumbnailInnerStyle,
-} from './SlideList.styles.ts';
+import styles from './SlideList.module.css';
 
 type SlideListProps = {
   slides: Slide[];
@@ -23,31 +14,30 @@ export default function SlideList({ slides, selectedSlideId, onSelect }: SlideLi
   };
 
   return (
-    <aside style={containerStyle} aria-label="Slides list">
+    <aside className={styles.container} aria-label="Slides list">
       {slides.length === 0 ? (
-        <div style={emptyStateWrapper} role="status" aria-live="polite">
-          <div style={emptyStateText}>No slides</div>
+        <div className={styles.emptyStateWrapper} role="status" aria-live="polite">
+          <div className={styles.emptyStateText}>No slides</div>
         </div>
       ) : (
         slides.map((slide, index) => {
           const isSelected = slide.id === selectedSlideId;
 
-          const itemStyle: React.CSSProperties = {
-            ...itemStyleBase,
-            borderWidth: isSelected ? '2px' : itemStyleBase.borderWidth,
-            borderStyle: itemStyleBase.borderStyle,
-            borderColor: isSelected ? selectedBorderColor : defaultBorderColor,
-            background:
-              slide.background?.type === 'color'
-                ? slide.background.value
-                : slide.background?.type === 'image'
-                  ? `url(${slide.background.value}) center/cover no-repeat`
-                  : itemStyleBase.background,
-          };
-
           return (
-            <div key={slide.id} style={itemStyle} onClick={() => handleClick(slide.id, index)}>
-              <div style={thumbnailInnerStyle}>{slide.title ?? 'Untitled slide'}</div>
+            <div
+              key={slide.id}
+              className={`${styles.item} ${isSelected ? styles.selected : ''}`}
+              style={{
+                background:
+                  slide.background?.type === 'color'
+                    ? slide.background.value
+                    : slide.background?.type === 'image'
+                      ? `url(${slide.background.value}) center/cover no-repeat`
+                      : undefined,
+              }}
+              onClick={() => handleClick(slide.id, index)}
+            >
+              <div className={styles.thumbnailInner}>{slide.title ?? 'Untitled slide'}</div>
             </div>
           );
         })

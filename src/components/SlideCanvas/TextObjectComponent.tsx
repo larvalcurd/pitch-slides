@@ -7,7 +7,7 @@ type Props = {
   text: TextObject;
   slide?: Slide | null;
   onObjectClick: (id: string, backgroundColor: string) => void;
-  onSelectObject?: (id: string) => void;
+  onSelectObject?: (id: string, multiSelect?: boolean) => void;
   isSelected?: boolean;
 };
 
@@ -42,9 +42,9 @@ export default function TextObjectComponent({
       key={text.id}
       style={textStyle}
       data-object-id={text.id}
-      onClick={() => {
+      onClick={(e) => {
         onObjectClick(text.id, bg);
-        onSelectObject?.(text.id);
+        onSelectObject?.(text.id, e.shiftKey);
       }}
     >
       {text.content}

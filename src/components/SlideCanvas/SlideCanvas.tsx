@@ -6,19 +6,13 @@ import ImageObjectComponent from './ImageObjectComponent.tsx';
 
 type Props = {
   slide?: Slide | null;
-  onSelectObject?: (objectId: string) => void;
+  onSelectObject?: (objectId: string, multiSelect?: boolean) => void;
   selectedObjectIds?: string[];
 };
 
 export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }: Props) {
   const handleObjectClick = (id: string, backgroundColor: string) => {
     console.log(id, backgroundColor);
-  };
-
-  const handleSelectObject = (id: string) => {
-    if (onSelectObject) {
-      onSelectObject(id);
-    }
   };
 
   const renderObject = (obj: SlideObject) => {
@@ -31,7 +25,7 @@ export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }
           text={obj}
           slide={slide}
           onObjectClick={handleObjectClick}
-          onSelectObject={handleSelectObject}
+          onSelectObject={onSelectObject}
           isSelected={isSelected}
         />
       );
@@ -44,7 +38,7 @@ export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }
           image={obj}
           slide={slide}
           onObjectClick={handleObjectClick}
-          onSelectObject={handleSelectObject}
+          onSelectObject={onSelectObject}
           isSelected={isSelected}
         />
       );

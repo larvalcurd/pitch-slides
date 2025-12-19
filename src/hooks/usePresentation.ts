@@ -44,8 +44,8 @@ export default function usePresentation() {
     setEditor(prev => changeSlideBackground(prev, background));
   }, []);
 
-  const handleSelectObject = useCallback((objectId: string) => {
-    setEditor(prev => selectObject(prev, objectId));
+  const handleSelectObject = useCallback((objectId: string, multiSelect = false) => {
+    setEditor(prev => selectObject(prev, objectId, multiSelect));
   }, []);
 
   return {

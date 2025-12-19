@@ -7,7 +7,7 @@ type Props = {
   image: ImageObject;
   slide?: Slide | null;
   onObjectClick: (id: string, backgroundColor: string) => void;
-  onSelectObject?: (id: string) => void;
+  onSelectObject?: (id: string, multiSelect?: boolean) => void;
   isSelected?: boolean;
 };
 
@@ -34,9 +34,9 @@ export default function ImageObjectComponent({
       key={image.id}
       style={imgWrapperStyle}
       data-object-id={image.id}
-      onClick={() => {
+      onClick={(e) => {
         onObjectClick(image.id, bg);
-        onSelectObject?.(image.id);
+        onSelectObject?.(image.id, e.shiftKey);
       }}
     >
       <img

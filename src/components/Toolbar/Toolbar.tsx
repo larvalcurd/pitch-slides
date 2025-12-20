@@ -1,15 +1,5 @@
 import styles from './Toolbar.module.css';
 
-import {
-  handleAddText,
-  handleAddImage,
-  handleMoveObject,
-  handleResizeObject,
-  handleBringForward,
-  handleSendBackward,
-  handleUpdateText,
-} from './Toolbar.handlers.ts';
-
 type ToolbarProps = {
   actions: Record<string, () => void>;
 };
@@ -18,16 +8,6 @@ type ToolbarButton = {
   label: string;
   action: string;
   onClick?: () => void;
-};
-
-export const ToolbarActions = {
-  addText: handleAddText,
-  addImage: handleAddImage,
-  moveObject: handleMoveObject,
-  resizeObject: handleResizeObject,
-  bringForward: handleBringForward,
-  sendBackward: handleSendBackward,
-  updateText: handleUpdateText,
 };
 
 export default function Toolbar({ actions }: ToolbarProps) {

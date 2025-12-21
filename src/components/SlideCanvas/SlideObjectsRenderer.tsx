@@ -17,10 +17,7 @@ export default function SlideObjectsRenderer({
   onSelectObject,
   slide,
 }: SlideObjectsRendererProps) {
-  const selectedSet = useMemo(
-    () => new Set(selectedObjectIds),
-    [selectedObjectIds]
-  );
+  const selectedSet = useMemo(() => new Set(selectedObjectIds), [selectedObjectIds]);
 
   const renderObject = (obj: SlideObject) => {
     const isSelected = selectedSet.has(obj.id);

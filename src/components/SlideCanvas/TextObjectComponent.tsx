@@ -23,9 +23,7 @@ export default function TextObjectComponent({ text, onSelectObject, isSelected }
         color: text.color ?? '#111',
       }}
       data-object-id={text.id}
-      onClick={e => {
-        onSelectObject?.(text.id, e.shiftKey);
-      }}
+      onClick={e => onSelectObject?.(text.id, e.shiftKey)}
     >
       {text.content}
     </div>

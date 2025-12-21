@@ -1,13 +1,13 @@
-import { useMemo } from 'react';
 import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
 import type { SlideObject } from '../../entities/object/types/ObjectTypes.ts';
 import TextObjectComponent from './TextObjectComponent.tsx';
 import ImageObjectComponent from './ImageObjectComponent.tsx';
+import useObjectSelection from '../../hooks/useObjectSelection.ts';
 
 type SlideObjectsRendererProps = {
   objects: SlideObject[];
   selectedObjectIds: string[];
-  onSelectObject?: (id: string, multiSelect?: boolean) => void;
+  onSelectObject: (id: string, multiSelect?: boolean) => void;
   slide?: Slide | null;
 };
 
@@ -17,10 +17,13 @@ export default function SlideObjectsRenderer({
   onSelectObject,
   slide,
 }: SlideObjectsRendererProps) {
-  const selectedSet = useMemo(() => new Set(selectedObjectIds), [selectedObjectIds]);
+  const { isSelected, toggleSelection } = useObjectSelection({
+    selectedIds: selectedObjectIds,
+    onSelect: onSelectObject,
+  });
 
   const renderObject = (obj: SlideObject) => {
-    const isSelected = selectedSet.has(obj.id);
+    const selected = isSelected(obj.id);
 
     if (obj.type === 'text') {
       return (
@@ -28,8 +31,8 @@ export default function SlideObjectsRenderer({
           key={obj.id}
           text={obj}
           slide={slide}
-          onSelectObject={onSelectObject}
-          isSelected={isSelected}
+          onSelectObject={toggleSelection}
+          isSelected={selected}
         />
       );
     }
@@ -40,8 +43,8 @@ export default function SlideObjectsRenderer({
           key={obj.id}
           image={obj}
           slide={slide}
-          onSelectObject={onSelectObject}
-          isSelected={isSelected}
+          onSelectObject={toggleSelection}
+          isSelected={selected}
         />
       );
     }

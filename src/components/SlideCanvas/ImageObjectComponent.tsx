@@ -21,9 +21,7 @@ export default function ImageObjectComponent({ image, onSelectObject, isSelected
         zIndex: image.zIndex,
       }}
       data-object-id={image.id}
-      onClick={e => {
-        onSelectObject?.(image.id, e.shiftKey);
-      }}
+      onClick={e => onSelectObject?.(image.id, e.shiftKey)}
     >
       <img src={image.src} alt={image.src ? 'Slide image' : ''} />
     </div>

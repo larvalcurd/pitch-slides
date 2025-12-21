@@ -5,7 +5,7 @@ import SlideObjectsRenderer from './SlideObjectsRenderer.tsx';
 
 type Props = {
   slide?: Slide | null;
-  onSelectObject?: (objectId: string, multiSelect?: boolean) => void;
+  onSelectObject: (objectId: string, multiSelect?: boolean) => void;
   selectedObjectIds?: string[];
 };
 

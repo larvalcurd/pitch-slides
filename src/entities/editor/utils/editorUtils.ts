@@ -9,6 +9,7 @@ import {
 } from '../../presentation';
 import { addObjectToSlide, createSlide, removeObjectFromSlide, type Slide } from '../../slide';
 import { createImageObject, createTextObject, type SlideObject } from '../../object';
+import { calculateTextPosition, calculateImagePosition } from '../../object/utils/objectPositioning';
 
 export function createEditor(): Editor {
   const presentation = createPresentation('p1', 'Untitled presentation', [createSlide()]);
@@ -64,23 +65,15 @@ export function addObject(editor: Editor, type: 'text' | 'image'): Editor {
 
   let obj: SlideObject;
   if (type === 'text') {
+    const position = calculateTextPosition();
     obj = createTextObject({
-      x: 20,
-      y: 20,
-      width: 300,
-      height: 80,
+      ...position,
       content: 'New text',
     });
   } else {
-    const imgW = 240;
-    const paddingFromEdge = 30;
-    const SLIDE_WIDTH = 960;
-    const x = SLIDE_WIDTH - imgW - paddingFromEdge;
+    const position = calculateImagePosition();
     obj = createImageObject({
-      x,
-      y: 20,
-      width: imgW,
-      height: 160,
+      ...position,
       src: 'images/scale_1200.jpg',
     });
   }

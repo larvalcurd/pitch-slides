@@ -9,7 +9,10 @@ import {
 } from '../../presentation';
 import { addObjectToSlide, createSlide, removeObjectFromSlide, type Slide } from '../../slide';
 import { createImageObject, createTextObject, type SlideObject } from '../../object';
-import { calculateTextPosition, calculateImagePosition } from '../../object/utils/objectPositioning';
+import {
+  calculateTextPosition,
+  calculateImagePosition,
+} from '../../object/utils/objectPositioning';
 
 export function createEditor(): Editor {
   const presentation = createPresentation('p1', 'Untitled presentation', [createSlide()]);

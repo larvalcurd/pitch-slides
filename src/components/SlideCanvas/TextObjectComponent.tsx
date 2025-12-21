@@ -12,7 +12,6 @@ type Props = {
 export default function TextObjectComponent({ text, onSelectObject, isSelected }: Props) {
   return (
     <div
-      key={text.id}
       className={`${styles['base-object']} ${styles['text-object']} ${isSelected ? styles.selected : ''}`}
       style={{
         left: text.x,

@@ -12,7 +12,6 @@ type Props = {
 export default function ImageObjectComponent({ image, onSelectObject, isSelected }: Props) {
   return (
     <div
-      key={image.id}
       className={`${styles['base-object']} ${styles['image-object']} ${isSelected ? styles.selected : ''}`}
       style={{
         left: image.x,

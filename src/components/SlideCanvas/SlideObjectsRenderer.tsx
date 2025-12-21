@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
 import type { SlideObject } from '../../entities/object/types/ObjectTypes.ts';
 import TextObjectComponent from './TextObjectComponent.tsx';
@@ -16,8 +17,13 @@ export default function SlideObjectsRenderer({
   onSelectObject,
   slide,
 }: SlideObjectsRendererProps) {
+  const selectedSet = useMemo(
+    () => new Set(selectedObjectIds),
+    [selectedObjectIds]
+  );
+
   const renderObject = (obj: SlideObject) => {
-    const isSelected = selectedObjectIds?.includes(obj.id);
+    const isSelected = selectedSet.has(obj.id);
 
     if (obj.type === 'text') {
       return (

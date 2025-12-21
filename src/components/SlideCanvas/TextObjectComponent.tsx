@@ -5,20 +5,11 @@ import styles from './SlideCanvas.module.css';
 type Props = {
   text: TextObject;
   slide?: Slide | null;
-  onObjectClick: (id: string, backgroundColor: string) => void;
   onSelectObject?: (id: string, multiSelect?: boolean) => void;
   isSelected?: boolean;
 };
 
-export default function TextObjectComponent({
-  text,
-  slide,
-  onObjectClick,
-  onSelectObject,
-  isSelected,
-}: Props) {
-  const bg = slide?.background?.type === 'color' ? slide.background.value : 'transparent';
-
+export default function TextObjectComponent({ text, onSelectObject, isSelected }: Props) {
   return (
     <div
       key={text.id}
@@ -34,7 +25,6 @@ export default function TextObjectComponent({
       }}
       data-object-id={text.id}
       onClick={e => {
-        onObjectClick(text.id, bg);
         onSelectObject?.(text.id, e.shiftKey);
       }}
     >

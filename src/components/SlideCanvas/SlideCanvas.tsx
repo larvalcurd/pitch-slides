@@ -1,8 +1,6 @@
 import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
-import type { SlideObject } from '../../entities/object/types/ObjectTypes.ts';
 import styles from './SlideCanvas.module.css';
-import TextObjectComponent from './TextObjectComponent.tsx';
-import ImageObjectComponent from './ImageObjectComponent.tsx';
+import SlideObjectsRenderer from './SlideObjectsRenderer.tsx';
 
 type Props = {
   slide?: Slide | null;
@@ -11,42 +9,6 @@ type Props = {
 };
 
 export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }: Props) {
-  const handleObjectClick = (id: string, backgroundColor: string) => {
-    console.log(id, backgroundColor);
-  };
-
-  const renderObject = (obj: SlideObject) => {
-    const isSelected = selectedObjectIds?.includes(obj.id);
-
-    if (obj.type === 'text') {
-      return (
-        <TextObjectComponent
-          key={obj.id}
-          text={obj}
-          slide={slide}
-          onObjectClick={handleObjectClick}
-          onSelectObject={onSelectObject}
-          isSelected={isSelected}
-        />
-      );
-    }
-
-    if (obj.type === 'image') {
-      return (
-        <ImageObjectComponent
-          key={obj.id}
-          image={obj}
-          slide={slide}
-          onObjectClick={handleObjectClick}
-          onSelectObject={onSelectObject}
-          isSelected={isSelected}
-        />
-      );
-    }
-
-    return null;
-  };
-
   return (
     <div className={styles.wrapper}>
       {slide ? (
@@ -68,7 +30,12 @@ export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }
             role="region"
             aria-label="Slide viewport"
           >
-            {slide.objects.map(renderObject)}
+            <SlideObjectsRenderer
+              objects={slide.objects}
+              selectedObjectIds={selectedObjectIds || []}
+              onSelectObject={onSelectObject}
+              slide={slide}
+            />
           </div>
         </div>
       ) : (

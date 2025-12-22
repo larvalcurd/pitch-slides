@@ -1,7 +1,8 @@
 import styles from './Toolbar.module.css';
+import { ChangeBackgroundButton } from './ChangeBackgroundButton';
 
 type ToolbarProps = {
-  actions: Record<string, () => void>;
+  actions: Record<string, (...args: any[]) => void>;
 };
 
 type ToolbarButton = {
@@ -31,10 +32,6 @@ export default function Toolbar({ actions }: ToolbarProps) {
     {
       label: 'Delete Object',
       action: 'deleteObject',
-    },
-    {
-      label: 'Change Background',
-      action: 'changeBackground',
     },
     {
       label: 'Move',
@@ -68,13 +65,18 @@ export default function Toolbar({ actions }: ToolbarProps) {
             className={styles.button}
             onClick={() => {
               console.log(`Action: ${button.action}`);
-              actions[button.action]?.();
+              if (button.onClick) {
+                button.onClick();
+              } else {
+                actions[button.action as keyof typeof actions]?.();
+              }
             }}
           >
             {button.label}
           </button>
         );
       })}
+      <ChangeBackgroundButton changeBackground={actions.changeBackground} />
     </div>
   );
 }

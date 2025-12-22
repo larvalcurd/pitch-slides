@@ -3,8 +3,7 @@ import { PresentationTitle } from '../components/PresentationTitle/PresentationT
 import Toolbar from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideList/SlideList.tsx';
 import { SlideCanvas } from '../components/SlideCanvas';
-
-import { getRandomColor } from '../entities/slide';
+import type { SlideBackground } from '../entities/slide';
 
 function App() {
   const {
@@ -26,11 +25,12 @@ function App() {
     addText: () => handleAddObject('text'),
     addImage: () => handleAddObject('image'),
     deleteObject: handleDeleteObject,
-    changeBackground: () =>
-      handleChangeSlideBackground({
-        type: 'color',
-        value: getRandomColor(),
-      }),
+    changeBackground: (background: SlideBackground) => handleChangeSlideBackground(background),
+    moveObject: () => console.log('Move object'),
+    resizeObject: () => console.log('Resize object'),
+    bringForward: () => console.log('Bring forward'),
+    sendBackward: () => console.log('Send backward'),
+    updateText: () => console.log('Update text'),
   };
 
   return (

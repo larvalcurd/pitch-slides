@@ -1,82 +1,47 @@
 import styles from './Toolbar.module.css';
-import { ChangeBackgroundButton } from './ChangeBackgroundButton';
+
+type ToolbarItem =
+  | { type: 'action'; label: string; action: string }
+  | { type: 'modal'; label: string; modal: 'background' };
 
 type ToolbarProps = {
-  actions: Record<string, (...args: any[]) => void>;
+  actions: Record<string, () => void>;
+  onOpenModal: (modal: 'background') => void;
 };
 
-type ToolbarButton = {
-  label: string;
-  action: string;
-  onClick?: () => void;
-};
+const toolbarConfig: ToolbarItem[] = [
+  { type: 'action', label: 'Add Slide', action: 'addSlide' },
+  { type: 'action', label: 'Delete Slide', action: 'deleteSlide' },
+  { type: 'action', label: 'Add Text', action: 'addText' },
+  { type: 'action', label: 'Add Image', action: 'addImage' },
+  { type: 'action', label: 'Delete Object', action: 'deleteObject' },
+  { type: 'modal', label: 'Change Background', modal: 'background' },
+  { type: 'action', label: 'Move', action: 'moveObject' },
+  { type: 'action', label: 'Resize', action: 'resizeObject' },
+  { type: 'action', label: 'Bring Forward', action: 'bringForward' },
+  { type: 'action', label: 'Send Backward', action: 'sendBackward' },
+  { type: 'action', label: 'Update Text', action: 'updateText' },
+];
 
-export default function Toolbar({ actions }: ToolbarProps) {
-  const ToolbarButtons: ToolbarButton[] = [
-    {
-      label: 'Add Slide',
-      action: 'addSlide',
-    },
-    {
-      label: 'Delete Slide',
-      action: 'deleteSlide',
-    },
-    {
-      label: 'Add Text',
-      action: 'addText',
-    },
-    {
-      label: 'Add Image',
-      action: 'addImage',
-    },
-    {
-      label: 'Delete Object',
-      action: 'deleteObject',
-    },
-    {
-      label: 'Move',
-      action: 'moveObject',
-    },
-    {
-      label: 'Resize',
-      action: 'resizeObject',
-    },
-    {
-      label: 'Bring Forward',
-      action: 'bringForward',
-    },
-    {
-      label: 'Send Backward',
-      action: 'sendBackward',
-    },
-    {
-      label: 'Update Text',
-      action: 'updateText',
-    },
-  ];
-
+export default function Toolbar({ actions, onOpenModal }: ToolbarProps) {
   return (
     <div className={styles.toolbar} role="toolbar" aria-label="Editor toolbar">
-      {ToolbarButtons.map((button, idx) => {
-        return (
-          <button
-            key={idx}
-            type="button"
-            className={styles.button}
-            onClick={() => {
-              console.log(`Action: ${button.action}`);
-              if (button.onClick) {
-                button.onClick();
-              } else {
-                actions[button.action as keyof typeof actions]?.();
-              }
-            }}
-          >
-            {button.label}
-          </button>
-        );
-      })}
-      <ChangeBackgroundButton changeBackground={actions.changeBackground} />
+      {toolbarConfig.map((item, idx) => (
+        <button
+          key={idx}
+          type="button"
+          className={styles.button}
+          onClick={() => {
+            if (item.type === 'action') {
+              actions[item.action]?.();
+            } else {
+              onOpenModal(item.modal);
+            }
+          }}
+        >
+          {item.label}
+        </button>
+      ))}
     </div>
   );
 }

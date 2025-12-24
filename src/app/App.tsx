@@ -1,9 +1,10 @@
 import usePresentation from '../hooks/usePresentation.ts';
+import { useEditorUI } from '../hooks/useEditorUI.ts';
 import { PresentationTitle } from '../components/PresentationTitle/PresentationTitle.tsx';
 import Toolbar from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideList/SlideList.tsx';
 import { SlideCanvas } from '../components/SlideCanvas';
-import type { SlideBackground } from '../entities/slide';
+import BackgroundSelector from '../components/BackgroundSelector/BackgroundSelector.tsx';
 
 function App() {
   const {
@@ -19,13 +20,14 @@ function App() {
     handleChangeSlideBackground,
   } = usePresentation();
 
+  const { activeModal, openModal, closeModal } = useEditorUI();
+
   const toolbarActions = {
     addSlide: handleAddSlide,
     deleteSlide: handleDeleteSlide,
     addText: () => handleAddObject('text'),
     addImage: () => handleAddObject('image'),
     deleteObject: handleDeleteObject,
-    changeBackground: (background: SlideBackground) => handleChangeSlideBackground(background),
     moveObject: () => console.log('Move object'),
     resizeObject: () => console.log('Resize object'),
     bringForward: () => console.log('Bring forward'),
@@ -58,7 +60,7 @@ function App() {
       >
         <PresentationTitle title={presentation.title} onTitleChange={changeTitle} />
 
-        <Toolbar actions={toolbarActions} />
+        <Toolbar actions={toolbarActions} onOpenModal={openModal} />
 
         <div
           style={{
@@ -76,6 +78,19 @@ function App() {
           />
         </div>
       </main>
+
+      {activeModal === 'background' && (
+        <BackgroundSelector
+          currentBackground={
+            presentation.slides.find(s => s.id === presentation.selectedSlideId)?.background
+          }
+          onSelect={bg => {
+            handleChangeSlideBackground(bg);
+            closeModal();
+          }}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

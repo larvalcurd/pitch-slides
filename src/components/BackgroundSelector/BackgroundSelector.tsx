@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
-import styles from './Toolbar.module.css';
+import { useState } from 'react';
 import type { SlideBackground } from '../../entities/slide/types/SlideTypes';
+import styles from './BackgroundSelector.module.css';
 
 type BackgroundSelectorProps = {
+  currentBackground?: SlideBackground;
   onSelect: (background: SlideBackground) => void;
   onClose: () => void;
 };
 
-export default function BackgroundSelector({ onSelect, onClose }: BackgroundSelectorProps) {
+export default function BackgroundSelector({
+  currentBackground,
+  onSelect,
+  onClose,
+}: BackgroundSelectorProps) {
   type BackgroundType = SlideBackground['type'];
-  const [type, setType] = useState<BackgroundType>('color');
-  const [color, setColor] = useState('#ffffff');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [type, setType] = useState<BackgroundType>(currentBackground?.type ?? 'color');
+  const [color, setColor] = useState(
+    currentBackground?.type === 'color' ? currentBackground.value : '#ffffff',
+  );
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    currentBackground?.type === 'image' ? currentBackground.value : null,
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,8 +46,8 @@ export default function BackgroundSelector({ onSelect, onClose }: BackgroundSele
   };
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+    <div className={styles.modal} onClick={onClose}>
+      <div className={styles.content} onClick={e => e.stopPropagation()}>
         <h3>Change Slide Background</h3>
 
         <div>
@@ -65,7 +74,12 @@ export default function BackgroundSelector({ onSelect, onClose }: BackgroundSele
         {type === 'color' && (
           <div>
             <label>Choose color:</label>
-            <input type="color" value={color} onChange={e => setColor(e.target.value)} />
+            <input
+              type="color"
+              value={color}
+              onChange={e => setColor(e.target.value)}
+              className={styles.colorInput}
+            />
           </div>
         )}
 

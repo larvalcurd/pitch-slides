@@ -1,6 +1,6 @@
 import type { ResizeHandle, SlideObject } from '../../entities/object';
 import { useDragAndDrop } from '../../hooks/useDragAndDrop';
-import { useResizable, type ResizeState } from '../../hooks/useResizable';
+import { useResizable } from '../../hooks/useResizable';
 import styles from './DraggableObject.module.css';
 
 type Props = {
@@ -52,8 +52,8 @@ export function DraggableObject({
     initialHeight: object.height,
     minWidth,
     minHeight,
-    onResizeEnd: (state: ResizeState) => {
-      onUpdateSize(object.id, state.x, state.y, state.width, state.height);
+    onResizeEnd: (x, y, width, height) => {
+      onUpdateSize(object.id, x, y, width, height);
     },
   });
 

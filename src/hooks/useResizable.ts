@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ResizeHandle } from '../entities/object';
 
-export type ResizeState = {
+type ResizeState = {
   x: number;
   y: number;
   width: number;
@@ -21,7 +21,7 @@ type UseResizableProps = {
   initialHeight: number;
   minWidth?: number;
   minHeight?: number;
-  onResizeEnd: (newState: ResizeState) => void;
+  onResizeEnd?: (x: number, y: number, width: number, height: number) => void;
 };
 
 type UseResizableReturn = {
@@ -186,7 +186,7 @@ export function useResizable(props: UseResizableProps): UseResizableReturn {
   const handleMouseUp = useCallback(() => {
     if (!originalRef.current) return;
 
-    onResizeEnd?.(currentState);
+    onResizeEnd?.(currentState.x, currentState.y, currentState.width, currentState.height);
 
     setIsResizing(false);
     setCurrentHandle(null);

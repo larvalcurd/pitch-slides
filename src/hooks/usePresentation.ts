@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { Editor } from '../entities/editor';
-import type { Slide } from '../entities/slide';
+import { updateObjectInSlide, type Slide } from '../entities/slide';
 import {
   createEditor,
   addSlide,
@@ -12,6 +12,8 @@ import {
   changeSlideBackground,
   selectObject,
 } from '../entities/editor';
+import { updateSlideInPresentation } from '../entities/presentation';
+import { moveObject } from '../entities/object';
 
 export default function usePresentation() {
   const [editor, setEditor] = useState<Editor>(() => createEditor());
@@ -48,8 +50,80 @@ export default function usePresentation() {
     setEditor(prev => selectObject(prev, objectId, multiSelect));
   }, []);
 
+  const handleUpdateObjectPosition = useCallback((objectId: string, newX: number, newY: number) => {
+    setEditor(prev => {
+      const currentSlideId = prev.selection?.slideId;
+      if (!currentSlideId) return prev;
+
+      const slide = prev.presentation.slides.find(s => s.id === currentSlideId);
+      if (!slide) return prev;
+
+      const obj = slide.objects.find(o => o.id === objectId);
+      if (!obj) return prev;
+
+      const updatedObj = moveObject(obj, newX, newY);
+      const updatedSlide = updateObjectInSlide(slide, objectId, updatedObj);
+      const newPresentation = updateSlideInPresentation(
+        prev.presentation,
+        currentSlideId,
+        updatedSlide,
+      );
+
+      return {
+        ...prev,
+        presentation: newPresentation,
+      };
+    });
+  }, []);
+
+  const currentSlide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
+
+  const handleUpdateObjectSize = useCallback(
+    (objectId: string, newX: number, newY: number, newWidth: number, newHeight: number) => {
+      setEditor(prev => {
+        const currentSlideId = prev.selection?.slideId;
+        if (!currentSlideId) return prev;
+
+        const slide = prev.presentation.slides.find(s => s.id === currentSlideId);
+        if (!slide) return prev;
+
+        const obj = slide.objects.find(o => o.id === objectId);
+        if (!obj) return prev;
+
+        // Обновляем объект
+        const updatedObj = {
+          ...obj,
+          x: newX,
+          y: newY,
+          width: newWidth,
+          height: newHeight,
+        };
+
+        const updatedSlide = {
+          ...slide,
+          objects: slide.objects.map(o => (o.id === objectId ? updatedObj : o)),
+        };
+
+        const newPresentation = {
+          ...prev.presentation,
+          slides: prev.presentation.slides.map(s => (s.id === currentSlideId ? updatedSlide : s)),
+        };
+
+        return {
+          ...prev,
+          presentation: newPresentation,
+        };
+      });
+    },
+    [],
+  );
+
   return {
+    editor,
     presentation: editor.presentation,
+    currentSlide,
+    selectedSlideId: editor.selection?.slideId,
+    selectedObjectIds: editor.selection?.objectIds || [],
     changeTitle,
     handleAddSlide,
     handleDeleteSlide,
@@ -58,6 +132,7 @@ export default function usePresentation() {
     handleDeleteObject,
     handleChangeSlideBackground,
     handleSelectObject,
-    selectedObjectIds: editor.selection?.objectIds || [],
+    handleUpdateObjectPosition,
+    handleUpdateObjectSize,
   } as const;
 }

@@ -49,8 +49,8 @@ export function selectSlide(editor: Editor, slideId: string): Editor {
   return {
     ...editor,
     presentation: newPresentation,
-    selectedSlideId: slideId,
-    selection: slideId !== editor.selectedSlideId ? null : editor.selection,
+    selectedSlideId: newPresentation.selectedSlideId,
+    selection: { slideId, objectIds: [] }, // Обнови selection
   };
 }
 

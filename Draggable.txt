@@ -1,0 +1,326 @@
+# Техническое задание: Компонент `DraggableObject`
+
+## 1. Общее описание
+
+**Компонент-обёртка** для объектов слайда, предоставляющий:
+- **Drag** — перемещение объекта по слайду
+- **Resize** — изменение размера за 8 точек (углы + стороны)
+- **Визуальное выделение** — рамка и точки управления для выбранного объекта
+
+---
+
+## 2. Входные данные (Props)
+
+| Prop | Тип | Обязательный | Описание |
+|------|-----|--------------|----------|
+| `object` | `SlideObject` | ✅ | Объект с `id`, `x`, `y`, `width`, `height`, `zIndex` |
+| `isSelected` | `boolean` | ✅ | Выделен ли объект |
+| `onSelect` | `(id: string, multiSelect?: boolean) => void` | ✅ | Callback при клике/выделении |
+| `onUpdatePosition` | `(id: string, x: number, y: number) => void` | ✅ | Callback при завершении drag |
+| `onUpdateSize` | `(id: string, x: number, y: number, width: number, height: number) => void` | ✅ | Callback при завершении resize |
+| `children` | `ReactNode` | ✅ | Содержимое объекта (TextObjectComponent / ImageObjectComponent) |
+| `minWidth` | `number` | ❌ | Минимальная ширина (по умолчанию: 20) |
+| `minHeight` | `number` | ❌ | Минимальная высота (по умолчанию: 20) |
+
+---
+
+## 3. Функциональные требования
+
+### 3.1. Drag (перемещение)
+
+| Требование | Описание |
+|------------|----------|
+| Инициация | `mousedown` на теле объекта (не на resize-точках) |
+| Порог | Drag начинается после смещения мыши на ≥3px (отличие от клика) |
+| Визуализация во время drag | Объект следует за курсором в реальном времени |
+| Завершение | `mouseup` → вызов `onUpdatePosition(id, newX, newY)` |
+| Курсор | `grab` → `grabbing` во время drag |
+| Z-index | Во время drag объект поднимается наверх (`zIndex: 1000`) |
+
+### 3.2. Resize (изменение размера)
+
+#### 3.2.1. Точки resize (8 штук)
+
+```
+  top-left ───── top ───── top-right
+      │                        │
+     left                    right
+      │                        │
+bottom-left ── bottom ── bottom-right
+```
+
+| Handle | Позиция | Курсор | Что меняется |
+|--------|---------|--------|--------------|
+| `top-left` | Левый верхний угол | `nwse-resize` | x, y, width, height |
+| `top` | Середина верха | `ns-resize` | y, height |
+| `top-right` | Правый верхний угол | `nesw-resize` | y, width, height |
+| `right` | Середина правой стороны | `ew-resize` | width |
+| `bottom-right` | Правый нижний угол | `nwse-resize` | width, height |
+| `bottom` | Середина низа | `ns-resize` | height |
+| `bottom-left` | Левый нижний угол | `nesw-resize` | x, width, height |
+| `left` | Середина левой стороны | `ew-resize` | x, width |
+
+#### 3.2.2. Логика вычисления при resize
+
+**Пример для `bottom-right`** (самый простой):
+```
+newWidth = originalWidth + deltaX
+newHeight = originalHeight + deltaY
+```
+
+**Пример для `top-left`** (сложнее — меняется и позиция):
+```
+newX = originalX + deltaX
+newY = originalY + deltaY
+newWidth = originalWidth - deltaX
+newHeight = originalHeight - deltaY
+```
+
+#### 3.2.3. Ограничения
+
+| Ограничение | Значение |
+|-------------|----------|
+| Минимальная ширина | `minWidth` (по умолчанию 20px) |
+| Минимальная высота | `minHeight` (по умолчанию 20px) |
+| Не выходить за 0 | `x ≥ 0`, `y ≥ 0` (опционально) |
+
+#### 3.2.4. Поведение
+
+| Требование | Описание |
+|------------|----------|
+| Инициация | `mousedown` на resize-точке |
+| Визуализация | Размер меняется в реальном времени |
+| Завершение | `mouseup` → вызов `onUpdateSize(id, newX, newY, newWidth, newHeight)` |
+| Не инициировать drag | `e.stopPropagation()` на точках |
+
+### 3.3. Выделение
+
+| Требование | Описание |
+|------------|----------|
+| Клик на объект | Вызов `onSelect(id, e.shiftKey)` |
+| Визуал выделенного | Синяя рамка 2px, видимые resize-точки |
+| Resize-точки | Показывать **только** когда `isSelected === true` |
+
+---
+
+## 4. Состояния компонента
+
+```typescript
+type DragState = {
+  type: 'idle' | 'dragging' | 'resizing';
+  handle?: ResizeHandle; // Какая точка resize активна
+  startX: number;        // Начальная позиция мыши
+  startY: number;
+  originalX: number;     // Исходные значения объекта
+  originalY: number;
+  originalWidth: number;
+  originalHeight: number;
+};
+```
+
+---
+
+## 5. Типы
+
+### 5.1. Добавить в `ObjectTypes.ts`
+
+```typescript
+export type ResizeHandle =
+  | 'top-left'
+  | 'top'
+  | 'top-right'
+  | 'right'
+  | 'bottom-right'
+  | 'bottom'
+  | 'bottom-left'
+  | 'left';
+```
+
+---
+
+## 6. Хук `useResizable`
+
+Создать **отдельный хук** для resize (или расширить `useDragAndDrop`):
+
+### `src/hooks/useResizable.ts`
+
+**Входные данные:**
+```typescript
+type UseResizableOptions = {
+  initialX: number;
+  initialY: number;
+  initialWidth: number;
+  initialHeight: number;
+  minWidth?: number;
+  minHeight?: number;
+  onResizeEnd: (x: number, y: number, width: number, height: number) => void;
+};
+```
+
+**Возвращает:**
+```typescript
+type UseResizableReturn = {
+  isResizing: boolean;
+  currentHandle: ResizeHandle | null;
+  // Текущие значения во время resize
+  currentX: number;
+  currentY: number;
+  currentWidth: number;
+  currentHeight: number;
+  // Начать resize
+  startResize: (e: React.MouseEvent, handle: ResizeHandle) => void;
+};
+```
+
+---
+
+## 7. Структура файлов
+
+```
+src/
+├── hooks/
+│   ├── useDragAndDrop.ts    # Уже есть
+│   └── useResizable.ts      # Новый
+├── components/
+│   └── SlideCanvas/
+│       ├── DraggableObject.tsx        # Обёртка
+│       ├── DraggableObject.module.css # Стили
+│       ├── ResizeHandles.tsx          # Компонент точек (опционально)
+│       ├── TextObjectComponent.tsx    # Только контент
+│       └── ImageObjectComponent.tsx   # Только контент
+```
+
+---
+
+## 8. CSS классы
+
+```css
+/* Базовый объект */
+.draggable-object { }
+
+/* Состояния */
+.selected { }    /* Выделенный объект */
+.dragging { }    /* Во время перемещения */
+.resizing { }    /* Во время resize */
+
+/* Resize-точки */
+.resize-handle { }           /* Общий стиль точки */
+.resize-handle.top-left { }
+.resize-handle.top { }
+.resize-handle.top-right { }
+.resize-handle.right { }
+.resize-handle.bottom-right { }
+.resize-handle.bottom { }
+.resize-handle.bottom-left { }
+.resize-handle.left { }
+```
+
+---
+
+## 9. Алгоритм resize для каждого handle
+
+```typescript
+const calculateResize = (
+  handle: ResizeHandle,
+  deltaX: number,
+  deltaY: number,
+  original: { x: number; y: number; width: number; height: number },
+  minWidth: number,
+  minHeight: number
+) => {
+  let { x, y, width, height } = original;
+
+  switch (handle) {
+    case 'top-left':
+      x += deltaX;
+      y += deltaY;
+      width -= deltaX;
+      height -= deltaY;
+      break;
+    case 'top':
+      y += deltaY;
+      height -= deltaY;
+      break;
+    case 'top-right':
+      y += deltaY;
+      width += deltaX;
+      height -= deltaY;
+      break;
+    case 'right':
+      width += deltaX;
+      break;
+    case 'bottom-right':
+      width += deltaX;
+      height += deltaY;
+      break;
+    case 'bottom':
+      height += deltaY;
+      break;
+    case 'bottom-left':
+      x += deltaX;
+      width -= deltaX;
+      height += deltaY;
+      break;
+    case 'left':
+      x += deltaX;
+      width -= deltaX;
+      break;
+  }
+
+  // Применить ограничения
+  if (width < minWidth) {
+    if (handle.includes('left')) {
+      x = original.x + original.width - minWidth;
+    }
+    width = minWidth;
+  }
+  if (height < minHeight) {
+    if (handle.includes('top')) {
+      y = original.y + original.height - minHeight;
+    }
+    height = minHeight;
+  }
+
+  return { x, y, width, height };
+};
+```
+
+---
+
+## 10. Порядок реализации
+
+| Шаг | Задача | Файл |
+|-----|--------|------|
+| 1 | Добавить тип `ResizeHandle` | `ObjectTypes.ts` |
+| 2 | Создать хук `useResizable` | `hooks/useResizable.ts` |
+| 3 | Добавить `handleUpdateObjectSize` | `usePresentation.ts` |
+| 4 | Создать `DraggableObject` | `DraggableObject.tsx` |
+| 5 | Добавить CSS стили | `DraggableObject.module.css` |
+| 6 | Упростить `TextObjectComponent` | `TextObjectComponent.tsx` |
+| 7 | Упростить `ImageObjectComponent` | `ImageObjectComponent.tsx` |
+| 8 | Обновить `SlideObjectsRenderer` | `SlideObjectsRenderer.tsx` |
+| 9 | Передать `onUpdateObjectSize` из `SlideCanvas` | `SlideCanvas.tsx` |
+
+---
+
+## 11. Пример использования (итоговый)
+
+```tsx
+// SlideObjectsRenderer.tsx
+<DraggableObject
+  object={obj}
+  isSelected={isSelected}
+  onSelect={onSelectObject}
+  onUpdatePosition={onUpdateObjectPosition}
+  onUpdateSize={onUpdateObjectSize}
+  minWidth={50}
+  minHeight={30}
+>
+  {obj.type === 'text' && <TextObjectComponent text={obj} />}
+  {obj.type === 'image' && <ImageObjectComponent image={obj} />}
+</DraggableObject>
+```
+
+---
+
+Хочешь начнём с реализации `useResizable` или сразу с `DraggableObject`?

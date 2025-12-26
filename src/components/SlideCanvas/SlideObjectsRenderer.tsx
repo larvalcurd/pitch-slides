@@ -1,56 +1,50 @@
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
-import type { SlideObject } from '../../entities/object/types/ObjectTypes.ts';
-import TextObjectComponent from './TextObjectComponent.tsx';
-import ImageObjectComponent from './ImageObjectComponent.tsx';
-import useObjectSelection from '../../hooks/useObjectSelection.ts';
+import type { SlideObject } from '../../entities/object/types/ObjectTypes';
+import { DraggableObject } from './DraggableObject';
+import TextObjectComponent from './TextObjectComponent';
+import ImageObjectComponent from './ImageObjectComponent';
 
-type SlideObjectsRendererProps = {
+type Props = {
   objects: SlideObject[];
   selectedObjectIds: string[];
   onSelectObject: (id: string, multiSelect?: boolean) => void;
-  slide?: Slide | null;
+  onUpdateObjectPosition: (id: string, x: number, y: number) => void;
+  onUpdateObjectSize: (id: string, x: number, y: number, width: number, height: number) => void;
 };
 
 export default function SlideObjectsRenderer({
   objects,
   selectedObjectIds,
   onSelectObject,
-  slide,
-}: SlideObjectsRendererProps) {
-  const { isSelected, toggleSelection } = useObjectSelection({
-    selectedIds: selectedObjectIds,
-    onSelect: onSelectObject,
-  });
-
-  const renderObject = (obj: SlideObject) => {
-    const selected = isSelected(obj.id);
-
-    if (obj.type === 'text') {
-      return (
-        <TextObjectComponent
-          key={obj.id}
-          text={obj}
-          slide={slide}
-          onSelectObject={toggleSelection}
-          isSelected={selected}
-        />
-      );
+  onUpdateObjectPosition,
+  onUpdateObjectSize,
+}: Props) {
+  const renderContent = (obj: SlideObject) => {
+    switch (obj.type) {
+      case 'text':
+        return <TextObjectComponent text={obj} />;
+      case 'image':
+        return <ImageObjectComponent image={obj} />;
+      default:
+        return null;
     }
-
-    if (obj.type === 'image') {
-      return (
-        <ImageObjectComponent
-          key={obj.id}
-          image={obj}
-          slide={slide}
-          onSelectObject={toggleSelection}
-          isSelected={selected}
-        />
-      );
-    }
-
-    return null;
   };
 
-  return <>{objects.map(renderObject)}</>;
+  return (
+    <>
+      {objects.map(obj => (
+        <DraggableObject
+          key={obj.id}
+          object={obj}
+          isSelected={selectedObjectIds.includes(obj.id)}
+          onSelect={onSelectObject}
+          onUpdatePosition={onUpdateObjectPosition}
+          onUpdateSize={onUpdateObjectSize}
+          minWidth={50}
+          minHeight={30}
+        >
+          {renderContent(obj)}
+        </DraggableObject>
+      ))}
+    </>
+  );
 }

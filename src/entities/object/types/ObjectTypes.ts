@@ -1,3 +1,13 @@
+export type ResizeHandle =
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'top'
+  | 'bottom'
+  | 'left'
+  | 'right';
+
 export type BaseObject = {
   id: string;
   x: number;
@@ -5,6 +15,9 @@ export type BaseObject = {
   width: number;
   height: number;
   zIndex: number;
+
+  isDragging?: boolean;
+  dragOffset?: { x: number; y: number };
 };
 
 export type TextObject = BaseObject & {

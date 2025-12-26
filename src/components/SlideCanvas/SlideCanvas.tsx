@@ -1,15 +1,29 @@
 import { useMemo } from 'react';
-import type { Slide } from '../../entities/slide/types/SlideTypes.ts';
+import type { Slide } from '../../entities/slide/types/SlideTypes';
 import styles from './SlideCanvas.module.css';
-import SlideObjectsRenderer from './SlideObjectsRenderer.tsx';
+import SlideObjectsRenderer from './SlideObjectsRenderer';
 
 type Props = {
   slide?: Slide | null;
-  onSelectObject: (objectId: string, multiSelect?: boolean) => void;
   selectedObjectIds?: string[];
+  onSelectObject: (objectId: string, multiSelect?: boolean) => void;
+  onUpdateObjectPosition: (objectId: string, x: number, y: number) => void;
+  onUpdateObjectSize: (
+    objectId: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) => void;
 };
 
-export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }: Props) {
+export default function SlideCanvas({
+  slide,
+  selectedObjectIds,
+  onSelectObject,
+  onUpdateObjectPosition,
+  onUpdateObjectSize,
+}: Props) {
   const backgroundStyle = useMemo(() => {
     if (!slide?.background) return undefined;
 
@@ -26,25 +40,28 @@ export default function SlideCanvas({ slide, onSelectObject, selectedObjectIds }
     }
   }, [slide?.background]);
 
+  // Клик на пустое место — снять выделение
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    // Проверяем, что клик был именно на canvas, а не на объекте
+    if (e.target === e.currentTarget) {
+      // Можно вызвать onSelectObject с null или пустым id
+      // Зависит от твоей реализации
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       {slide ? (
         <div className={styles.column}>
-          <div className={styles.title} aria-hidden={false}>
-            {slide.title ?? 'Untitled slide'}
-          </div>
+          <div className={styles.title}>{slide.title ?? 'Untitled slide'}</div>
 
-          <div
-            className={styles.viewport}
-            style={backgroundStyle}
-            role="region"
-            aria-label="Slide viewport"
-          >
+          <div className={styles.viewport} style={backgroundStyle} onClick={handleCanvasClick}>
             <SlideObjectsRenderer
               objects={slide.objects}
               selectedObjectIds={selectedObjectIds || []}
               onSelectObject={onSelectObject}
-              slide={slide}
+              onUpdateObjectPosition={onUpdateObjectPosition}
+              onUpdateObjectSize={onUpdateObjectSize}
             />
           </div>
         </div>

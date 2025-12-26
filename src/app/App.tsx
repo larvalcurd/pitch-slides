@@ -18,6 +18,9 @@ function App() {
     handleSelectObject,
     selectedObjectIds,
     handleChangeSlideBackground,
+    currentSlide,
+    handleUpdateObjectPosition,
+    handleUpdateObjectSize,
   } = usePresentation();
 
   const { activeModal, openModal, closeModal } = useEditorUI();
@@ -72,9 +75,11 @@ function App() {
           }}
         >
           <SlideCanvas
-            slide={presentation.slides.find(s => s.id === presentation.selectedSlideId) ?? null}
-            onSelectObject={handleSelectObject}
+            slide={currentSlide}
             selectedObjectIds={selectedObjectIds}
+            onSelectObject={handleSelectObject}
+            onUpdateObjectPosition={handleUpdateObjectPosition}
+            onUpdateObjectSize={handleUpdateObjectSize}
           />
         </div>
       </main>

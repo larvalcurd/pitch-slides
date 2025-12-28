@@ -3,6 +3,12 @@ import { moveObject, resizeObject, setObjectZIndex } from '../utils/ObjectUtils'
 import { createMinimalImage, createMaximalImage } from '../factory/ImageObjectFactory';
 import { createMinimalText, createMaximalText } from '../factory/TextObjectFactory';
 import type { ImageObject, TextObject } from '../types/ObjectTypes';
+import {
+  updateFontFamily,
+  updateFontSize,
+  updateText,
+  updateTextColor,
+} from '../utils/TextObjectUtils';
 
 describe('ObjectUtils - ImageObject', () => {
   it('moveObject with minimal image: updates position, returns new object, original unchanged', () => {
@@ -248,5 +254,78 @@ describe('ObjectUtils - TextObject', () => {
     expect(updated.content).toBe(snapshot.content);
 
     expect(updated).not.toBe(maximal);
+  });
+
+  it('updateText: updates content, returns new object, original unchanged', () => {
+    const text: TextObject = createMinimalText();
+    const snapshot: TextObject = {
+      ...text,
+    };
+
+    const updated = updateText(text, 'New content');
+
+    expect(updated.content).toBe('New content');
+
+    // other fields preserved
+    expect(updated.x).toBe(snapshot.x);
+    expect(updated.y).toBe(snapshot.y);
+    expect(updated.width).toBe(snapshot.width);
+
+    expect(updated).not.toBe(text);
+    expect(text).toEqual(snapshot);
+  });
+
+  it('updateFontSize: updates fontSize, returns new object, original unchanged', () => {
+    const text: TextObject = createMinimalText();
+    const snapshot: TextObject = {
+      ...text,
+    };
+
+    const updated = updateFontSize(text, 24);
+
+    expect(updated.fontSize).toBe(24);
+
+    // other fields preserved
+    expect(updated.content).toBe(snapshot.content);
+    expect(updated.x).toBe(snapshot.x);
+
+    expect(updated).not.toBe(text);
+    expect(text).toEqual(snapshot);
+  });
+
+  it('updateFontFamily: updates fontFamily, returns new object, original unchanged', () => {
+    const text: TextObject = createMinimalText();
+    const snapshot: TextObject = {
+      ...text,
+    };
+
+    const updated = updateFontFamily(text, 'Arial');
+
+    expect(updated.fontFamily).toBe('Arial');
+
+    // other fields preserved
+    expect(updated.content).toBe(snapshot.content);
+    expect(updated.x).toBe(snapshot.x);
+
+    expect(updated).not.toBe(text);
+    expect(text).toEqual(snapshot);
+  });
+
+  it('updateTextColor: updates color, returns new object, original unchanged', () => {
+    const text: TextObject = createMinimalText();
+    const snapshot: TextObject = {
+      ...text,
+    };
+
+    const updated = updateTextColor(text, '#ff0000');
+
+    expect(updated.color).toBe('#ff0000');
+
+    // other fields preserved
+    expect(updated.content).toBe(snapshot.content);
+    expect(updated.x).toBe(snapshot.x);
+
+    expect(updated).not.toBe(text);
+    expect(text).toEqual(snapshot);
   });
 });

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 type ModalType = 'background' | null;
 
-export function useEditorUI() {
+export default function useEditorUI() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   return {

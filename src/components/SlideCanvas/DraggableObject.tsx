@@ -1,6 +1,6 @@
 import type { ResizeHandle, SlideObject } from '../../entities/object';
-import { useDragAndDrop } from '../../hooks/useDragAndDrop';
-import { useResizable } from '../../hooks/useResizable';
+import useDragAndDrop from '../../hooks/useDragAndDrop';
+import useResizable from '../../hooks/useResizable';
 import styles from './DraggableObject.module.css';
 
 type Props = {
@@ -25,7 +25,7 @@ const RESIZE_HANDLES: { handle: ResizeHandle; className: string }[] = [
   { handle: 'left', className: styles.left },
 ];
 
-export function DraggableObject({
+export default function DraggableObject({
   object,
   isSelected,
   onSelect,
@@ -65,6 +65,7 @@ export function DraggableObject({
   const currentHeight = isResizing ? resizeHeight : object.height;
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onSelect(object.id, e.shiftKey);
     handleDragMouseDown(e);
   };

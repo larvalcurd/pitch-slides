@@ -1,4 +1,4 @@
-import { useResizable } from '../hooks/useResizable';
+import useResizable from '../hooks/useResizable';
 
 const TestResize = () => {
   const {

@@ -16,7 +16,7 @@
 
 /* Hover эффект */
 .draggableObject:hover {
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 1px rgb(59 130 246 / 50%);
 }
 
 /* Выделенный объект */
@@ -28,7 +28,7 @@
 .dragging {
   opacity: 0.85;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgb(0 0 0 / 15%),
     0 0 0 2px #3b82f6;
 }
 
@@ -50,7 +50,7 @@
   width: 10px;
   height: 10px;
   background: #3b82f6;
-  border: 2px solid #ffffff;
+  border: 2px solid #fff;
   border-radius: 50%;
   pointer-events: auto; /* Точки ловят события */
   z-index: 10;

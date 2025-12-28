@@ -106,7 +106,7 @@ const calculateResize = (
   return { x, y, width, height };
 };
 
-export function useResizable(props: UseResizableProps): UseResizableReturn {
+export default function useResizable(props: UseResizableProps): UseResizableReturn {
   const {
     initialX,
     initialY,

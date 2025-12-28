@@ -1,5 +1,5 @@
 import type { SlideObject } from '../../entities/object/types/ObjectTypes';
-import { DraggableObject } from './DraggableObject';
+import DraggableObject from './DraggableObject';
 import TextObjectComponent from './TextObjectComponent';
 import ImageObjectComponent from './ImageObjectComponent';
 

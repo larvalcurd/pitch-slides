@@ -6,7 +6,7 @@ import SlideObjectsRenderer from './SlideObjectsRenderer';
 type Props = {
   slide?: Slide | null;
   selectedObjectIds?: string[];
-  onSelectObject: (objectId: string, multiSelect?: boolean) => void;
+  onSelectObject: (objectId: string | null, multiSelect?: boolean) => void;
   onUpdateObjectPosition: (objectId: string, x: number, y: number) => void;
   onUpdateObjectSize: (
     objectId: string,
@@ -44,8 +44,7 @@ export default function SlideCanvas({
   const handleCanvasClick = (e: React.MouseEvent) => {
     // Проверяем, что клик был именно на canvas, а не на объекте
     if (e.target === e.currentTarget) {
-      // Можно вызвать onSelectObject с null или пустым id
-      // Зависит от твоей реализации
+      onSelectObject(null);
     }
   };
 

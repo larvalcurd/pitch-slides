@@ -1,6 +1,6 @@
 import usePresentation from '../hooks/usePresentation.ts';
-import { useEditorUI } from '../hooks/useEditorUI.ts';
-import { PresentationTitle } from '../components/PresentationTitle/PresentationTitle.tsx';
+import useEditorUI from '../hooks/useEditorUI.ts';
+import PresentationTitle from '../components/PresentationTitle/PresentationTitle.tsx';
 import Toolbar from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideList/SlideList.tsx';
 import { SlideCanvas } from '../components/SlideCanvas';

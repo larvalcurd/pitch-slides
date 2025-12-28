@@ -121,8 +121,16 @@ export function changeSlideBackground(editor: Editor, background: Slide['backgro
   };
 }
 
-export function selectObject(editor: Editor, objectId: string, multiSelect = false): Editor {
+export function selectObject(editor: Editor, objectId: string | null, multiSelect = false): Editor {
   if (!editor.selectedSlideId) return editor;
+
+  if (objectId === null) {
+    return {
+      ...editor,
+      selection: null,
+    };
+  }
+
   const currentIds = editor.selection?.objectIds || [];
   const newIds = multiSelect ? [...currentIds, objectId] : [objectId];
   return {

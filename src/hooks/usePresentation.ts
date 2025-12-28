@@ -46,9 +46,9 @@ export default function usePresentation() {
     setEditor(prev => changeSlideBackground(prev, background));
   }, []);
 
-  const handleSelectObject = useCallback((objectId: string, multiSelect = false) => {
-    setEditor(prev => selectObject(prev, objectId, multiSelect));
-  }, []);
+  const handleSelectObject = useCallback((objectId: string | null, multiSelect?: boolean) => {
+  setEditor(prev => selectObject(prev, objectId, multiSelect));
+}, []);
 
   const handleUpdateObjectPosition = useCallback((objectId: string, newX: number, newY: number) => {
     setEditor(prev => {
@@ -76,8 +76,6 @@ export default function usePresentation() {
     });
   }, []);
 
-  const currentSlide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
-
   const handleUpdateObjectSize = useCallback(
     (objectId: string, newX: number, newY: number, newWidth: number, newHeight: number) => {
       setEditor(prev => {
@@ -90,7 +88,6 @@ export default function usePresentation() {
         const obj = slide.objects.find(o => o.id === objectId);
         if (!obj) return prev;
 
-        // Обновляем объект
         const updatedObj = {
           ...obj,
           x: newX,
@@ -117,6 +114,8 @@ export default function usePresentation() {
     },
     [],
   );
+
+  const currentSlide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
 
   return {
     editor,

@@ -7,7 +7,7 @@ type PresentationTitleProps = {
   disabled?: boolean;
 };
 
-export function PresentationTitle({
+export default function PresentationTitle({
   title,
   onTitleChange,
   disabled = false,

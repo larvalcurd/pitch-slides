@@ -7,7 +7,7 @@ type useDragAndDropProps = {
   threshold?: number;
 };
 
-export function useDragAndDrop(props: useDragAndDropProps = {}) {
+export default function useDragAndDrop(props: useDragAndDropProps = {}) {
   const { onDragEnd, onDragMove, onDragStart, threshold = 3 } = props;
 
   const [isDragging, setIsDragging] = useState(false);

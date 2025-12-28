@@ -47,8 +47,8 @@ export default function usePresentation() {
   }, []);
 
   const handleSelectObject = useCallback((objectId: string | null, multiSelect?: boolean) => {
-  setEditor(prev => selectObject(prev, objectId, multiSelect));
-}, []);
+    setEditor(prev => selectObject(prev, objectId, multiSelect));
+  }, []);
 
   const handleUpdateObjectPosition = useCallback((objectId: string, newX: number, newY: number) => {
     setEditor(prev => {

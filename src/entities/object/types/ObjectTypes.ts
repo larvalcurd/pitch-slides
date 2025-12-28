@@ -34,8 +34,3 @@ export type ImageObject = BaseObject & {
 };
 
 export type SlideObject = TextObject | ImageObject;
-
-export type ObjectSelection = {
-  slideId: string;
-  objectIds: string[];
-};

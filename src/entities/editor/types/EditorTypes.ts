@@ -1,5 +1,9 @@
 import type { Presentation } from '../../presentation';
-import type { ObjectSelection } from '../../object';
+
+export type ObjectSelection = {
+  slideId: string;
+  objectIds: string[];
+};
 
 export type Editor = {
   presentation: Presentation;

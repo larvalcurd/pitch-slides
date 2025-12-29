@@ -49,12 +49,11 @@ export default function SlideCanvas({
   }, [slide?.background]);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
-  
-  if (e.target === e.currentTarget) {
-    onSelectObject(null);
-    onStopEditingText();  
-  }
-};
+    if (e.target === e.currentTarget) {
+      onSelectObject(null);
+      onStopEditingText();
+    }
+  };
 
   return (
     <div className={styles.wrapper}>

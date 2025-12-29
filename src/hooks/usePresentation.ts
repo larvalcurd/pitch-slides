@@ -35,53 +35,55 @@ export default function usePresentation() {
   }, []);
 
   const handleAddObject = useCallback((type: 'text' | 'image') => {
-  setEditor(prev => {
-    const newEditor = addObject(prev, type);
-    if (type === 'text') {
-      const newObject = newEditor.presentation.slides
-        .find(s => s.id === newEditor.presentation.selectedSlideId)
-        ?.objects.slice(-1)[0];
-      if (newObject) {
-        newEditor.editingTextObjectId = newObject.id;
+    setEditor(prev => {
+      const newEditor = addObject(prev, type);
+      if (type === 'text') {
+        const newObject = newEditor.presentation.slides
+          .find(s => s.id === newEditor.presentation.selectedSlideId)
+          ?.objects.slice(-1)[0];
+        if (newObject) {
+          newEditor.editingTextObjectId = newObject.id;
+        }
       }
-    }
-    return newEditor;
-  });
-}, []);
-
+      return newEditor;
+    });
+  }, []);
 
   const handleDeleteObject = useCallback(() => {
-  setEditor(prev => {
-    const currentEditingId = prev.editingTextObjectId;
-    const newEditor = deleteObject(prev);
-    
-    if (currentEditingId && !newEditor.presentation.slides
-      .find(s => s.id === newEditor.presentation.selectedSlideId)
-      ?.objects.some(o => o.id === currentEditingId)) {
-      newEditor.editingTextObjectId = null;
-    }
-    return newEditor;
-  });
-}, []);
+    setEditor(prev => {
+      const currentEditingId = prev.editingTextObjectId;
+      const newEditor = deleteObject(prev);
+
+      if (
+        currentEditingId &&
+        !newEditor.presentation.slides
+          .find(s => s.id === newEditor.presentation.selectedSlideId)
+          ?.objects.some(o => o.id === currentEditingId)
+      ) {
+        newEditor.editingTextObjectId = null;
+      }
+      return newEditor;
+    });
+  }, []);
 
   const handleChangeSlideBackground = useCallback((background: Slide['background']) => {
     setEditor(prev => changeSlideBackground(prev, background));
   }, []);
 
   const handleSelectObject = useCallback((objectId: string | null, multiSelect?: boolean) => {
-  setEditor(prev => {
-    const newEditor = selectObject(prev, objectId, multiSelect);
-    if (objectId) {
-      const selectedObj = prev.presentation.slides
-        .find(s => s.id === prev.selectedSlideId)
-        ?.objects.find(o => o.id === objectId);
-      newEditor.editingTextObjectId = selectedObj?.type === 'text' ? objectId : null;
-    } else {
-      newEditor.editingTextObjectId = null;
-    }
-    return newEditor;
-  });
-}, []);
+    setEditor(prev => {
+      const newEditor = selectObject(prev, objectId, multiSelect);
+      if (objectId) {
+        const selectedObj = prev.presentation.slides
+          .find(s => s.id === prev.selectedSlideId)
+          ?.objects.find(o => o.id === objectId);
+        newEditor.editingTextObjectId = selectedObj?.type === 'text' ? objectId : null;
+      } else {
+        newEditor.editingTextObjectId = null;
+      }
+      return newEditor;
+    });
+  }, []);
 
   const handleUpdateObjectPosition = useCallback((objectId: string, newX: number, newY: number) => {
     setEditor(prev => {
@@ -179,8 +181,8 @@ export default function usePresentation() {
   }, []);
 
   const setEditingTextObject = useCallback((id: string | null) => {
-  setEditor(prev => ({ ...prev, editingTextObjectId: id }));
-}, []);
+    setEditor(prev => ({ ...prev, editingTextObjectId: id }));
+  }, []);
 
   const currentSlide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
 
@@ -204,6 +206,6 @@ export default function usePresentation() {
     handleStartEditingText,
     handleStopEditingText,
     handleUpdateTextContent,
-    setEditingTextObject
+    setEditingTextObject,
   } as const;
 }

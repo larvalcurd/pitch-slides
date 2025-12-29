@@ -122,19 +122,21 @@ describe('TextObjectUtils', () => {
   });
 
   it('updateTextContent throws error for empty string after trim', () => {
-  const minimal: TextObject = createMinimalText();
-  expect(() => updateTextContent(minimal, '   ')).toThrow('Text content cannot be empty');
-});
+    const minimal: TextObject = createMinimalText();
+    expect(() => updateTextContent(minimal, '   ')).toThrow('Text content cannot be empty');
+  });
 
-it('updateTextContent throws error for content exceeding 500 characters', () => {
-  const minimal: TextObject = createMinimalText();
-  const longContent = 'a'.repeat(501);
-  expect(() => updateTextContent(minimal, longContent)).toThrow('Text content exceeds maximum length of 500 characters');
-});
+  it('updateTextContent throws error for content exceeding 500 characters', () => {
+    const minimal: TextObject = createMinimalText();
+    const longContent = 'a'.repeat(501);
+    expect(() => updateTextContent(minimal, longContent)).toThrow(
+      'Text content exceeds maximum length of 500 characters',
+    );
+  });
 
-it('updateTextContent accepts valid content', () => {
-  const minimal: TextObject = createMinimalText();
-  const updated = updateTextContent(minimal, 'Valid content');
-  expect(updated.content).toBe('Valid content');
-});
+  it('updateTextContent accepts valid content', () => {
+    const minimal: TextObject = createMinimalText();
+    const updated = updateTextContent(minimal, 'Valid content');
+    expect(updated.content).toBe('Valid content');
+  });
 });

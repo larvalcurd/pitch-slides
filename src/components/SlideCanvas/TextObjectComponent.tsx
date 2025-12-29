@@ -70,6 +70,7 @@ export default function TextObjectComponent({
         fontFamily: text.fontFamily ?? 'inherit',
         color: text.color ?? '#111',
       }}
+      onClick={onStartEditing}
     >
       {text.content}
     </div>

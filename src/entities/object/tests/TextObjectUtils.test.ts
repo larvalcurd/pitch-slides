@@ -6,6 +6,7 @@ import {
 } from '../utils/TextObjectUtils';
 import { createMinimalText, createMaximalText } from '../factory/TextObjectFactory';
 import type { TextObject } from '../types/ObjectTypes';
+import { MAX_TEXT_LENGTH } from '../../../utils/constants';
 
 describe('TextObjectUtils', () => {
   it('updateTextContent with minimal text: sets content, preserves other fields, original unchanged', () => {
@@ -38,6 +39,26 @@ describe('TextObjectUtils', () => {
     expect(updated.width).toBe(snapshot.width);
     expect(updated).not.toBe(maximal);
     expect(maximal).toEqual(snapshot);
+  });
+
+  it('updateTextContent trims whitespace from content', () => {
+    const minimal: TextObject = createMinimalText();
+    const updated = updateTextContent(minimal, '  trimmed content  ');
+    expect(updated.content).toBe('trimmed content');
+  });
+
+  it('updateTextContent throws error for empty content after trim', () => {
+    const minimal: TextObject = createMinimalText();
+    expect(() => updateTextContent(minimal, '   ')).toThrow('Text content cannot be empty');
+    expect(() => updateTextContent(minimal, '')).toThrow('Text content cannot be empty');
+  });
+
+  it('updateTextContent throws error for content exceeding max length', () => {
+    const minimal: TextObject = createMinimalText();
+    const longContent = 'a'.repeat(MAX_TEXT_LENGTH + 1);
+    expect(() => updateTextContent(minimal, longContent)).toThrow(
+      `Text content exceeds maximum length of ${MAX_TEXT_LENGTH} characters`,
+    );
   });
 
   it('updateTextFontSize with minimal text: adds fontSize, original unchanged', () => {
@@ -99,4 +120,21 @@ describe('TextObjectUtils', () => {
     expect(updated).not.toBe(maximal);
     expect(maximal).toEqual(snapshot);
   });
+
+  it('updateTextContent throws error for empty string after trim', () => {
+  const minimal: TextObject = createMinimalText();
+  expect(() => updateTextContent(minimal, '   ')).toThrow('Text content cannot be empty');
+});
+
+it('updateTextContent throws error for content exceeding 500 characters', () => {
+  const minimal: TextObject = createMinimalText();
+  const longContent = 'a'.repeat(501);
+  expect(() => updateTextContent(minimal, longContent)).toThrow('Text content exceeds maximum length of 500 characters');
+});
+
+it('updateTextContent accepts valid content', () => {
+  const minimal: TextObject = createMinimalText();
+  const updated = updateTextContent(minimal, 'Valid content');
+  expect(updated.content).toBe('Valid content');
+});
 });

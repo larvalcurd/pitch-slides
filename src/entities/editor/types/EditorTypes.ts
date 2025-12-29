@@ -9,4 +9,5 @@ export type Editor = {
   presentation: Presentation;
   selection: ObjectSelection | null;
   selectedSlideId?: string | null;
+  editingTextObjectId?: string | null;
 };

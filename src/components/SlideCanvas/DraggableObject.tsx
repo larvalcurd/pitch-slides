@@ -12,6 +12,7 @@ type Props = {
   children: React.ReactNode;
   minWidth?: number;
   minHeight?: number;
+  onDoubleClick?: () => void;
 };
 
 const RESIZE_HANDLES: { handle: ResizeHandle; className: string }[] = [
@@ -34,6 +35,7 @@ export default function DraggableObject({
   children,
   minWidth = 20,
   minHeight = 20,
+  onDoubleClick,
 }: Props) {
   const {
     isDragging,
@@ -98,6 +100,7 @@ export default function DraggableObject({
       }}
       data-object-id={object.id}
       onMouseDown={handleMouseDown}
+      onDoubleClick={onDoubleClick}
     >
       <div className={styles.content}>{children}</div>
 

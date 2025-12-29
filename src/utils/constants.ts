@@ -6,3 +6,5 @@ export const DEFAULT_TEXT_HEIGHT = 80;
 export const DEFAULT_IMAGE_WIDTH = 240;
 export const DEFAULT_IMAGE_HEIGHT = 160;
 export const DEFAULT_IMAGE_PADDING = 30;
+
+export const MAX_TEXT_LENGTH = 500;

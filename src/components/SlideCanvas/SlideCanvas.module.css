@@ -87,6 +87,10 @@
   overflow: hidden;
 }
 
+.textContent:focus {
+  outline: none;
+}
+
 .imageContent {
   width: 100%;
   height: 100%;

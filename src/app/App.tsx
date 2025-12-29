@@ -21,6 +21,10 @@ function App() {
     currentSlide,
     handleUpdateObjectPosition,
     handleUpdateObjectSize,
+    editingTextObjectId,
+    handleStartEditingText,
+    handleStopEditingText,
+    handleUpdateTextContent,
   } = usePresentation();
 
   const { activeModal, openModal, closeModal } = useEditorUI();
@@ -80,6 +84,10 @@ function App() {
             onSelectObject={handleSelectObject}
             onUpdateObjectPosition={handleUpdateObjectPosition}
             onUpdateObjectSize={handleUpdateObjectSize}
+            editingTextObjectId={editingTextObjectId}
+            onStartEditingText={handleStartEditingText}
+            onStopEditingText={handleStopEditingText}
+            onUpdateTextContent={handleUpdateTextContent}
           />
         </div>
       </main>

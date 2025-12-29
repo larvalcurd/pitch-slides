@@ -15,6 +15,10 @@ type Props = {
     width: number,
     height: number,
   ) => void;
+  editingTextObjectId?: string | null;
+  onStartEditingText: (objectId: string) => void;
+  onStopEditingText: () => void;
+  onUpdateTextContent: (objectId: string, content: string) => void;
 };
 
 export default function SlideCanvas({
@@ -23,6 +27,10 @@ export default function SlideCanvas({
   onSelectObject,
   onUpdateObjectPosition,
   onUpdateObjectSize,
+  editingTextObjectId,
+  onStartEditingText,
+  onStopEditingText,
+  onUpdateTextContent,
 }: Props) {
   const backgroundStyle = useMemo(() => {
     if (!slide?.background) return undefined;
@@ -40,13 +48,13 @@ export default function SlideCanvas({
     }
   }, [slide?.background]);
 
-  // Клик на пустое место — снять выделение
   const handleCanvasClick = (e: React.MouseEvent) => {
-    // Проверяем, что клик был именно на canvas, а не на объекте
-    if (e.target === e.currentTarget) {
-      onSelectObject(null);
-    }
-  };
+  
+  if (e.target === e.currentTarget) {
+    onSelectObject(null);
+    onStopEditingText();  
+  }
+};
 
   return (
     <div className={styles.wrapper}>
@@ -61,6 +69,10 @@ export default function SlideCanvas({
               onSelectObject={onSelectObject}
               onUpdateObjectPosition={onUpdateObjectPosition}
               onUpdateObjectSize={onUpdateObjectSize}
+              editingTextObjectId={editingTextObjectId}
+              onStartEditingText={onStartEditingText}
+              onStopEditingText={onStopEditingText}
+              onUpdateTextContent={onUpdateTextContent}
             />
           </div>
         </div>

@@ -20,6 +20,7 @@ export function createEditor(): Editor {
     presentation,
     selection: null,
     selectedSlideId: presentation.selectedSlideId,
+    editingTextObjectId: null,
   };
 }
 

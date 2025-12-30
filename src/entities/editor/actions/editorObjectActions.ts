@@ -14,12 +14,15 @@ export function addObject(editor: Editor, type: 'text' | 'image'): Editor {
   if (!slide) return editor;
 
   let obj;
+  let editingTextObjectId: string | null = null;
+
   if (type === 'text') {
     const position = calculateTextPosition();
     obj = createTextObject({
       ...position,
       content: 'New text',
     });
+    editingTextObjectId = obj.id;
   } else {
     const position = calculateImagePosition();
     obj = createImageObject({
@@ -30,9 +33,15 @@ export function addObject(editor: Editor, type: 'text' | 'image'): Editor {
 
   const updatedSlide = addObjectToSlide(slide, obj);
   const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+
   return {
     ...editor,
     presentation: newPresentation,
+    selection: {
+      slideId: slide.id,
+      objectIds: [obj.id],
+    },
+    editingTextObjectId,
   };
 }
 

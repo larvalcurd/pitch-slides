@@ -15,10 +15,20 @@ import {
   updateObjectPosition,
   updateObjectSize,
 } from '../entities/editor/actions/editorObjectActions';
-import { selectSlide, selectObject } from '../entities/editor/selection/editorSelection';
+import {
+  selectSlide,
+  selectObject,
+  clearSelection,
+} from '../entities/editor/selection/editorSelection';
 
 import useEditorDrag from './useEditorDrag';
 import useEditorResize from './useEditorResize';
+import {
+  clearObjectSelection,
+  clearUIState,
+  startEditingText,
+  stopEditingText,
+} from '../entities/editor/actions/editorUIActions';
 
 export default function usePresentation() {
   const [editor, setEditor] = useState<Editor>(() => createEditor());
@@ -61,77 +71,27 @@ export default function usePresentation() {
   }, []);
 
   const handleAddObject = useCallback((type: 'text' | 'image') => {
-    setEditor(prev => {
-      const newEditor = addObject(prev, type);
-      if (type === 'text') {
-        const newObject = newEditor.presentation.slides
-          .find(s => s.id === newEditor.selection?.slideId)
-          ?.objects.slice(-1)[0];
-        if (newObject) {
-          return { ...newEditor, editingTextObjectId: newObject.id };
-        }
-      }
-      return newEditor;
-    });
+    setEditor(prev => addObject(prev, type));
   }, []);
 
   const handleDeleteObject = useCallback(() => {
-    setEditor(prev => {
-      const currentEditingId = prev.editingTextObjectId;
-      const newEditor = deleteObject(prev);
-
-      if (
-        currentEditingId &&
-        !newEditor.presentation.slides
-          .find(s => s.id === newEditor.selection?.slideId)
-          ?.objects.some(o => o.id === currentEditingId)
-      ) {
-        return { ...newEditor, editingTextObjectId: null };
-      }
-      return newEditor;
-    });
+    setEditor(prev => deleteObject(prev));
   }, []);
 
   const handleSelectObject = useCallback((objectId: string | null, multiSelect?: boolean) => {
-    setEditor(prev => {
-      const newEditor = selectObject(prev, objectId, multiSelect);
-
-      if (objectId) {
-        const selectedObj = prev.presentation.slides
-          .find(s => s.id === prev.selection?.slideId)
-          ?.objects.find(o => o.id === objectId);
-        return {
-          ...newEditor,
-          editingTextObjectId: selectedObj?.type === 'text' ? objectId : null,
-        };
-      }
-
-      return { ...newEditor, editingTextObjectId: null };
-    });
+    setEditor(prev => selectObject(prev, objectId, multiSelect));
   }, []);
+
   const handleDeselectAll = useCallback(() => {
-    setEditor(prev => {
-      if (!prev.selection) return prev;
-
-      return {
-        ...prev,
-        selection: {
-          ...prev.selection,
-          objectIds: [],
-        },
-        editingTextObjectId: null,
-        dragging: null,
-        resizing: null,
-      };
-    });
-  }, []);
+  setEditor(prev => clearUIState(clearObjectSelection(prev)));
+}, []);
 
   const handleStartEditingText = useCallback((objectId: string) => {
-    setEditor(prev => ({ ...prev, editingTextObjectId: objectId }));
+    setEditor(prev => startEditingText(prev, objectId));
   }, []);
 
   const handleStopEditingText = useCallback(() => {
-    setEditor(prev => ({ ...prev, editingTextObjectId: null }));
+    setEditor(prev => stopEditingText(prev));
   }, []);
 
   const handleUpdateTextContent = useCallback((objectId: string, content: string) => {
@@ -144,10 +104,6 @@ export default function usePresentation() {
 
   const handleUpdateObjectSize = useCallback((objectId: string, width: number, height: number) => {
     setEditor(prev => updateObjectSize(prev, objectId, width, height));
-  }, []);
-
-  const setEditingTextObject = useCallback((id: string | null) => {
-    setEditor(prev => ({ ...prev, editingTextObjectId: id }));
   }, []);
 
   const currentSlide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
@@ -185,7 +141,6 @@ export default function usePresentation() {
     handleStartEditingText,
     handleStopEditingText,
     handleUpdateTextContent,
-    setEditingTextObject,
     handleUpdateObjectPosition,
     handleUpdateObjectSize,
   } as const;

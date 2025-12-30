@@ -1,4 +1,5 @@
 import type { Presentation } from '../../presentation';
+import type { DragState, ResizeState } from './UIStateTypes';
 
 export type ObjectSelection = {
   slideId: string;
@@ -10,4 +11,13 @@ export type Editor = {
   selection: ObjectSelection | null;
   selectedSlideId?: string | null;
   editingTextObjectId?: string | null;
+
+  dragging: DragState | null;
+  resizing: ResizeState | null;
+  editingTextId: string | null;
+};
+
+export type SerializableEditor = { 
+  presentation: Presentation;
+  selection: ObjectSelection | null;
 };

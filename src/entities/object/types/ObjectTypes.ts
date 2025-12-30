@@ -15,9 +15,6 @@ export type BaseObject = {
   width: number;
   height: number;
   zIndex: number;
-
-  isDragging?: boolean;
-  dragOffset?: { x: number; y: number };
 };
 
 export type TextObject = BaseObject & {

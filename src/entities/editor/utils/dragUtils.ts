@@ -74,66 +74,65 @@ export const calculateDragPreview = (
   return { positions };
 };
 
-
 export const applyDrag = (
-    editor: Editor,
-    finalPositions: Record<string, { x: number; y: number }>
+  editor: Editor,
+  finalPositions: Record<string, { x: number; y: number }>,
 ): Editor => {
-    const currentSlideId = editor.selection?.slideId;
+  const currentSlideId = editor.selection?.slideId;
 
-    if (!currentSlideId) {
-        return {
-            ...editor,
-            dragging: null,
-        };
+  if (!currentSlideId) {
+    return {
+      ...editor,
+      dragging: null,
     };
+  }
 
-    const updatedSlides = editor.presentation.slides.map(slide => {
-        if (slide.id !== currentSlideId) {
-            return slide;
-        }
+  const updatedSlides = editor.presentation.slides.map(slide => {
+    if (slide.id !== currentSlideId) {
+      return slide;
+    }
 
-        const updatedObjects = slide.objects.map(obj => {
-            const newPos = finalPositions[obj.id];
-            if (newPos) {
-                return {
-                    ...obj,
-                    x: newPos.x,
-                    y: newPos.y,
-                };
-            }
-            return obj;
-        });
-
+    const updatedObjects = slide.objects.map(obj => {
+      const newPos = finalPositions[obj.id];
+      if (newPos) {
         return {
-            ...slide,
-            objects: updatedObjects,
+          ...obj,
+          x: newPos.x,
+          y: newPos.y,
         };
+      }
+      return obj;
     });
 
     return {
-        ...editor,
-        presentation: {
-            ...editor.presentation,
-            slides: updatedSlides,
-        },
-        dragging: null,
+      ...slide,
+      objects: updatedObjects,
     };
+  });
+
+  return {
+    ...editor,
+    presentation: {
+      ...editor.presentation,
+      slides: updatedSlides,
+    },
+    dragging: null,
+  };
 };
 
 export const cancelDragging = (editor: Editor): Editor => ({
-    ...editor,
-    dragging: null,
+  ...editor,
+  dragging: null,
 });
 
 export const isDraggingActive = (editor: Editor): boolean => {
-    return editor.dragging !== null;
+  return editor.dragging !== null;
 };
 
 export const getDraggingObjectIds = (editor: Editor): string[] => {
-    return editor.dragging?.objectIds ?? [];
+  return editor.dragging?.objectIds ?? [];
 };
 
 export const isObjectBeingDragged = (editor: Editor, objectId: string): boolean => {
-    return editor.dragging?.objectIds.includes(objectId) ?? false;
-}
+  return editor.dragging?.objectIds.includes(objectId) ?? false;
+};

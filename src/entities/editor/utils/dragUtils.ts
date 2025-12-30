@@ -25,10 +25,16 @@ export const startDragging = (
     }
   });
 
+  const validObjectIds = Object.keys(originalPositions);
+
+  if (validObjectIds.length === 0) {
+    return editor;
+  }
+
   return {
     ...editor,
     dragging: {
-      objectIds,
+      objectIds: validObjectIds,
       startMouseX: mouseX,
       startMouseY: mouseY,
       currentMouseX: mouseX,

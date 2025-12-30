@@ -9,15 +9,13 @@ export type ObjectSelection = {
 export type Editor = {
   presentation: Presentation;
   selection: ObjectSelection | null;
-  selectedSlideId?: string | null;
-  editingTextObjectId?: string | null;
 
   dragging: DragState | null;
   resizing: ResizeState | null;
   editingTextId: string | null;
 };
 
-export type SerializableEditor = { 
+export type SerializableEditor = {
   presentation: Presentation;
   selection: ObjectSelection | null;
 };

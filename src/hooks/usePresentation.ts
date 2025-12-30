@@ -83,8 +83,8 @@ export default function usePresentation() {
   }, []);
 
   const handleDeselectAll = useCallback(() => {
-  setEditor(prev => clearUIState(clearObjectSelection(prev)));
-}, []);
+    setEditor(prev => clearUIState(clearObjectSelection(prev)));
+  }, []);
 
   const handleStartEditingText = useCallback((objectId: string) => {
     setEditor(prev => startEditingText(prev, objectId));

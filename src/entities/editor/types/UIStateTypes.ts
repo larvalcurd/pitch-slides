@@ -4,7 +4,9 @@ export type DragState = {
     objectIds: string[];
     startMouseX: number;
     startMouseY: number;
-    oroginalObjectPositions: { [objectId: string]: { x: number; y: number } };
+    currentMouseX: number;
+    currentMouseY: number;
+    originalObjectPositions: { [objectId: string]: { x: number; y: number } };
 };
 
 export type ResizeState = {
@@ -12,7 +14,7 @@ export type ResizeState = {
     handle: ResizeHandle;
     startMouseX: number;
     startMouseY: number;
-    origianl: {
+    original: {
         x: number;
         y: number;
         width: number;

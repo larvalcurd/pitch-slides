@@ -14,15 +14,22 @@ import {
   calculateImagePosition,
 } from '../../object/utils/objectPositioning';
 
-export function createEditor(): Editor {
-  const presentation = createPresentation('p1', 'Untitled presentation', [createSlide()]);
+export const createEditor = (): Editor => {
+  const presentation = createPresentation('presentation-1', 'Untitled Presentation', [createSlide()]);
+
   return {
     presentation,
-    selection: null,
-    selectedSlideId: presentation.selectedSlideId,
+    selection: {
+      slideId: presentation.slides[0].id,
+      objectIds: [],
+    },
+    dragging: null,
+    resizing: null,
     editingTextObjectId: null,
   };
-}
+};
+
+
 
 export function addSlide(editor: Editor): Editor {
   const newSlide: Slide = createSlide();
@@ -30,18 +37,25 @@ export function addSlide(editor: Editor): Editor {
   return {
     ...editor,
     presentation: newPresentation,
-    selectedSlideId: newPresentation.selectedSlideId,
+    selection: {
+      slideId: newPresentation.selectedSlideId!,
+      objectIds: [],
+    },
   };
 }
 
 export function deleteSlide(editor: Editor): Editor {
-  if (!editor.selectedSlideId) return editor;
-  const newPresentation = deleteSlideFromPresentation(editor.presentation, editor.selectedSlideId);
+  if (!editor.selection?.slideId) return editor;
+  const newPresentation = deleteSlideFromPresentation(editor.presentation, editor.selection.slideId);
+  const newSelection = editor.selection.slideId === newPresentation.selectedSlideId
+    ? editor.selection
+    : newPresentation.selectedSlideId
+      ? { slideId: newPresentation.selectedSlideId, objectIds: [] }
+      : null;
   return {
     ...editor,
     presentation: newPresentation,
-    selectedSlideId: newPresentation.selectedSlideId,
-    selection: editor.selection?.slideId === editor.selectedSlideId ? null : editor.selection,
+    selection: newSelection,
   };
 }
 
@@ -50,8 +64,7 @@ export function selectSlide(editor: Editor, slideId: string): Editor {
   return {
     ...editor,
     presentation: newPresentation,
-    selectedSlideId: newPresentation.selectedSlideId,
-    selection: { slideId, objectIds: [] }, // Обнови selection
+    selection: { slideId, objectIds: [] },
   };
 }
 
@@ -64,7 +77,7 @@ export function changePresentationTitle(editor: Editor, newTitle: string): Edito
 }
 
 export function addObject(editor: Editor, type: 'text' | 'image'): Editor {
-  const slide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
+  const slide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
   if (!slide) return editor;
 
   let obj: SlideObject;
@@ -92,7 +105,7 @@ export function addObject(editor: Editor, type: 'text' | 'image'): Editor {
 
 export function deleteObject(editor: Editor): Editor {
   if (!editor.selection) return editor;
-  const slide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
+  const slide = editor.presentation.slides.find(s => s.id === editor.selection.slideId);
   if (!slide) return editor;
 
   const updatedSlide = editor.selection.objectIds.reduce(
@@ -108,7 +121,7 @@ export function deleteObject(editor: Editor): Editor {
 }
 
 export function changeSlideBackground(editor: Editor, background: Slide['background']): Editor {
-  const slide = editor.presentation.slides.find(s => s.id === editor.selectedSlideId);
+  const slide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
   if (!slide) return editor;
 
   const updatedSlide = {
@@ -123,7 +136,7 @@ export function changeSlideBackground(editor: Editor, background: Slide['backgro
 }
 
 export function selectObject(editor: Editor, objectId: string | null, multiSelect = false): Editor {
-  if (!editor.selectedSlideId) return editor;
+  if (!editor.selection?.slideId) return editor;
 
   if (objectId === null) {
     return {
@@ -137,7 +150,7 @@ export function selectObject(editor: Editor, objectId: string | null, multiSelec
   return {
     ...editor,
     selection: {
-      slideId: editor.selectedSlideId,
+      slideId: editor.selection.slideId,
       objectIds: newIds,
     },
   };

@@ -41,7 +41,7 @@ export const startResizing = (
       },
     },
     dragging: null,
-    editingTextId: null,
+    editingTextObjectId: null,
   };
 };
 

@@ -12,7 +12,7 @@ export type Editor = {
 
   dragging: DragState | null;
   resizing: ResizeState | null;
-  editingTextId: string | null;
+  editingTextObjectId: string | null;
 };
 
 export type SerializableEditor = {

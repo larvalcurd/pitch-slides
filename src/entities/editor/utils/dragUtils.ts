@@ -42,7 +42,7 @@ export const startDragging = (
       originalPositions,
     },
     resizing: null,
-    editingTextId: null,
+    editingTextObjectId: null,
   };
 };
 

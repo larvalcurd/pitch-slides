@@ -1,12 +1,15 @@
 import type { Slide } from '../../slide';
 import type { Presentation } from '../types/PresentationTypes.ts';
 
-export function createPresentation(id: string, title: string, slides: Slide[] = []): Presentation {
+export function createPresentation(
+  id: string,
+  title: string,
+  slides: Slide[] = []
+): Presentation {
   return {
     id,
     title,
     slides,
-    selectedSlideId: slides[0]?.id || null,
   };
 }
 

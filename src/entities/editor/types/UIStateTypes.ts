@@ -2,9 +2,9 @@ import type { ResizeHandle } from "../../object";
 
 export type DragState = {
     objectIds: string[];
-    initialMouseX: number;
-    initialMouseY: number;
-    initialObjectPositions: { [objectId: string]: { x: number; y: number } };
+    startMouseX: number;
+    startMouseY: number;
+    oroginalObjectPositions: { [objectId: string]: { x: number; y: number } };
 };
 
 export type ResizeState = {

@@ -3,7 +3,6 @@ import {
   createPresentation,
   updatePresentationTitle,
   moveSlide,
-  setSelectedSlide,
   updateSlideInPresentation,
   addSlideToPresentation,
   deleteSlideFromPresentation,
@@ -57,23 +56,21 @@ function createMaximalPresentation(): Presentation {
     id: 'pres-max',
     title: 'Full Presentation',
     slides: [s1, s2],
-    selectedSlideId: s1.id,
   };
 }
 
 describe('PresentationUtils (deep immutability + behavior)', () => {
-  it('createPresentation - minimal (no slides) sets selectedSlideId null and no mutation', () => {
+  it('createPresentation - minimal (no slides)', () => {
     const p = createPresentation('p1', 'T'); // using exported factory
     expect(p.id).toBe('p1');
     expect(p.title).toBe('T');
     expect(p.slides).toEqual([]);
-    expect(p.selectedSlideId).toBeNull();
   });
 
-  it('createPresentation - with slides picks first slide as selected', () => {
+  it('createPresentation - with slides', () => {
     const slide = createMaximalSlide('first');
     const p = createPresentation('p2', 'HasSlides', [slide]);
-    expect(p.selectedSlideId).toBe(slide.id);
+    expect(p.slides).toEqual([slide]);
   });
 
   it('updatePresentationTitle - minimal: changes title immutably', () => {
@@ -97,7 +94,7 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     expect(pres).toEqual(snap);
   });
 
-  it('addSlideToPresentation - minimal: appends slide and sets selectedSlideId to new slide id', () => {
+  it('addSlideToPresentation - minimal: appends slide', () => {
     const pres = createMinimalPresentation();
     const snap = deepClone(pres);
 
@@ -106,14 +103,13 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     expect(res.slides.length).toBe(1);
     expect(res.slides[0]).toEqual(newSlide);
-    expect(res.selectedSlideId).toBe(newSlide.id);
 
     expect(res).not.toBe(pres);
     expect(res.slides).not.toBe(pres.slides);
     expect(pres).toEqual(snap);
   });
 
-  it('addSlideToPresentation - maximal: appends slide and selects the new slide (current behavior)', () => {
+  it('addSlideToPresentation - maximal: appends slide', () => {
     const pres = createMaximalPresentation();
     const snap = deepClone(pres);
 
@@ -122,7 +118,6 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     expect(res.slides.length).toBe(pres.slides.length + 1);
     expect(res.slides.at(-1)).toEqual(newSlide);
-    expect(res.selectedSlideId).toBe(newSlide.id);
 
     expect(res).not.toBe(pres);
     expect(res.slides).not.toBe(pres.slides);
@@ -139,16 +134,15 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     expect(pres).toEqual(snap);
   });
 
-  it('removeSlide - maximal: removes slide, updates selectedSlideId', () => {
+  it('deleteSlideFromPresentation - maximal: removes slide', () => {
     const pres = createMaximalPresentation();
     const snap = deepClone(pres);
+    const slideToDelete = pres.slides[0];
 
-    const res = deleteSlideFromPresentation(pres, pres.selectedSlideId as string);
+    const res = deleteSlideFromPresentation(pres, slideToDelete.id);
 
-    expect(res.slides.some(s => s.id === pres.selectedSlideId)).toBe(false);
-
-    const expectedSelected = res.slides[0]?.id ?? null;
-    expect(res.selectedSlideId).toBe(expectedSelected);
+    expect(res.slides.length).toBe(pres.slides.length - 1);
+    expect(res.slides.some(s => s.id === slideToDelete.id)).toBe(false);
 
     expect(res).not.toBe(pres);
     expect(res.slides).not.toBe(pres.slides);
@@ -178,31 +172,6 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
     expect(res.slides[1].id).toBe(fromId);
     // other slide preserved (deep equal and same reference where untouched)
     expect(res.slides[0]).toEqual(pres.slides[1]);
-    expect(pres).toEqual(snap);
-  });
-
-  it('setSelectedSlide - minimal: setting to null/slide id behaves immutably', () => {
-    const pres = createMinimalPresentation();
-    const snap = deepClone(pres);
-
-    const resNull = setSelectedSlide(pres, null);
-    expect(resNull.selectedSlideId).toBeNull();
-    expect(resNull).not.toBe(pres);
-    expect(pres).toEqual(snap);
-
-    const resInvalid = setSelectedSlide(pres, 'no-id');
-    expect(resInvalid).toBe(pres);
-  });
-
-  it('setSelectedSlide - maximal: change selection and is immutable', () => {
-    const pres = createMaximalPresentation();
-    const snap = deepClone(pres);
-
-    const otherId = pres.slides[1].id;
-    const res = setSelectedSlide(pres, otherId);
-
-    expect(res.selectedSlideId).toBe(otherId);
-    expect(res).not.toBe(pres);
     expect(pres).toEqual(snap);
   });
 
@@ -254,7 +223,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
       id: 'p1',
       title: 'T',
       slides: [],
-      selectedSlideId: null,
     });
   });
 
@@ -266,45 +234,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     expect(pres).toEqual(snap);
   });
 
-  it('addSlideToPresentation - when presentation.selectedSlideId is undefined: sets to new slide id', () => {
-    const s1 = createMaximalSlide('a');
-    const s2 = createMaximalSlide('b');
-
-    const pres: Presentation = {
-      id: 'p-undef',
-      title: 'T',
-      slides: [s1, s2],
-    };
-    const snap = deepClone(pres);
-
-    const newSlide = createMinimalSlide('ns');
-    const res = addSlideToPresentation(pres, newSlide);
-
-    expect(res.slides.length).toBe(3);
-    expect(res.selectedSlideId).toBe(newSlide.id);
-
-    expect(res).not.toBe(pres);
-    expect(res.slides).not.toBe(pres.slides);
-    expect(pres).toEqual(snap);
-  });
-
-  it('addSlideToPresentation - when selectedSlideId is null (explicit): sets to new slide id', () => {
-    const pres: Presentation = {
-      id: 'p-null',
-      title: 'T',
-      slides: [],
-      selectedSlideId: null,
-    };
-    const snap = deepClone(pres);
-    const newSlide = createMinimalSlide('ns-null');
-    const res = addSlideToPresentation(pres, newSlide);
-
-    expect(res.slides.length).toBe(1);
-    expect(res.selectedSlideId).toBe(newSlide.id);
-    expect(res).not.toBe(pres);
-    expect(pres).toEqual(snap);
-  });
-
   it('moveSlide - clamp negative index: moves last -> first', () => {
     const s1 = createMaximalSlide('s1');
     const s2 = createMaximalSlide('s2');
@@ -313,7 +242,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
       id: 'p-move',
       title: 'T',
       slides: [s1, s2, s3],
-      selectedSlideId: s1.id,
     };
     const snap = deepClone(pres);
 
@@ -333,7 +261,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
       id: 'p-move-2',
       title: 'T',
       slides: [s1, s2, s3],
-      selectedSlideId: s1.id,
     };
     const snap = deepClone(pres);
 
@@ -356,13 +283,14 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     expect(pres).toEqual(snap);
   });
 
-  it('removeSlide - maximal: removes selected slide', () => {
+  it('deleteSlideFromPresentation - maximal: removes slide', () => {
     const pres = createMaximalPresentation();
     const snap = deepClone(pres);
+    const slideToDelete = pres.slides[0];
 
-    const res = deleteSlideFromPresentation(pres, pres.selectedSlideId as string);
+    const res = deleteSlideFromPresentation(pres, slideToDelete.id);
     expect(res).not.toBe(pres);
-    expect(res.slides.some(s => s.id === pres.selectedSlideId)).toBe(false);
+    expect(res.slides.some(s => s.id === slideToDelete.id)).toBe(false);
     expect(pres).toEqual(snap);
   });
 
@@ -371,28 +299,6 @@ describe('PresentationUtils (additional coverage & edge cases)', () => {
     const snap = deepClone(pres);
     const res = moveSlide(pres, 'no-id', 1);
     expect(res).toBe(pres);
-    expect(pres).toEqual(snap);
-  });
-
-  it('setSelectedSlide - minimal: set to null returns new object and shape unchanged', () => {
-    const pres = createMinimalPresentation();
-    const snap = deepClone(pres);
-
-    const resNull = setSelectedSlide(pres, null);
-    expect(resNull).not.toBe(pres);
-    expect(resNull.selectedSlideId).toBeNull();
-    expect(pres).toEqual(snap);
-  });
-
-  it('setSelectedSlide - maximal: change selection clears selectedObjects and is immutable', () => {
-    const pres = createMaximalPresentation();
-    const snap = deepClone(pres);
-
-    const otherId = pres.slides[1].id;
-    const res = setSelectedSlide(pres, otherId);
-
-    expect(res.selectedSlideId).toBe(otherId);
-    expect(res).not.toBe(pres);
     expect(pres).toEqual(snap);
   });
 

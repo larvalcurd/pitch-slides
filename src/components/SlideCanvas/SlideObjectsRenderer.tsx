@@ -1,14 +1,23 @@
-import type { SlideObject } from '../../entities/object/types/ObjectTypes';
+import type { ResizeHandle, SlideObject } from '../../entities/object/types/ObjectTypes';
 import DraggableObject from './DraggableObject';
 import TextObjectComponent from './TextObjectComponent';
 import ImageObjectComponent from './ImageObjectComponent';
+import type { ResizePreview } from '../../entities/editor';
 
 type Props = {
   objects: SlideObject[];
   selectedObjectIds: string[];
   onSelectObject: (id: string, multiSelect?: boolean) => void;
-  onUpdateObjectPosition: (id: string, x: number, y: number) => void;
-  onUpdateObjectSize: (id: string, x: number, y: number, width: number, height: number) => void;
+
+  isDragging: boolean;
+  startDrag: (e: React.MouseEvent, objectIds: string[]) => void;
+  getDeltaForObject: (objectId: string) => { x: number; y: number };
+
+  isResizing: boolean;
+  resizingObjectId: string | null;
+  resizePreview: ResizePreview | null;
+  startResize: (e: React.MouseEvent, objectId: string, handle: ResizeHandle) => void;
+
   editingTextObjectId?: string | null;
   onStartEditingText: (objectId: string) => void;
   onStopEditingText: () => void;
@@ -19,8 +28,13 @@ export default function SlideObjectsRenderer({
   objects,
   selectedObjectIds,
   onSelectObject,
-  onUpdateObjectPosition,
-  onUpdateObjectSize,
+  isDragging,
+  startDrag,
+  getDeltaForObject,
+  isResizing,
+  resizingObjectId,
+  resizePreview,
+  startResize,
   editingTextObjectId,
   onStartEditingText,
   onStopEditingText,
@@ -47,21 +61,35 @@ export default function SlideObjectsRenderer({
 
   return (
     <>
-      {objects.map(obj => (
-        <DraggableObject
-          key={obj.id}
-          object={obj}
-          isSelected={selectedObjectIds.includes(obj.id)}
-          onSelect={onSelectObject}
-          onUpdatePosition={onUpdateObjectPosition}
-          onUpdateSize={onUpdateObjectSize}
-          minWidth={50}
-          minHeight={30}
-          onDoubleClick={obj.type === 'text' ? () => onStartEditingText(obj.id) : undefined}
-        >
-          {renderContent(obj)}
-        </DraggableObject>
-      ))}
+      {objects.map(obj => {
+        const isSelected = selectedObjectIds.includes(obj.id);
+        const isObjDragging = isDragging && isSelected;
+        const isObjResizing = isResizing && resizingObjectId === obj.id;
+
+        return (
+          <DraggableObject
+            key={obj.id}
+            object={obj}
+            isSelected={isSelected}
+            onSelect={onSelectObject}
+            isDragging={isObjDragging}
+            dragDelta={getDeltaForObject(obj.id)}
+            onStartDrag={e => {
+              // Если объект уже выделен — тащим все выделенные
+              // Если нет — тащим только этот
+              const objectsToMove =
+                isSelected && selectedObjectIds.length > 0 ? selectedObjectIds : [obj.id];
+              startDrag(e, objectsToMove);
+            }}
+            isResizing={isObjResizing}
+            resizePreview={isObjResizing ? resizePreview : null}
+            onStartResize={(e, handle) => startResize(e, obj.id, handle)}
+            onDoubleClick={obj.type === 'text' ? () => onStartEditingText(obj.id) : undefined}
+          >
+            {renderContent(obj)}
+          </DraggableObject>
+        );
+      })}
     </>
   );
 }

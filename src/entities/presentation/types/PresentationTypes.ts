@@ -4,5 +4,4 @@ export type Presentation = {
   id: string;
   title: string;
   slides: Slide[];
-  selectedSlideId?: string | null;
 };

@@ -132,7 +132,6 @@ export const calculateResizePreview = (
     const diff = minHeight - newHeight;
     newHeight = minHeight;
 
-
     if (
       resizing.handle === 'top-left' ||
       resizing.handle === 'top' ||
@@ -150,28 +149,25 @@ export const calculateResizePreview = (
   };
 };
 
-export const applyResize = (
-    editor: Editor,
-    finalBounds: ResizePreview,
-): Editor => {
-    if (!editor.resizing) {
-        return editor;
+export const applyResize = (editor: Editor, finalBounds: ResizePreview): Editor => {
+  if (!editor.resizing) {
+    return editor;
+  }
+
+  const { objectId } = editor.resizing;
+  const currentSlideId = editor.selection?.slideId;
+
+  if (!currentSlideId) {
+    return {
+      ...editor,
+      resizing: null,
+    };
+  }
+
+  const updatedSlides = editor.presentation.slides.map(slide => {
+    if (slide.id !== currentSlideId) {
+      return slide;
     }
-
-    const {objectId} = editor.resizing;
-    const currentSlideId = editor.selection?.slideId;
-
-    if (!currentSlideId) {
-        return {
-            ...editor,
-            resizing: null,
-        };
-    }
-
-    const updatedSlides = editor.presentation.slides.map(slide => {
-        if (slide.id !== currentSlideId) {
-            return slide;
-        }
 
     const updatedObjects = slide.objects.map(obj => {
       if (obj.id === objectId) {
@@ -200,7 +196,7 @@ export const applyResize = (
     },
     resizing: null,
   };
-}
+};
 
 export const cancelResizing = (editor: Editor): Editor => ({
   ...editor,

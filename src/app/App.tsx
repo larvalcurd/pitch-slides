@@ -8,19 +8,32 @@ import BackgroundSelector from '../components/BackgroundSelector/BackgroundSelec
 
 function App() {
   const {
+    editor,
     presentation,
+    currentSlide,
+    selectedObjectIds,
+
+    isDragging,
+    startDrag,
+    getDeltaForObject,
+
+    isResizing,
+    resizingObjectId,
+    resizePreview,
+    startResize,
+
     changeTitle,
     handleAddSlide,
     handleDeleteSlide,
     handleSelectSlide,
+    handleChangeSlideBackground,
+
     handleAddObject,
     handleDeleteObject,
+
     handleSelectObject,
-    selectedObjectIds,
-    handleChangeSlideBackground,
-    currentSlide,
-    handleUpdateObjectPosition,
-    handleUpdateObjectSize,
+    handleDeselectAll,
+
     editingTextObjectId,
     handleStartEditingText,
     handleStopEditingText,
@@ -52,7 +65,7 @@ function App() {
     >
       <SlideList
         slides={presentation.slides}
-        selectedSlideId={presentation.selectedSlideId}
+        selectedSlideId={editor.selection?.slideId}
         onSelect={handleSelectSlide}
       />
 
@@ -82,8 +95,14 @@ function App() {
             slide={currentSlide}
             selectedObjectIds={selectedObjectIds}
             onSelectObject={handleSelectObject}
-            onUpdateObjectPosition={handleUpdateObjectPosition}
-            onUpdateObjectSize={handleUpdateObjectSize}
+            onDeselectAll={handleDeselectAll}
+            isDragging={isDragging}
+            startDrag={startDrag}
+            getDeltaForObject={getDeltaForObject}
+            isResizing={isResizing}
+            resizingObjectId={resizingObjectId}
+            resizePreview={resizePreview}
+            startResize={startResize}
             editingTextObjectId={editingTextObjectId}
             onStartEditingText={handleStartEditingText}
             onStopEditingText={handleStopEditingText}
@@ -95,7 +114,7 @@ function App() {
       {activeModal === 'background' && (
         <BackgroundSelector
           currentBackground={
-            presentation.slides.find(s => s.id === presentation.selectedSlideId)?.background
+            presentation.slides.find(s => s.id === editor.selection?.slideId)?.background
           }
           onSelect={bg => {
             handleChangeSlideBackground(bg);

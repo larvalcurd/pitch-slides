@@ -2,19 +2,24 @@ import { useMemo } from 'react';
 import type { Slide } from '../../entities/slide/types/SlideTypes';
 import styles from './SlideCanvas.module.css';
 import SlideObjectsRenderer from './SlideObjectsRenderer';
+import type { ResizeHandle } from '../../entities/object';
+import type { ResizePreview } from '../../entities/editor';
 
 type Props = {
   slide?: Slide | null;
   selectedObjectIds?: string[];
   onSelectObject: (objectId: string | null, multiSelect?: boolean) => void;
-  onUpdateObjectPosition: (objectId: string, x: number, y: number) => void;
-  onUpdateObjectSize: (
-    objectId: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-  ) => void;
+  onDeselectAll: () => void;
+
+  isDragging: boolean;
+  startDrag: (e: React.MouseEvent, objectIds: string[]) => void;
+  getDeltaForObject: (objectId: string) => { x: number; y: number };
+
+  isResizing: boolean;
+  resizingObjectId: string | null;
+  resizePreview: ResizePreview | null;
+  startResize: (e: React.MouseEvent, objectId: string, handle: ResizeHandle) => void;
+
   editingTextObjectId?: string | null;
   onStartEditingText: (objectId: string) => void;
   onStopEditingText: () => void;
@@ -23,10 +28,16 @@ type Props = {
 
 export default function SlideCanvas({
   slide,
-  selectedObjectIds,
+  selectedObjectIds = [],
   onSelectObject,
-  onUpdateObjectPosition,
-  onUpdateObjectSize,
+  onDeselectAll,
+  isDragging,
+  startDrag,
+  getDeltaForObject,
+  isResizing,
+  resizingObjectId,
+  resizePreview,
+  startResize,
   editingTextObjectId,
   onStartEditingText,
   onStopEditingText,
@@ -50,7 +61,7 @@ export default function SlideCanvas({
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onSelectObject(null);
+      onDeselectAll();
       onStopEditingText();
     }
   };
@@ -64,10 +75,15 @@ export default function SlideCanvas({
           <div className={styles.viewport} style={backgroundStyle} onClick={handleCanvasClick}>
             <SlideObjectsRenderer
               objects={slide.objects}
-              selectedObjectIds={selectedObjectIds || []}
+              selectedObjectIds={selectedObjectIds}
               onSelectObject={onSelectObject}
-              onUpdateObjectPosition={onUpdateObjectPosition}
-              onUpdateObjectSize={onUpdateObjectSize}
+              isDragging={isDragging}
+              startDrag={startDrag}
+              getDeltaForObject={getDeltaForObject}
+              isResizing={isResizing}
+              resizingObjectId={resizingObjectId}
+              resizePreview={resizePreview}
+              startResize={startResize}
               editingTextObjectId={editingTextObjectId}
               onStartEditingText={onStartEditingText}
               onStopEditingText={onStopEditingText}

@@ -1,17 +1,22 @@
-import type { ResizeHandle, SlideObject } from '../../entities/object';
-import useDragAndDrop from '../../hooks/useDragAndDrop';
-import useResizable from '../../hooks/useResizable';
+import type { ReactNode } from 'react';
+import type { SlideObject, ResizeHandle } from '../../entities/object';
+import type { ResizePreview } from '../../entities/editor/types/UIStateTypes';
 import styles from './DraggableObject.module.css';
 
 type Props = {
   object: SlideObject;
   isSelected: boolean;
   onSelect: (objectId: string, multiSelect?: boolean) => void;
-  onUpdatePosition: (objectId: string, x: number, y: number) => void;
-  onUpdateSize: (objectId: string, x: number, y: number, width: number, height: number) => void;
-  children: React.ReactNode;
-  minWidth?: number;
-  minHeight?: number;
+
+  isDragging: boolean;
+  dragDelta: { x: number; y: number };
+  onStartDrag: (e: React.MouseEvent) => void;
+
+  isResizing: boolean;
+  resizePreview: ResizePreview | null;
+  onStartResize: (e: React.MouseEvent, handle: ResizeHandle) => void;
+
+  children: ReactNode;
   onDoubleClick?: () => void;
 };
 
@@ -30,46 +35,27 @@ export default function DraggableObject({
   object,
   isSelected,
   onSelect,
-  onUpdatePosition,
-  onUpdateSize,
+  isDragging,
+  dragDelta,
+  onStartDrag,
+  isResizing,
+  resizePreview,
+  onStartResize,
   children,
-  minWidth = 20,
-  minHeight = 20,
   onDoubleClick,
 }: Props) {
-  const {
-    isDragging,
-    delta: dragDelta,
-    handleMouseDown: handleDragMouseDown,
-  } = useDragAndDrop({
-    onDragEnd: (deltaX, deltaY) => {
-      onUpdatePosition(object.id, object.x + deltaX, object.y + deltaY);
-    },
-  });
+  const currentX = isResizing && resizePreview ? resizePreview.x : object.x + dragDelta.x;
 
-  const { isResizing, currentState, startResize } = useResizable({
-    initialX: object.x,
-    initialY: object.y,
-    initialWidth: object.width,
-    initialHeight: object.height,
-    minWidth,
-    minHeight,
-    onResizeEnd: (x, y, width, height) => {
-      onUpdateSize(object.id, x, y, width, height);
-    },
-  });
+  const currentY = isResizing && resizePreview ? resizePreview.y : object.y + dragDelta.y;
 
-  const { x: resizeX, y: resizeY, width: resizeWidth, height: resizeHeight } = currentState;
+  const currentWidth = isResizing && resizePreview ? resizePreview.width : object.width;
 
-  const currentX = isResizing ? resizeX : object.x + (isDragging ? dragDelta.x : 0);
-  const currentY = isResizing ? resizeY : object.y + (isDragging ? dragDelta.y : 0);
-  const currentWidth = isResizing ? resizeWidth : object.width;
-  const currentHeight = isResizing ? resizeHeight : object.height;
+  const currentHeight = isResizing && resizePreview ? resizePreview.height : object.height;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect(object.id, e.shiftKey);
-    handleDragMouseDown(e);
+    onStartDrag(e);
   };
 
   const getCursor = () => {
@@ -110,7 +96,10 @@ export default function DraggableObject({
             <div
               key={handle}
               className={`${styles.resizeHandle} ${className}`}
-              onMouseDown={e => startResize(e, handle)}
+              onMouseDown={e => {
+                e.stopPropagation();
+                onStartResize(e, handle);
+              }}
             />
           ))}
         </div>

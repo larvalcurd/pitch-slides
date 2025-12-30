@@ -1,11 +1,7 @@
 import type { Slide } from '../../slide';
 import type { Presentation } from '../types/PresentationTypes.ts';
 
-export function createPresentation(
-  id: string,
-  title: string,
-  slides: Slide[] = []
-): Presentation {
+export function createPresentation(id: string, title: string, slides: Slide[] = []): Presentation {
   return {
     id,
     title,
@@ -28,7 +24,6 @@ export function addSlideToPresentation(presentation: Presentation, slide: Slide)
   return {
     ...presentation,
     slides: [...presentation.slides, slide],
-    selectedSlideId: slide.id,
   };
 }
 
@@ -40,16 +35,9 @@ export function deleteSlideFromPresentation(
 
   if (newSlides.length === presentation.slides.length) return presentation;
 
-  const deletedIndex = presentation.slides.findIndex(s => s.id === slideId);
-  const newSelectedSlideId =
-    presentation.selectedSlideId === slideId
-      ? newSlides[Math.max(0, deletedIndex - 1)]?.id || null
-      : presentation.selectedSlideId;
-
   return {
     ...presentation,
     slides: newSlides,
-    selectedSlideId: newSelectedSlideId,
   };
 }
 
@@ -73,20 +61,6 @@ export function moveSlide(
   return {
     ...presentation,
     slides,
-  };
-}
-
-export function setSelectedSlide(presentation: Presentation, slideId: string | null): Presentation {
-  if (slideId === presentation.selectedSlideId) return presentation;
-
-  if (slideId !== null) {
-    const exists = presentation.slides.some(s => s.id === slideId);
-    if (!exists) return presentation;
-  }
-
-  return {
-    ...presentation,
-    selectedSlideId: slideId,
   };
 }
 

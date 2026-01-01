@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-type ModalType = 'background' | null;
+export type ModalType = 'background' | 'addImage' | null;
 
 export default function useEditorUI() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);

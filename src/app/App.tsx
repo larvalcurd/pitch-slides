@@ -5,6 +5,7 @@ import Toolbar from '../components/Toolbar/Toolbar.tsx';
 import SlideList from '../components/SlideList/SlideList.tsx';
 import { SlideCanvas } from '../components/SlideCanvas';
 import BackgroundSelector from '../components/BackgroundSelector/BackgroundSelector.tsx';
+import ImageSelector from '../components/ImageSelector/ImageSelector.tsx';
 
 function App() {
   const {
@@ -28,7 +29,8 @@ function App() {
     handleSelectSlide,
     handleChangeSlideBackground,
 
-    handleAddObject,
+    handleAddText,
+    handleAddImage,
     handleDeleteObject,
 
     handleSelectObject,
@@ -45,8 +47,7 @@ function App() {
   const toolbarActions = {
     addSlide: handleAddSlide,
     deleteSlide: handleDeleteSlide,
-    addText: () => handleAddObject('text'),
-    addImage: () => handleAddObject('image'),
+    addText: handleAddText,
     deleteObject: handleDeleteObject,
     moveObject: () => console.log('Move object'),
     resizeObject: () => console.log('Resize object'),
@@ -110,6 +111,16 @@ function App() {
           />
         </div>
       </main>
+
+      {activeModal === 'addImage' && (
+        <ImageSelector
+          onSelect={payload => {
+            handleAddImage(payload);
+            closeModal();
+          }}
+          onClose={closeModal}
+        />
+      )}
 
       {activeModal === 'background' && (
         <BackgroundSelector

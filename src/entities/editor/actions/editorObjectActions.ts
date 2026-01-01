@@ -8,40 +8,58 @@ import {
 } from '../../object/utils/objectPositioning';
 import { updateTextContent } from '../../object/utils/TextObjectUtils';
 import { moveObject, resizeObject } from '../../object/utils/ObjectUtils';
+import type { ImagePayload } from '../../object/types/ImagePayload.ts';
 
-export function addObject(editor: Editor, type: 'text' | 'image'): Editor {
-  const slide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
+export function addTextObject(editor: Editor): Editor {
+  const slideId = editor.selection?.slideId;
+  if (!slideId) return editor;
+
+  const slide = editor.presentation.slides.find(s => s.id === slideId);
   if (!slide) return editor;
 
-  let obj;
-  let editingTextObjectId: string | null = null;
+  const position = calculateTextPosition();
+  const textObject = createTextObject({
+    ...position,
+    content: 'New text',
+  });
 
-  if (type === 'text') {
-    const position = calculateTextPosition();
-    obj = createTextObject({
-      ...position,
-      content: 'New text',
-    });
-    editingTextObjectId = obj.id;
-  } else {
-    const position = calculateImagePosition();
-    obj = createImageObject({
-      ...position,
-      src: 'images/scale_1200.jpg',
-    });
-  }
-
-  const updatedSlide = addObjectToSlide(slide, obj);
-  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+  const updatedSlide = addObjectToSlide(slide, textObject);
+  const newPresentation = updateSlideInPresentation(
+    editor.presentation,
+    slide.id,
+    updatedSlide
+  );
 
   return {
     ...editor,
     presentation: newPresentation,
     selection: {
-      slideId: slide.id,
-      objectIds: [obj.id],
+      slideId,
+      objectIds: [textObject.id],
     },
-    editingTextObjectId,
+    editingTextObjectId: textObject.id,
+  };
+}
+
+
+export function addImageObject(editor: Editor, payload: ImagePayload): Editor {
+  const slideId = editor.selection?.slideId;
+  if (!slideId) return editor;
+
+  const slide = editor.presentation.slides.find(s => s.id === slideId);
+  if (!slide) return editor;
+
+  const imageObject = createImageObject(payload);
+  const updatedSlide = addObjectToSlide(slide, imageObject);
+  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
+
+  return {
+    ...editor,
+    presentation: newPresentation,
+    selection: {
+      slideId,
+      objectIds: [imageObject.id],
+    },
   };
 }
 

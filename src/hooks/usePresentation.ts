@@ -9,16 +9,16 @@ import {
   changeSlideBackground,
 } from '../entities/editor/actions/editorPresentationActions';
 import {
-  addObject,
+  addImageObject,
   deleteObject,
   updateTextObject,
   updateObjectPosition,
   updateObjectSize,
+  addTextObject,
 } from '../entities/editor/actions/editorObjectActions';
 import {
   selectSlide,
   selectObject,
-  clearSelection,
 } from '../entities/editor/selection/editorSelection';
 
 import useEditorDrag from './useEditorDrag';
@@ -29,6 +29,7 @@ import {
   startEditingText,
   stopEditingText,
 } from '../entities/editor/actions/editorUIActions';
+import type { ImagePayload } from '../entities/object/types/ImagePayload';
 
 export default function usePresentation() {
   const [editor, setEditor] = useState<Editor>(() => createEditor());
@@ -70,8 +71,12 @@ export default function usePresentation() {
     setEditor(prev => changeSlideBackground(prev, background));
   }, []);
 
-  const handleAddObject = useCallback((type: 'text' | 'image') => {
-    setEditor(prev => addObject(prev, type));
+  const handleAddText = useCallback(() => {
+    setEditor(prev => addTextObject(prev));
+  }, []);
+
+  const handleAddImage = useCallback((payload: ImagePayload) => {
+    setEditor(prev => addImageObject(prev, payload));
   }, []);
 
   const handleDeleteObject = useCallback(() => {
@@ -131,7 +136,8 @@ export default function usePresentation() {
     handleSelectSlide,
     handleChangeSlideBackground,
 
-    handleAddObject,
+    handleAddText,
+    handleAddImage,
     handleDeleteObject,
 
     handleSelectObject,

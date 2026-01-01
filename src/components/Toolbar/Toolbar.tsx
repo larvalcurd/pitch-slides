@@ -1,19 +1,20 @@
+import type { ModalType } from '../../hooks/useEditorUI';
 import styles from './Toolbar.module.css';
 
 type ToolbarItem =
   | { type: 'action'; label: string; action: string }
-  | { type: 'modal'; label: string; modal: 'background' };
+  | { type: 'modal'; label: string; modal: ModalType };
 
 type ToolbarProps = {
   actions: Record<string, () => void>;
-  onOpenModal: (modal: 'background') => void;
+  onOpenModal: (modal: ModalType) => void;
 };
 
 const toolbarConfig: ToolbarItem[] = [
   { type: 'action', label: 'Add Slide', action: 'addSlide' },
   { type: 'action', label: 'Delete Slide', action: 'deleteSlide' },
   { type: 'action', label: 'Add Text', action: 'addText' },
-  { type: 'action', label: 'Add Image', action: 'addImage' },
+  { type: 'modal', label: 'Add Image', modal: 'addImage' },
   { type: 'action', label: 'Delete Object', action: 'deleteObject' },
   { type: 'modal', label: 'Change Background', modal: 'background' },
   { type: 'action', label: 'Move', action: 'moveObject' },

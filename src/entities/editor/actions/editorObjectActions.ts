@@ -24,11 +24,7 @@ export function addTextObject(editor: Editor): Editor {
   });
 
   const updatedSlide = addObjectToSlide(slide, textObject);
-  const newPresentation = updateSlideInPresentation(
-    editor.presentation,
-    slide.id,
-    updatedSlide
-  );
+  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
 
   return {
     ...editor,
@@ -40,7 +36,6 @@ export function addTextObject(editor: Editor): Editor {
     editingTextObjectId: textObject.id,
   };
 }
-
 
 export function addImageObject(editor: Editor, payload: ImagePayload): Editor {
   const slideId = editor.selection?.slideId;

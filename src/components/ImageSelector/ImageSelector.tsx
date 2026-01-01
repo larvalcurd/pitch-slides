@@ -62,7 +62,9 @@ export default function ImageSelector({ onSelect, onClose }: ImageSelectorProps)
         {imageData && (
           <div style={{ marginTop: 12 }}>
             <img src={imageData.src} alt="Preview" style={{ maxWidth: 200, maxHeight: 200 }} />
-            <p>Original size: {imageData.naturalWidth} x {imageData.naturalHeight}</p>
+            <p>
+              Original size: {imageData.naturalWidth} x {imageData.naturalHeight}
+            </p>
           </div>
         )}
 

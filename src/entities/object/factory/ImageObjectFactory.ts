@@ -2,9 +2,9 @@ import { nanoid } from 'nanoid';
 import type { ImageObject } from '../types/ObjectTypes';
 import type { ImagePayload } from '../types/ImagePayload';
 
-const DEFAULT_IMAGE_POSITION = { x: 100, y: 100 };
-const DEFAULT_Z_INDEX = 1;
-const MAX_WIDTH = 300;
+export const DEFAULT_IMAGE_POSITION = { x: 100, y: 100 };
+export const DEFAULT_Z_INDEX = 1;
+export const MAX_WIDTH = 300;
 
 export function createImageObject(payload: ImagePayload): ImageObject {
   const scale = Math.min(1, MAX_WIDTH / payload.naturalWidth);

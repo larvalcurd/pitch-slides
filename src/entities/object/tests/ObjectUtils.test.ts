@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { moveObject, resizeObject, setObjectZIndex } from '../utils/ObjectUtils';
-import { createMinimalImage, createMaximalImage } from '../factory/ImageObjectFactory';
 import { createMinimalText, createMaximalText } from '../factory/TextObjectFactory';
 import type { ImageObject, TextObject } from '../types/ObjectTypes';
 import {
@@ -9,6 +8,161 @@ import {
   updateText,
   updateTextColor,
 } from '../utils/TextObjectUtils';
+
+function createMinimalImage(): ImageObject {
+  return {
+    id: 'minimal-image',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    src: 'minimal.jpg',
+    zIndex: 0,
+    type: 'image',
+  };
+}
+
+function createMaximalImage(): ImageObject {
+  return {
+    id: 'maximal-image',
+    x: 10,
+    y: 10,
+    width: 200,
+    height: 200,
+    src: 'maximal.jpg',
+    zIndex: 1,
+    type: 'image',
+  };
+}
+
+describe('ObjectUtils - ImageObject', () => {
+  it('moveObject with minimal image: updates position, returns new object, original unchanged', () => {
+    const minimal: ImageObject = createMinimalImage();
+    const snapshot: ImageObject = {
+      ...minimal,
+    };
+
+    const moved = moveObject(minimal, 10, 20);
+
+    expect(moved.x).toBe(10);
+    expect(moved.y).toBe(20);
+
+    // other fields preserved
+    expect(moved.width).toBe(snapshot.width);
+    expect(moved.height).toBe(snapshot.height);
+    expect(moved.src).toBe(snapshot.src);
+
+    // immutability
+    expect(moved).not.toBe(minimal);
+    expect(minimal).toEqual(snapshot);
+  });
+
+  it('moveObject with maximal image: updates position, returns new object, original unchanged', () => {
+    const maximal: ImageObject = createMaximalImage();
+    const snapshot: ImageObject = {
+      ...maximal,
+    };
+
+    const moved = moveObject(maximal, 999, 888);
+
+    expect(moved.x).toBe(999);
+    expect(moved.y).toBe(888);
+
+    // original unchanged
+    expect(maximal.x).toBe(snapshot.x);
+    expect(maximal.y).toBe(snapshot.y);
+
+    // extras preserved on returned object
+    expect(moved.src).toBe(snapshot.src);
+    expect(moved.width).toBe(snapshot.width);
+    expect(moved.height).toBe(snapshot.height);
+
+    expect(moved).not.toBe(maximal);
+  });
+
+  it('resizeObject with minimal image: updates size, returns new object, original unchanged', () => {
+    const minimal: ImageObject = createMinimalImage();
+    const snapshot: ImageObject = {
+      ...minimal,
+    };
+
+    const resized = resizeObject(minimal, 55, 66);
+
+    expect(resized.width).toBe(55);
+    expect(resized.height).toBe(66);
+
+    // other fields preserved
+    expect(resized.x).toBe(snapshot.x);
+    expect(resized.y).toBe(snapshot.y);
+    expect(resized.src).toBe(snapshot.src);
+
+    expect(resized).not.toBe(minimal);
+    expect(minimal).toEqual(snapshot);
+  });
+
+  it('resizeObject with maximal image: updates size, returns new object, original unchanged', () => {
+    const maximal: ImageObject = createMaximalImage();
+    const snapshot: ImageObject = {
+      ...maximal,
+    };
+
+    const resized = resizeObject(maximal, 301, 302);
+
+    expect(resized.width).toBe(301);
+    expect(resized.height).toBe(302);
+
+    // original unchanged
+    expect(maximal.width).toBe(snapshot.width);
+    expect(maximal.height).toBe(snapshot.height);
+
+    // other fields preserved
+    expect(resized.src).toBe(snapshot.src);
+    expect(resized.x).toBe(snapshot.x);
+
+    expect(resized).not.toBe(maximal);
+  });
+
+  it('setObjectZIndex with minimal image: updates zIndex, returns new object, original unchanged', () => {
+    const minimal: ImageObject = createMinimalImage();
+    const snapshot: ImageObject = {
+      ...minimal,
+    };
+
+    const updated = setObjectZIndex(minimal, 42);
+
+    expect(updated.zIndex).toBe(42);
+
+    // other fields preserved
+    expect(updated.x).toBe(snapshot.x);
+    expect(updated.y).toBe(snapshot.y);
+    expect(updated.width).toBe(snapshot.width);
+
+    expect(updated).not.toBe(minimal);
+    expect(minimal).toEqual(snapshot);
+  });
+
+  it('setObjectZIndex with maximal image: updates zIndex, returns new object, original unchanged', () => {
+    const maximal: ImageObject = createMaximalImage();
+    const snapshot: ImageObject = {
+      ...maximal,
+    };
+
+    const updated = setObjectZIndex(maximal, -7);
+
+    expect(updated.zIndex).toBe(-7);
+
+    // original unchanged
+    expect(maximal.zIndex).toBe(snapshot.zIndex);
+
+    // other fields preserved
+    expect(updated.src).toBe(snapshot.src);
+    expect(updated.width).toBe(snapshot.width);
+
+    expect(updated).not.toBe(maximal);
+  });
+});
+
+// ...existing code...
 
 describe('ObjectUtils - ImageObject', () => {
   it('moveObject with minimal image: updates position, returns new object, original unchanged', () => {

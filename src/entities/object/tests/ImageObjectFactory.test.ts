@@ -1,122 +1,102 @@
-// typescript
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock nanoid before importing factories so ids are deterministic
 vi.mock('nanoid', () => ({
   nanoid: () => 'fixed-nanoid',
 }));
 
 import {
   createImageObject,
-  createMinimalImage,
-  createMaximalImage,
+  DEFAULT_IMAGE_POSITION,
+  DEFAULT_Z_INDEX,
+  MAX_WIDTH,
 } from '../factory/ImageObjectFactory.ts';
-import { DEFAULT_BASE } from '../factory/defaults.ts';
-import type { BaseObject } from '../types/ObjectTypes.ts';
+import type { ImagePayload } from '../types/ImagePayload.ts';
 
 describe('ImageObjectFactory', () => {
-  const baseArgs = {
-    x: 5,
-    y: 6,
-    width: 120,
-    height: 80,
-    src: 'img.png',
-  };
-
-  it('generates id when none provided and applies basic defaults', () => {
-    const img = createImageObject(baseArgs);
+  it('generates id', () => {
+    const payload: ImagePayload = {
+      src: 'img.png',
+      naturalWidth: 100,
+      naturalHeight: 100,
+    };
+    const img = createImageObject(payload);
     expect(img.id).toBe('fixed-nanoid');
+  });
+
+  it('sets type to image', () => {
+    const payload: ImagePayload = {
+      src: 'img.png',
+      naturalWidth: 100,
+      naturalHeight: 100,
+    };
+    const img = createImageObject(payload);
     expect(img.type).toBe('image');
-    expect(img.src).toBe('img.png');
-    expect(img.x).toBe(5);
-    expect(img.y).toBe(6);
-    expect(img.width).toBe(120);
-    expect(img.height).toBe(80);
-    expect(img.zIndex).toBe(DEFAULT_BASE.zIndex);
   });
 
-  it('preserves provided id', () => {
-    const img = createImageObject({
-      ...baseArgs,
-      id: 'custom-id',
-    });
-    expect(img.id).toBe('custom-id');
-  });
-
-  it('respects overrides for base fields (e.g., zIndex)', () => {
-    const img = createImageObject({
-      ...baseArgs,
-      zIndex: 42,
-    });
-    expect(img.zIndex).toBe(42);
-  });
-
-  it('createMinimalImage applies minimal defaults and merges overrides', () => {
-    const created = createMinimalImage({
-      src: 'min.png',
-      zIndex: 9,
-    });
-    expect(created.src).toBe('min.png');
-    expect(created.x).toBe(0);
-    expect(created.y).toBe(0);
-    expect(created.width).toBe(100);
-    expect(created.height).toBe(100);
-    expect(created.zIndex).toBe(9);
-  });
-
-  it('createMaximalImage returns maximal instance and accepts overrides', () => {
-    const maximal = createMaximalImage({
-      src: 'over.png',
-      zIndex: 7,
-    });
-    expect(maximal.src).toBe('over.png');
-    expect(maximal.zIndex).toBe(7);
-    // maximal defaults from factory implementation (position/size chosen there)
-    expect(maximal.x).toBeDefined();
-    expect(maximal.width).toBeDefined();
-  });
-
-  it('does not mutate input params and returns a new object', () => {
-    const params: Partial<BaseObject> & {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    } = {
-      x: 2,
-      y: 4,
-      width: 8,
-      height: 16,
+  it('sets src from payload', () => {
+    const payload: ImagePayload = {
+      src: 'test.png',
+      naturalWidth: 100,
+      naturalHeight: 100,
     };
-    const copy = {
-      ...params,
+    const img = createImageObject(payload);
+    expect(img.src).toBe('test.png');
+  });
+
+  it('sets x, y, zIndex to default values', () => {
+    const payload: ImagePayload = {
+      src: 'img.png',
+      naturalWidth: 100,
+      naturalHeight: 100,
     };
-    const obj = createImageObject({
-      ...params,
+    const img = createImageObject(payload);
+    expect(img.x).toBe(DEFAULT_IMAGE_POSITION.x);
+    expect(img.y).toBe(DEFAULT_IMAGE_POSITION.y);
+    expect(img.zIndex).toBe(DEFAULT_Z_INDEX);
+  });
+
+  it('does not scale width and height when naturalWidth <= MAX_WIDTH', () => {
+    const payload: ImagePayload = {
+      src: 'img.png',
+      naturalWidth: MAX_WIDTH,
+      naturalHeight: 300,
+    };
+    const img = createImageObject(payload);
+    expect(img.width).toBe(MAX_WIDTH);
+    expect(img.height).toBe(300);
+  });
+
+  it('scales width and height when naturalWidth > MAX_WIDTH', () => {
+    const payload: ImagePayload = {
+      src: 'img.png',
+      naturalWidth: 1000,
+      naturalHeight: 500,
+    };
+    const img = createImageObject(payload);
+    const expectedScale = MAX_WIDTH / 1000;
+    expect(img.width).toBe(1000 * expectedScale);
+    expect(img.height).toBe(500 * expectedScale);
+  });
+
+  it('does not mutate input payload', () => {
+    const payload: ImagePayload = {
       src: 'a.png',
-    });
-    expect(params).toEqual(copy);
-    expect(obj).not.toBe(params as unknown as BaseObject);
+      naturalWidth: 200,
+      naturalHeight: 150,
+    };
+    const copy = { ...payload };
+    createImageObject(payload);
+    expect(payload).toEqual(copy);
   });
 
-  it('multiple creations without id produce non-empty string ids', () => {
-    const a = createImageObject({
-      x: 0,
-      y: 0,
-      width: 1,
-      height: 1,
+  it('generates non-empty string id', () => {
+    const payload: ImagePayload = {
       src: '',
-    });
-    const b = createImageObject({
-      x: 0,
-      y: 0,
-      width: 1,
-      height: 1,
-      src: '',
-    });
-    expect(typeof a.id).toBe('string');
-    expect(typeof b.id).toBe('string');
-    expect(a.id.length).toBeGreaterThan(0);
-    expect(b.id.length).toBeGreaterThan(0);
+      naturalWidth: 1,
+      naturalHeight: 1,
+    };
+    const img = createImageObject(payload);
+    expect(typeof img.id).toBe('string');
+    expect(img.id.length).toBeGreaterThan(0);
   });
 });

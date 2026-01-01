@@ -16,10 +16,7 @@ import {
   updateObjectSize,
   addTextObject,
 } from '../entities/editor/actions/editorObjectActions';
-import {
-  selectSlide,
-  selectObject,
-} from '../entities/editor/selection/editorSelection';
+import { selectSlide, selectObject } from '../entities/editor/selection/editorSelection';
 
 import useEditorDrag from './useEditorDrag';
 import useEditorResize from './useEditorResize';

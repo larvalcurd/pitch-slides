@@ -64,6 +64,47 @@ export function moveSlide(
   };
 }
 
+export function moveSlides(
+  presentation: Presentation,
+  selectedSlideIds: string[],
+  targetIndex: number,
+): Presentation {
+  if (selectedSlideIds.length === 0) return presentation;
+
+  const slides = presentation.slides;
+  const indexById = new Map(slides.map((s, i) => [s.id, i]));
+
+  const selectedIndices = selectedSlideIds
+    .map(id => indexById.get(id))
+    .filter((i): i is number => i !== undefined)
+    .sort((a, b) => a - b);
+
+  if (selectedIndices.length === 0) return presentation;
+
+  // сколько выбранных слайдов было выше точки вставки
+  const shift = selectedIndices.filter(i => i < targetIndex).length;
+  const adjustedIndex = targetIndex - shift;
+
+  // порядок берём ТОЛЬКО из presentation.slides
+  const selectedSlides = selectedIndices.map(i => slides[i]);
+
+  const selectedIndexSet = new Set(selectedIndices);
+  const remainingSlides = slides.filter((_, i) => !selectedIndexSet.has(i));
+
+  const clampedIndex = Math.max(0, Math.min(adjustedIndex, remainingSlides.length));
+
+  const newSlides = [
+    ...remainingSlides.slice(0, clampedIndex),
+    ...selectedSlides,
+    ...remainingSlides.slice(clampedIndex),
+  ];
+
+  return {
+    ...presentation,
+    slides: newSlides,
+  };
+}
+
 export function updateSlideInPresentation(
   presentation: Presentation,
   slideId: string,

@@ -1,5 +1,5 @@
 import type { ResizeHandle } from '../../object';
-import type { Editor } from '../types/EditorTypes';
+import { isObjectSelection, type Editor } from '../types/EditorTypes';
 import type { ResizePreview, ResizeState } from '../types/UIStateTypes';
 import { DEFAULT_MIN_WIDTH, DEFAULT_MIN_HEIGHT } from '../../../utils/constants';
 
@@ -10,18 +10,23 @@ export const startResizing = (
   mouseX: number,
   mouseY: number,
 ): Editor => {
-  const currentSlide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
+  if (!isObjectSelection(editor.selection)) {
+    return editor;
+  }
+
+  const { slideId, objectIds } = editor.selection;
+
+  if (!objectIds.includes(objectId)) {
+    return editor;
+  }
+
+  const currentSlide = editor.presentation.slides.find(slide => slide.id === slideId);
 
   if (!currentSlide) {
     return editor;
   }
 
-  if (!editor.selection?.objectIds.includes(objectId)) {
-    return editor;
-  }
-
   const obj = currentSlide.objects.find(o => o.id === objectId);
-
   if (!obj) {
     return editor;
   }
@@ -154,32 +159,31 @@ export const applyResize = (editor: Editor, finalBounds: ResizePreview): Editor 
     return editor;
   }
 
-  const { objectId } = editor.resizing;
-  const currentSlideId = editor.selection?.slideId;
-
-  if (!currentSlideId) {
+  if (!isObjectSelection(editor.selection)) {
     return {
       ...editor,
       resizing: null,
     };
   }
 
+  const { slideId } = editor.selection;
+  const { objectId } = editor.resizing;
+
   const updatedSlides = editor.presentation.slides.map(slide => {
-    if (slide.id !== currentSlideId) {
+    if (slide.id !== slideId) {
       return slide;
     }
 
     const updatedObjects = slide.objects.map(obj => {
-      if (obj.id === objectId) {
-        return {
-          ...obj,
-          x: finalBounds.x,
-          y: finalBounds.y,
-          width: finalBounds.width,
-          height: finalBounds.height,
-        };
-      }
-      return obj;
+      if (obj.id !== objectId) return obj;
+
+      return {
+        ...obj,
+        x: finalBounds.x,
+        y: finalBounds.y,
+        width: finalBounds.width,
+        height: finalBounds.height,
+      };
     });
 
     return {

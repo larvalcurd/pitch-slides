@@ -1,4 +1,4 @@
-import type { Editor } from '../types/EditorTypes';
+import { isObjectSelection, type Editor } from '../types/EditorTypes';
 import type { DragPreview, DragState } from '../types/UIStateTypes';
 
 export const startDragging = (
@@ -7,23 +7,30 @@ export const startDragging = (
   mouseX: number,
   mouseY: number,
 ): Editor => {
-  const currentSlide = editor.presentation.slides.find(
-    slide => slide.id === editor.selection?.slideId,
-  );
+  if (!isObjectSelection(editor.selection)) {
+    return editor;
+  }
 
-  if (!currentSlide || objectIds.length === 0) {
+  if (objectIds.length === 0) {
+    return editor;
+  }
+
+  const { slideId } = editor.selection;
+
+  const currentSlide = editor.presentation.slides.find(slide => slide.id === slideId);
+
+  if (!currentSlide) {
     return editor;
   }
 
   const originalPositions: Record<string, { x: number; y: number }> = {};
 
-  objectIds.forEach(objectId => {
+  for (const objectId of objectIds) {
     const obj = currentSlide.objects.find(o => o.id === objectId);
-
     if (obj) {
       originalPositions[objectId] = { x: obj.x, y: obj.y };
     }
-  });
+  }
 
   const validObjectIds = Object.keys(originalPositions);
 
@@ -78,30 +85,29 @@ export const applyDrag = (
   editor: Editor,
   finalPositions: Record<string, { x: number; y: number }>,
 ): Editor => {
-  const currentSlideId = editor.selection?.slideId;
-
-  if (!currentSlideId) {
+  if (!isObjectSelection(editor.selection)) {
     return {
       ...editor,
       dragging: null,
     };
   }
 
+  const { slideId } = editor.selection;
+
   const updatedSlides = editor.presentation.slides.map(slide => {
-    if (slide.id !== currentSlideId) {
+    if (slide.id !== slideId) {
       return slide;
     }
 
     const updatedObjects = slide.objects.map(obj => {
       const newPos = finalPositions[obj.id];
-      if (newPos) {
-        return {
-          ...obj,
-          x: newPos.x,
-          y: newPos.y,
-        };
-      }
-      return obj;
+      if (!newPos) return obj;
+
+      return {
+        ...obj,
+        x: newPos.x,
+        y: newPos.y,
+      };
     });
 
     return {

@@ -9,8 +9,8 @@ export const createEditor = (): Editor => {
   return {
     presentation,
     selection: {
-      slideId: presentation.slides[0].id,
-      objectIds: [],
+      type: 'slides',
+      slideIds: [presentation.slides[0].id],
     },
     dragging: null,
     resizing: null,

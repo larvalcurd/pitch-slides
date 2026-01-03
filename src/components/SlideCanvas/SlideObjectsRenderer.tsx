@@ -7,7 +7,7 @@ import type { ResizePreview } from '../../entities/editor';
 type Props = {
   objects: SlideObject[];
   selectedObjectIds: string[];
-  onSelectObject: (id: string, multiSelect?: boolean) => void;
+  onSelectObject: (objectId: string, multi: boolean) => void;
 
   isDragging: boolean;
   startDrag: (e: React.MouseEvent, objectIds: string[]) => void;
@@ -71,7 +71,7 @@ export default function SlideObjectsRenderer({
             key={obj.id}
             object={obj}
             isSelected={isSelected}
-            onSelect={onSelectObject}
+            onSelectObject={onSelectObject}
             isDragging={isObjDragging}
             dragDelta={getDeltaForObject(obj.id)}
             onStartDrag={e => {

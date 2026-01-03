@@ -1,4 +1,4 @@
-import type { Editor } from '../types/EditorTypes';
+import { isObjectSelection, type Editor } from '../types/EditorTypes';
 
 export function startEditingText(editor: Editor, objectId: string): Editor {
   return {
@@ -24,13 +24,16 @@ export function clearUIState(editor: Editor): Editor {
 }
 
 export function clearObjectSelection(editor: Editor): Editor {
-  if (!editor.selection) return editor;
+  if (!isObjectSelection(editor.selection)) {
+    return editor;
+  }
 
   return {
     ...editor,
     selection: {
-      ...editor.selection,
-      objectIds: [],
+      type: 'slides',
+      slideIds: [editor.selection.slideId],
     },
+    editingTextObjectId: null,
   };
 }

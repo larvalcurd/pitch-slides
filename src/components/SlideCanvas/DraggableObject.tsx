@@ -6,7 +6,7 @@ import styles from './DraggableObject.module.css';
 type Props = {
   object: SlideObject;
   isSelected: boolean;
-  onSelect: (objectId: string, multiSelect?: boolean) => void;
+  onSelectObject: (objectId: string, multi: boolean) => void;
 
   isDragging: boolean;
   dragDelta: { x: number; y: number };
@@ -34,7 +34,7 @@ const RESIZE_HANDLES: { handle: ResizeHandle; className: string }[] = [
 export default function DraggableObject({
   object,
   isSelected,
-  onSelect,
+  onSelectObject,
   isDragging,
   dragDelta,
   onStartDrag,
@@ -45,16 +45,14 @@ export default function DraggableObject({
   onDoubleClick,
 }: Props) {
   const currentX = isResizing && resizePreview ? resizePreview.x : object.x + dragDelta.x;
-
   const currentY = isResizing && resizePreview ? resizePreview.y : object.y + dragDelta.y;
-
   const currentWidth = isResizing && resizePreview ? resizePreview.width : object.width;
-
   const currentHeight = isResizing && resizePreview ? resizePreview.height : object.height;
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onSelect(object.id, e.shiftKey);
+    const multi = e.ctrlKey || e.metaKey;
+    onSelectObject(object.id, multi);
     onStartDrag(e);
   };
 

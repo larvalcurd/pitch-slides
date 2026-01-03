@@ -9,9 +9,10 @@ import ImageSelector from '../components/ImageSelector/ImageSelector.tsx';
 
 function App() {
   const {
-    editor,
     presentation,
     currentSlide,
+
+    selectedSlideIds,
     selectedObjectIds,
 
     isDragging,
@@ -42,18 +43,18 @@ function App() {
     handleUpdateTextContent,
   } = usePresentation();
 
-  const { activeModal, openModal, closeModal } = useEditorUI();
+  const { activeModal, handleOpenModal, handleCloseModal } = useEditorUI();
 
   const toolbarActions = {
-    addSlide: handleAddSlide,
-    deleteSlide: handleDeleteSlide,
-    addText: handleAddText,
-    deleteObject: handleDeleteObject,
-    moveObject: () => console.log('Move object'),
-    resizeObject: () => console.log('Resize object'),
-    bringForward: () => console.log('Bring forward'),
-    sendBackward: () => console.log('Send backward'),
-    updateText: () => console.log('Update text'),
+    onAddSlide: handleAddSlide,
+    onDeleteSlide: handleDeleteSlide,
+    onAddText: handleAddText,
+    onDeleteObject: handleDeleteObject,
+    onMoveObject: () => console.log('Move object'),
+    onResizeObject: () => console.log('Resize object'),
+    onBringForward: () => console.log('Bring forward'),
+    onSendBackward: () => console.log('Send backward'),
+    onUpdateText: () => console.log('Update text'),
   };
 
   return (
@@ -66,7 +67,7 @@ function App() {
     >
       <SlideList
         slides={presentation.slides}
-        selectedSlideId={editor.selection?.slideId}
+        selectedSlideIds={selectedSlideIds}
         onSelect={handleSelectSlide}
       />
 
@@ -81,7 +82,7 @@ function App() {
       >
         <PresentationTitle title={presentation.title} onTitleChange={changeTitle} />
 
-        <Toolbar actions={toolbarActions} onOpenModal={openModal} />
+        <Toolbar actions={toolbarActions} onOpenModal={handleOpenModal} />
 
         <div
           style={{
@@ -93,7 +94,7 @@ function App() {
           }}
         >
           <SlideCanvas
-            slide={currentSlide}
+            currentSlide={currentSlide}
             selectedObjectIds={selectedObjectIds}
             onSelectObject={handleSelectObject}
             onDeselectAll={handleDeselectAll}
@@ -116,22 +117,20 @@ function App() {
         <ImageSelector
           onSelect={payload => {
             handleAddImage(payload);
-            closeModal();
+            handleCloseModal();
           }}
-          onClose={closeModal}
+          onClose={handleCloseModal}
         />
       )}
 
       {activeModal === 'background' && (
         <BackgroundSelector
-          currentBackground={
-            presentation.slides.find(s => s.id === editor.selection?.slideId)?.background
-          }
+          currentBackground={currentSlide?.background}
           onSelect={bg => {
             handleChangeSlideBackground(bg);
-            closeModal();
+            handleCloseModal();
           }}
-          onClose={closeModal}
+          onClose={handleCloseModal}
         />
       )}
     </div>

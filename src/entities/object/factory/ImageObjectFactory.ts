@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import type { ImageObject } from '../types/ObjectTypes';
 import type { ImagePayload } from '../types/ImagePayload';
+import { applyPatchImage } from './helpers';
 
 export const DEFAULT_IMAGE_POSITION = { x: 100, y: 100 };
 export const DEFAULT_Z_INDEX = 1;
@@ -44,26 +45,32 @@ export function createImageObject(payload: ImagePayload): ImageObject {
 //   return applyPatchImage(img, params as Partial<ImageObject>);
 // }
 
-// export function createMinimalImage(overrides?: Partial<ImageObject>) {
-//   return applyPatchImage(
-//     createImageObject({
-//       x: 0,
-//       y: 0,
-//       width: 100,
-//       height: 100,
-//       src: '',
-//     }),
-//     overrides,
-//   );
-// }
+export function createMinimalImage(overrides?: Partial<ImageObject>) {
+  return applyPatchImage(
+    {
+      id: nanoid(),
+      type: 'image' as const,
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+      zIndex: DEFAULT_Z_INDEX,
+      src: '',
+    },
+    overrides,
+  );
+}
 
-// export function createMaximalImage(overrides?: Partial<ImageObject>) {
-//   const img = createImageObject({
-//     x: 50,
-//     y: 50,
-//     width: 400,
-//     height: 300,
-//     src: 'big-image.png',
-//   });
-//   return overrides ? applyPatchImage(img, overrides) : img;
-// }
+export function createMaximalImage(overrides?: Partial<ImageObject>) {
+  const img = {
+    id: nanoid(),
+    type: 'image' as const,
+    x: 50,
+    y: 50,
+    width: 400,
+    height: 300,
+    zIndex: DEFAULT_Z_INDEX,
+    src: 'big-image.png',
+  };
+  return overrides ? applyPatchImage(img, overrides) : img;
+}

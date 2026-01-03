@@ -7,7 +7,7 @@ export default function useEditorUI() {
 
   return {
     activeModal,
-    openModal: (modal: ModalType) => setActiveModal(modal),
-    closeModal: () => setActiveModal(null),
+    handleOpenModal: (modal: ModalType) => setActiveModal(modal),
+    handleCloseModal: () => setActiveModal(null),
   };
 }

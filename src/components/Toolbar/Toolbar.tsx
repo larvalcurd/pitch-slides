@@ -11,17 +11,17 @@ type ToolbarProps = {
 };
 
 const toolbarConfig: ToolbarItem[] = [
-  { type: 'action', label: 'Add Slide', action: 'addSlide' },
-  { type: 'action', label: 'Delete Slide', action: 'deleteSlide' },
-  { type: 'action', label: 'Add Text', action: 'addText' },
+  { type: 'action', label: 'Add Slide', action: 'onAddSlide' },
+  { type: 'action', label: 'Delete Slide', action: 'onDeleteSlide' },
+  { type: 'action', label: 'Add Text', action: 'onAddText' },
   { type: 'modal', label: 'Add Image', modal: 'addImage' },
-  { type: 'action', label: 'Delete Object', action: 'deleteObject' },
+  { type: 'action', label: 'Delete Object', action: 'onDeleteObject' },
   { type: 'modal', label: 'Change Background', modal: 'background' },
-  { type: 'action', label: 'Move', action: 'moveObject' },
-  { type: 'action', label: 'Resize', action: 'resizeObject' },
-  { type: 'action', label: 'Bring Forward', action: 'bringForward' },
-  { type: 'action', label: 'Send Backward', action: 'sendBackward' },
-  { type: 'action', label: 'Update Text', action: 'updateText' },
+  { type: 'action', label: 'Move', action: 'onMoveObject' },
+  { type: 'action', label: 'Resize', action: 'onResizeObject' },
+  { type: 'action', label: 'Bring Forward', action: 'onBringForward' },
+  { type: 'action', label: 'Send Backward', action: 'onSendBackward' },
+  { type: 'action', label: 'Update Text', action: 'onUpdateText' },
 ];
 
 export default function Toolbar({ actions, onOpenModal }: ToolbarProps) {

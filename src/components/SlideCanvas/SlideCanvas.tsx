@@ -6,9 +6,9 @@ import type { ResizeHandle } from '../../entities/object';
 import type { ResizePreview } from '../../entities/editor';
 
 type Props = {
-  slide?: Slide | null;
-  selectedObjectIds?: string[];
-  onSelectObject: (objectId: string | null, multiSelect?: boolean) => void;
+  currentSlide: Slide | null;
+  selectedObjectIds: string[];
+  onSelectObject: (objectId: string, multi: boolean) => void;
   onDeselectAll: () => void;
 
   isDragging: boolean;
@@ -27,8 +27,8 @@ type Props = {
 };
 
 export default function SlideCanvas({
-  slide,
-  selectedObjectIds = [],
+  currentSlide,
+  selectedObjectIds,
   onSelectObject,
   onDeselectAll,
   isDragging,
@@ -44,20 +44,20 @@ export default function SlideCanvas({
   onUpdateTextContent,
 }: Props) {
   const backgroundStyle = useMemo(() => {
-    if (!slide?.background) return undefined;
+    if (!currentSlide?.background) return undefined;
 
-    if (slide.background.type === 'color') {
-      return { backgroundColor: slide.background.value };
+    if (currentSlide.background.type === 'color') {
+      return { backgroundColor: currentSlide.background.value };
     }
 
-    if (slide.background.type === 'image') {
+    if (currentSlide.background.type === 'image') {
       return {
-        backgroundImage: `url(${slide.background.value})`,
+        backgroundImage: `url(${currentSlide.background.value})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       };
     }
-  }, [slide?.background]);
+  }, [currentSlide?.background]);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -68,13 +68,13 @@ export default function SlideCanvas({
 
   return (
     <div className={styles.wrapper}>
-      {slide ? (
+      {currentSlide ? (
         <div className={styles.column}>
-          <div className={styles.title}>{slide.title ?? 'Untitled slide'}</div>
+          <div className={styles.title}>{currentSlide.title ?? 'Untitled slide'}</div>
 
           <div className={styles.viewport} style={backgroundStyle} onClick={handleCanvasClick}>
             <SlideObjectsRenderer
-              objects={slide.objects}
+              objects={currentSlide.objects}
               selectedObjectIds={selectedObjectIds}
               onSelectObject={onSelectObject}
               isDragging={isDragging}

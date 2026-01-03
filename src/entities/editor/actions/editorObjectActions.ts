@@ -1,20 +1,19 @@
-import type { Editor } from '../types/EditorTypes.ts';
+import type { Editor } from '../types/EditorTypes';
+import { isObjectSelection } from '../types/EditorTypes';
 import { updateSlideInPresentation } from '../../presentation';
 import { addObjectToSlide, removeObjectFromSlide, updateObjectInSlide } from '../../slide';
 import { createImageObject, createTextObject } from '../../object';
-import {
-  calculateTextPosition,
-  calculateImagePosition,
-} from '../../object/utils/objectPositioning';
+import { calculateTextPosition } from '../../object/utils/objectPositioning';
 import { updateTextContent } from '../../object/utils/TextObjectUtils';
 import { moveObject, resizeObject } from '../../object/utils/ObjectUtils';
-import type { ImagePayload } from '../../object/types/ImagePayload.ts';
+import type { ImagePayload } from '../../object/types/ImagePayload';
+import { getSelectedSlideId } from '../selection/editorSelection';
 
 export function addTextObject(editor: Editor): Editor {
-  const slideId = editor.selection?.slideId;
-  if (!slideId) return editor;
+  const selectedSlideId = getSelectedSlideId(editor);
+  if (!selectedSlideId) return editor;
 
-  const slide = editor.presentation.slides.find(s => s.id === slideId);
+  const slide = editor.presentation.slides.find(s => s.id === selectedSlideId);
   if (!slide) return editor;
 
   const position = calculateTextPosition();
@@ -24,13 +23,18 @@ export function addTextObject(editor: Editor): Editor {
   });
 
   const updatedSlide = addObjectToSlide(slide, textObject);
-  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+  const newPresentation = updateSlideInPresentation(
+    editor.presentation,
+    selectedSlideId,
+    updatedSlide,
+  );
 
   return {
     ...editor,
     presentation: newPresentation,
     selection: {
-      slideId,
+      type: 'objects',
+      slideId: selectedSlideId,
       objectIds: [textObject.id],
     },
     editingTextObjectId: textObject.id,
@@ -38,49 +42,61 @@ export function addTextObject(editor: Editor): Editor {
 }
 
 export function addImageObject(editor: Editor, payload: ImagePayload): Editor {
-  const slideId = editor.selection?.slideId;
-  if (!slideId) return editor;
+  const selectedSlideId = getSelectedSlideId(editor);
+  if (!selectedSlideId) return editor;
 
-  const slide = editor.presentation.slides.find(s => s.id === slideId);
+  const slide = editor.presentation.slides.find(s => s.id === selectedSlideId);
   if (!slide) return editor;
 
   const imageObject = createImageObject(payload);
   const updatedSlide = addObjectToSlide(slide, imageObject);
-  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
+  const newPresentation = updateSlideInPresentation(
+    editor.presentation,
+    selectedSlideId,
+    updatedSlide,
+  );
 
   return {
     ...editor,
     presentation: newPresentation,
     selection: {
-      slideId,
+      type: 'objects',
+      slideId: selectedSlideId,
       objectIds: [imageObject.id],
     },
   };
 }
 
 export function deleteObject(editor: Editor): Editor {
-  const selection = editor.selection;
-  if (!selection) return editor;
+  if (!isObjectSelection(editor.selection)) return editor;
 
-  const slide = editor.presentation.slides.find(s => s.id === selection.slideId);
+  const { slideId, objectIds } = editor.selection;
+  const slide = editor.presentation.slides.find(s => s.id === slideId);
   if (!slide) return editor;
 
-  const updatedSlide = selection.objectIds.reduce(
+  const updatedSlide = objectIds.reduce(
     (currentSlide, objectId) => removeObjectFromSlide(currentSlide, objectId),
     slide,
   );
 
-  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
 
   return {
     ...editor,
     presentation: newPresentation,
-    selection: null,
+    selection: {
+      type: 'slides',
+      slideIds: [slideId],
+    },
+    editingTextObjectId: null,
   };
 }
 
 export function updateTextObject(editor: Editor, objectId: string, content: string): Editor {
-  const slide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
+  if (!isObjectSelection(editor.selection)) return editor;
+
+  const { slideId } = editor.selection;
+  const slide = editor.presentation.slides.find(s => s.id === slideId);
   if (!slide) return editor;
 
   const object = slide.objects.find(o => o.id === objectId);
@@ -88,7 +104,7 @@ export function updateTextObject(editor: Editor, objectId: string, content: stri
 
   const updatedObject = updateTextContent(object, content);
   const updatedSlide = updateObjectInSlide(slide, objectId, updatedObject);
-  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
 
   return {
     ...editor,
@@ -102,7 +118,10 @@ export function updateObjectPosition(
   x: number,
   y: number,
 ): Editor {
-  const slide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
+  if (!isObjectSelection(editor.selection)) return editor;
+
+  const { slideId } = editor.selection;
+  const slide = editor.presentation.slides.find(s => s.id === slideId);
   if (!slide) return editor;
 
   const object = slide.objects.find(o => o.id === objectId);
@@ -110,7 +129,7 @@ export function updateObjectPosition(
 
   const updatedObject = moveObject(object, x, y);
   const updatedSlide = updateObjectInSlide(slide, objectId, updatedObject);
-  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
 
   return {
     ...editor,
@@ -124,7 +143,10 @@ export function updateObjectSize(
   width: number,
   height: number,
 ): Editor {
-  const slide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
+  if (!isObjectSelection(editor.selection)) return editor;
+
+  const { slideId } = editor.selection;
+  const slide = editor.presentation.slides.find(s => s.id === slideId);
   if (!slide) return editor;
 
   const object = slide.objects.find(o => o.id === objectId);
@@ -132,7 +154,7 @@ export function updateObjectSize(
 
   const updatedObject = resizeObject(object, width, height);
   const updatedSlide = updateObjectInSlide(slide, objectId, updatedObject);
-  const newPresentation = updateSlideInPresentation(editor.presentation, slide.id, updatedSlide);
+  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
 
   return {
     ...editor,

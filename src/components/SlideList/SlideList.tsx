@@ -3,14 +3,14 @@ import styles from './SlideList.module.css';
 
 type SlideListProps = {
   slides: Slide[];
-  selectedSlideId?: string | null;
-  onSelect?: (slideId: string) => void;
+  selectedSlideIds: string[];
+  onSelect: (slideId: string, multi: boolean) => void;
 };
 
-export default function SlideList({ slides, selectedSlideId, onSelect }: SlideListProps) {
-  const handleClick = (id: string, index: number) => {
-    console.log(id, index + 1);
-    if (onSelect) onSelect(id);
+export default function SlideList({ slides, selectedSlideIds, onSelect }: SlideListProps) {
+  const handleClick = (e: React.MouseEvent, slideId: string) => {
+    const multi = e.ctrlKey || e.metaKey;
+    onSelect(slideId, multi);
   };
 
   return (
@@ -20,8 +20,8 @@ export default function SlideList({ slides, selectedSlideId, onSelect }: SlideLi
           <div className={styles.emptyStateText}>No slides</div>
         </div>
       ) : (
-        slides.map((slide, index) => {
-          const isSelected = slide.id === selectedSlideId;
+        slides.map(slide => {
+          const isSelected = selectedSlideIds.includes(slide.id);
 
           return (
             <div
@@ -35,7 +35,7 @@ export default function SlideList({ slides, selectedSlideId, onSelect }: SlideLi
                       ? `url(${slide.background.value}) center/cover no-repeat`
                       : undefined,
               }}
-              onClick={() => handleClick(slide.id, index)}
+              onClick={e => handleClick(e, slide.id)}
             >
               <div className={styles.thumbnailInner}>{slide.title ?? 'Untitled slide'}</div>
             </div>

@@ -9,7 +9,7 @@ import {
 import { createSlide, type Slide } from '../../slide';
 import { getSelectedSlideId, getSelectedSlideIds } from '../selection/editorSelection.ts';
 
-export function addSlide(editor: Editor): Editor { 
+export function addSlide(editor: Editor): Editor {
   const newSlide: Slide = createSlide();
   const newPresentation = addSlideToPresentation(editor.presentation, newSlide);
 
@@ -22,7 +22,6 @@ export function addSlide(editor: Editor): Editor {
     editingTextObjectId: null,
   };
 }
-
 
 export function deleteSlide(editor: Editor): Editor {
   if (!isSlideSelection(editor.selection) || editor.selection.slideIds.length === 0) {
@@ -40,7 +39,7 @@ export function deleteSlide(editor: Editor): Editor {
 
   if (slides.length > 0) {
     const firstDeletedIndex = editor.presentation.slides.findIndex(
-      s => s.id === slideSelection.slideIds[0]
+      s => s.id === slideSelection.slideIds[0],
     );
     const newIndex = Math.min(firstDeletedIndex, slides.length - 1);
     newSelection = { type: 'slides', slideIds: [slides[newIndex].id] };
@@ -66,7 +65,7 @@ export function moveSlides(editor: Editor, targetIndex: number): Editor {
   const newPresentation = moveSlidesInPresentation(
     editor.presentation,
     selectedSlideIds,
-    targetIndex
+    targetIndex,
   );
 
   if (newPresentation === editor.presentation) {
@@ -92,10 +91,7 @@ export function changePresentationTitle(editor: Editor, newTitle: string): Edito
   };
 }
 
-export function changeSlideBackground(
-  editor: Editor,
-  background: Slide['background']
-): Editor {
+export function changeSlideBackground(editor: Editor, background: Slide['background']): Editor {
   const slideId = getSelectedSlideId(editor);
   if (!slideId) return editor;
 
@@ -103,11 +99,7 @@ export function changeSlideBackground(
   if (!slide) return editor;
 
   const updatedSlide = { ...slide, background };
-  const newPresentation = updateSlideInPresentation(
-    editor.presentation,
-    slideId,
-    updatedSlide
-  );
+  const newPresentation = updateSlideInPresentation(editor.presentation, slideId, updatedSlide);
 
   return {
     ...editor,

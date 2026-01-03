@@ -16,7 +16,15 @@ import {
   updateObjectSize,
   addTextObject,
 } from '../entities/editor/actions/editorObjectActions';
-import { selectSlide, selectObject } from '../entities/editor/selection/editorSelection';
+import {
+  selectSlide,
+  selectObject,
+  getSelectedSlideIds,
+  getSelectedSlideId,
+  getSelectedObjectIds,
+  toggleSlideSelection,
+  toggleObjectSelection,
+} from '../entities/editor/selection/editorSelection';
 
 import useEditorDrag from './useEditorDrag';
 import useEditorResize from './useEditorResize';
@@ -60,8 +68,8 @@ export default function usePresentation() {
     setEditor(prev => deleteSlide(prev));
   }, []);
 
-  const handleSelectSlide = useCallback((slideId: string) => {
-    setEditor(prev => selectSlide(prev, slideId));
+  const handleSelectSlide = useCallback((slideId: string, multi: boolean) => {
+    setEditor(prev => (multi ? toggleSlideSelection(prev, slideId) : selectSlide(prev, slideId)));
   }, []);
 
   const handleChangeSlideBackground = useCallback((background: Slide['background']) => {
@@ -80,8 +88,15 @@ export default function usePresentation() {
     setEditor(prev => deleteObject(prev));
   }, []);
 
-  const handleSelectObject = useCallback((objectId: string | null, multiSelect?: boolean) => {
-    setEditor(prev => selectObject(prev, objectId, multiSelect));
+  const handleSelectObject = useCallback((objectId: string, multi: boolean) => {
+    setEditor(prev => {
+      const slideId = getSelectedSlideId(prev);
+      if (!slideId) return prev;
+
+      return multi
+        ? toggleObjectSelection(prev, slideId, objectId)
+        : selectObject(prev, slideId, objectId);
+    });
   }, []);
 
   const handleDeselectAll = useCallback(() => {
@@ -108,14 +123,18 @@ export default function usePresentation() {
     setEditor(prev => updateObjectSize(prev, objectId, width, height));
   }, []);
 
-  const currentSlide = editor.presentation.slides.find(s => s.id === editor.selection?.slideId);
-  const selectedObjectIds = editor.selection?.objectIds || [];
+  const selectedSlideIds = getSelectedSlideIds(editor);
+  const selectedSlideId = getSelectedSlideId(editor);
+
+  const currentSlide = editor.presentation.slides.find(s => s.id === selectedSlideId) ?? null;
+
+  const selectedObjectIds = getSelectedObjectIds(editor);
 
   return {
     editor,
     presentation: editor.presentation,
     currentSlide,
-    selectedSlideId: editor.selection?.slideId,
+    selectedSlideIds,
     selectedObjectIds,
 
     isDragging,

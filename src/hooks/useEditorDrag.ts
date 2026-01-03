@@ -16,107 +16,158 @@ type UseEditorDragProps = {
   threshold?: number;
 };
 
+type DragContext =
+  | {
+      type: 'object';
+      slideId: string;
+      objectIds: string[];
+    }
+  | {
+      type: 'slides';
+      slideIds: string[];
+    };
+
 type UseEditorDragReturn = {
   isDragging: boolean;
-  startDrag: (e: React.MouseEvent, objectIds: string[]) => void;
+  startDrag: (context: DragContext, e: React.MouseEvent) => void;
   getDeltaForObject: (objectId: string) => { x: number; y: number };
+  getPreviewForObject: (objectId: string) => { x: number; y: number };
 };
 
-export default function useEditorDrag(options: UseEditorDragProps): UseEditorDragReturn {
-  const { editor, applyEditorUpdate, threshold = 3 } = options;
-
+export default function useEditorDrag({
+  editor,
+  applyEditorUpdate,
+  threshold = 3,
+}: UseEditorDragProps): UseEditorDragReturn {
   const [thresholdPassed, setThresholdPassed] = useState(false);
 
-  const mouseRef = useRef({ x: 0, y: 0 });
-
   const editorRef = useRef(editor);
+  const mouseStartRef = useRef({ x: 0, y: 0 });
+  const previewRef = useRef<ReturnType<typeof calculateDragPreview> | null>(null);
+
   useEffect(() => {
     editorRef.current = editor;
   }, [editor]);
 
-  const thresholdPassedRef = useRef(thresholdPassed);
-  useEffect(() => {
-    thresholdPassedRef.current = thresholdPassed;
-  }, [thresholdPassed]);
-
   const startDrag = useCallback(
-    (e: React.MouseEvent, objectIds: string[]) => {
+    (context: DragContext, e: React.MouseEvent) => {
       if (e.button !== 0) return;
 
       e.preventDefault();
       e.stopPropagation();
 
-      mouseRef.current = { x: e.clientX, y: e.clientY };
+      mouseStartRef.current = { x: e.clientX, y: e.clientY };
       setThresholdPassed(false);
+      previewRef.current = null;
 
-      applyEditorUpdate(prev => startDragging(prev, objectIds, e.clientX, e.clientY));
+      applyEditorUpdate(editor => startDragging(editor, context, e.clientX, e.clientY));
     },
     [applyEditorUpdate],
   );
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      const currentEditor = editorRef.current;
+      const current = editorRef.current;
+      if (!current.dragging) return;
 
-      if (!currentEditor.dragging) return;
+      const dx = e.clientX - mouseStartRef.current.x;
+      const dy = e.clientY - mouseStartRef.current.y;
 
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-
-      if (!thresholdPassedRef.current) {
-        const delta = getDragDelta(currentEditor.dragging, e.clientX, e.clientY);
-
-        if (Math.abs(delta.x) < threshold && Math.abs(delta.y) < threshold) {
-          return;
-        }
-
+      if (!thresholdPassed && Math.sqrt(dx * dx + dy * dy) >= threshold) {
         setThresholdPassed(true);
       }
 
-      applyEditorUpdate(prev => ({ ...prev }));
+      if (!thresholdPassed) return;
+
+      applyEditorUpdate(editor => {
+        if (!editor.dragging) return editor;
+
+        if (editor.dragging.type === 'object') {
+          return {
+            ...editor,
+            dragging: {
+              ...editor.dragging,
+              currentMouseX: e.clientX,
+              currentMouseY: e.clientY,
+            },
+          };
+        }
+
+        if (editor.dragging.type === 'slides') {
+          return {
+            ...editor,
+            dragging: {
+              ...editor.dragging,
+              currentMouseY: e.clientY,
+            },
+          };
+        }
+
+        return editor;
+      });
+
+      if (current.dragging.type === 'object') {
+        previewRef.current = calculateDragPreview(current.dragging, e.clientX, e.clientY);
+      }
+
+      if (current.dragging.type === 'slides') {
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const slideEl = el?.closest('[data-slide-id]');
+        if (!slideEl) return;
+
+        const slideId = slideEl.getAttribute('data-slide-id');
+        if (!slideId) return;
+
+        const index = current.presentation.slides.findIndex(s => s.id === slideId);
+
+        if (index !== -1) {
+          applyEditorUpdate(editor => ({
+            ...editor,
+            dragging: {
+              ...editor.dragging!,
+              targetIndex: index,
+            },
+          }));
+        }
+      }
     },
-    [threshold, applyEditorUpdate],
+    [applyEditorUpdate, threshold, thresholdPassed],
   );
 
   const handleMouseUp = useCallback(() => {
-    const currentEditor = editorRef.current;
+    const current = editorRef.current;
+    if (!current.dragging) return;
 
-    if (!currentEditor.dragging) return;
-
-    if (thresholdPassedRef.current) {
-      const preview = calculateDragPreview(
-        currentEditor.dragging,
-        mouseRef.current.x,
-        mouseRef.current.y,
-      );
-
-      applyEditorUpdate(prev => applyDrag(prev, preview.positions));
+    if (thresholdPassed) {
+      applyEditorUpdate(applyDrag);
     } else {
-      applyEditorUpdate(prev => cancelDragging(prev));
+      applyEditorUpdate(cancelDragging);
     }
 
     setThresholdPassed(false);
-  }, [applyEditorUpdate]);
+    previewRef.current = null;
+  }, [applyEditorUpdate, thresholdPassed]);
 
   useEffect(() => {
-    if (editor.dragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+    if (!editor.dragging) return;
 
-      document.body.style.userSelect = 'none';
-      document.body.style.cursor = 'grabbing';
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
 
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.body.style.userSelect = '';
-        document.body.style.cursor = '';
-      };
-    }
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'grabbing';
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
   }, [editor.dragging, handleMouseMove, handleMouseUp]);
 
   const getDeltaForObject = useCallback(
-    (objectId: string): { x: number; y: number } => {
-      if (!editor.dragging || !thresholdPassed) {
+    (objectId: string) => {
+      if (!editor.dragging || editor.dragging.type !== 'object' || !thresholdPassed) {
         return { x: 0, y: 0 };
       }
 
@@ -124,14 +175,26 @@ export default function useEditorDrag(options: UseEditorDragProps): UseEditorDra
         return { x: 0, y: 0 };
       }
 
-      return getDragDelta(editor.dragging, mouseRef.current.x, mouseRef.current.y);
+      return getDragDelta(
+        editor.dragging,
+        editor.dragging.currentMouseX,
+        editor.dragging.currentMouseY,
+      );
     },
     [editor.dragging, thresholdPassed],
   );
 
+  const getPreviewForObject = useCallback((objectId: string) => {
+    const preview = previewRef.current;
+    if (!preview) return { x: 0, y: 0 };
+
+    return preview.positions[objectId] ?? { x: 0, y: 0 };
+  }, []);
+
   return {
-    isDragging: editor.dragging !== null && thresholdPassed,
+    isDragging: editor.dragging !== null,
     startDrag,
     getDeltaForObject,
+    getPreviewForObject,
   };
 }

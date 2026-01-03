@@ -28,6 +28,7 @@ function App() {
     handleAddSlide,
     handleDeleteSlide,
     handleSelectSlide,
+    handleMoveSlides,
     handleChangeSlideBackground,
 
     handleAddText,
@@ -69,6 +70,7 @@ function App() {
         slides={presentation.slides}
         selectedSlideIds={selectedSlideIds}
         onSelect={handleSelectSlide}
+        startDrag={startDrag}
       />
 
       <main

@@ -12,7 +12,14 @@ type Props = {
   onDeselectAll: () => void;
 
   isDragging: boolean;
-  startDrag: (e: React.MouseEvent, objectIds: string[]) => void;
+  startDrag: (
+    context: {
+      type: 'object';
+      slideId: string;
+      objectIds: string[];
+    },
+    e: React.MouseEvent,
+  ) => void;
   getDeltaForObject: (objectId: string) => { x: number; y: number };
 
   isResizing: boolean;
@@ -74,6 +81,7 @@ export default function SlideCanvas({
 
           <div className={styles.viewport} style={backgroundStyle} onClick={handleCanvasClick}>
             <SlideObjectsRenderer
+              slideId={currentSlide.id}
               objects={currentSlide.objects}
               selectedObjectIds={selectedObjectIds}
               onSelectObject={onSelectObject}

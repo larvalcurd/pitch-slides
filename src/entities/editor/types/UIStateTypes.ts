@@ -1,13 +1,23 @@
 import type { ResizeHandle } from '../../object';
 
-export type DragState = {
-  objectIds: string[];
-  startMouseX: number;
-  startMouseY: number;
-  currentMouseX: number;
-  currentMouseY: number;
-  originalPositions: Record<string, { x: number; y: number }>;
-};
+export type DragState =
+  | {
+      type: 'object';
+      slideId: string;
+      objectIds: string[];
+      startMouseX: number;
+      startMouseY: number;
+      currentMouseX: number;
+      currentMouseY: number;
+      originalPositions: Record<string, { x: number; y: number }>;
+    }
+  | {
+      type: 'slides';
+      slideIds: string[];
+      startMouseY: number;
+      currentMouseY: number;
+      targetIndex: number | null;
+    };
 
 export type ResizeState = {
   objectId: string;

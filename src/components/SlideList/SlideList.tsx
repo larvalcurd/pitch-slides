@@ -5,12 +5,44 @@ type SlideListProps = {
   slides: Slide[];
   selectedSlideIds: string[];
   onSelect: (slideId: string, multi: boolean) => void;
+  startDrag: (
+    context: {
+      type: 'slides';
+      slideIds: string[];
+    },
+    e: React.MouseEvent,
+  ) => void;
 };
 
-export default function SlideList({ slides, selectedSlideIds, onSelect }: SlideListProps) {
-  const handleClick = (e: React.MouseEvent, slideId: string) => {
+export default function SlideList({
+  slides,
+  selectedSlideIds,
+  onSelect,
+  startDrag,
+}: SlideListProps) {
+  const handleMouseDown = (e: React.MouseEvent, slideId: string) => {
     const multi = e.ctrlKey || e.metaKey;
+
+    let slideIds: string[];
+    if (multi) {
+      if (selectedSlideIds.includes(slideId)) {
+        slideIds = selectedSlideIds.filter(id => id !== slideId);
+      } else {
+        slideIds = [...selectedSlideIds, slideId];
+      }
+    } else {
+      slideIds = [slideId];
+    }
+
     onSelect(slideId, multi);
+
+    startDrag(
+      {
+        type: 'slides',
+        slideIds,
+      },
+      e,
+    );
   };
 
   return (
@@ -26,6 +58,7 @@ export default function SlideList({ slides, selectedSlideIds, onSelect }: SlideL
           return (
             <div
               key={slide.id}
+              data-slide-id={slide.id}
               className={`${styles.item} ${isSelected ? styles.selected : ''}`}
               style={{
                 background:
@@ -35,7 +68,7 @@ export default function SlideList({ slides, selectedSlideIds, onSelect }: SlideL
                       ? `url(${slide.background.value}) center/cover no-repeat`
                       : undefined,
               }}
-              onClick={e => handleClick(e, slide.id)}
+              onMouseDown={e => handleMouseDown(e, slide.id)}
             >
               <div className={styles.thumbnailInner}>{slide.title ?? 'Untitled slide'}</div>
             </div>

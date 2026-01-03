@@ -7,6 +7,7 @@ import {
   deleteSlide,
   changePresentationTitle,
   changeSlideBackground,
+  moveSlides,
 } from '../entities/editor/actions/editorPresentationActions';
 import {
   addImageObject,
@@ -70,6 +71,10 @@ export default function usePresentation() {
 
   const handleSelectSlide = useCallback((slideId: string, multi: boolean) => {
     setEditor(prev => (multi ? toggleSlideSelection(prev, slideId) : selectSlide(prev, slideId)));
+  }, []);
+
+  const handleMoveSlides = useCallback((targetIndex: number) => {
+    setEditor(prev => moveSlides(prev, targetIndex));
   }, []);
 
   const handleChangeSlideBackground = useCallback((background: Slide['background']) => {
@@ -150,6 +155,7 @@ export default function usePresentation() {
     handleAddSlide,
     handleDeleteSlide,
     handleSelectSlide,
+    handleMoveSlides,
     handleChangeSlideBackground,
 
     handleAddText,

@@ -1,144 +1,167 @@
 import { isObjectSelection, type Editor } from '../types/EditorTypes';
-import type { DragPreview, DragState } from '../types/UIStateTypes';
+import type { DragState, DragPreview } from '../types/UIStateTypes';
+import { moveSlides } from '../actions/editorPresentationActions';
 
-export const startDragging = (
+export function startDragging(
   editor: Editor,
-  objectIds: string[],
+  context:
+    | {
+        type: 'object';
+        slideId: string;
+        objectIds: string[];
+      }
+    | {
+        type: 'slides';
+        slideIds: string[];
+      },
   mouseX: number,
   mouseY: number,
-): Editor => {
-  if (!isObjectSelection(editor.selection)) {
-    return editor;
-  }
+): Editor {
+  if (context.type === 'object') {
+    if (!isObjectSelection(editor.selection)) return editor;
+    if (context.objectIds.length === 0) return editor;
 
-  if (objectIds.length === 0) {
-    return editor;
-  }
+    const currentSlide = editor.presentation.slides.find(slide => slide.id === context.slideId);
+    if (!currentSlide) return editor;
 
-  const { slideId } = editor.selection;
+    const originalPositions: Record<string, { x: number; y: number }> = {};
 
-  const currentSlide = editor.presentation.slides.find(slide => slide.id === slideId);
-
-  if (!currentSlide) {
-    return editor;
-  }
-
-  const originalPositions: Record<string, { x: number; y: number }> = {};
-
-  for (const objectId of objectIds) {
-    const obj = currentSlide.objects.find(o => o.id === objectId);
-    if (obj) {
-      originalPositions[objectId] = { x: obj.x, y: obj.y };
+    for (const objectId of context.objectIds) {
+      const obj = currentSlide.objects.find(o => o.id === objectId);
+      if (obj) {
+        originalPositions[objectId] = { x: obj.x, y: obj.y };
+      }
     }
+
+    const validObjectIds = Object.keys(originalPositions);
+    if (validObjectIds.length === 0) return editor;
+
+    return {
+      ...editor,
+      dragging: {
+        type: 'object',
+        slideId: context.slideId,
+        objectIds: validObjectIds,
+        startMouseX: mouseX,
+        startMouseY: mouseY,
+        currentMouseX: mouseX,
+        currentMouseY: mouseY,
+        originalPositions,
+      },
+      resizing: null,
+      editingTextObjectId: null,
+    };
   }
 
-  const validObjectIds = Object.keys(originalPositions);
+  if (context.type === 'slides') {
+    if (context.slideIds.length === 0) return editor;
 
-  if (validObjectIds.length === 0) {
-    return editor;
+    return {
+      ...editor,
+      dragging: {
+        type: 'slides',
+        slideIds: context.slideIds,
+        startMouseY: mouseY,
+        currentMouseY: mouseY,
+        targetIndex: null,
+      },
+    };
+  }
+
+  return editor;
+}
+
+export function getDragDelta(
+  dragging: DragState,
+  currentMouseX: number,
+  currentMouseY: number,
+): { x: number; y: number } {
+  if (dragging.type !== 'object') {
+    return { x: 0, y: 0 };
   }
 
   return {
-    ...editor,
-    dragging: {
-      objectIds: validObjectIds,
-      startMouseX: mouseX,
-      startMouseY: mouseY,
-      currentMouseX: mouseX,
-      currentMouseY: mouseY,
-      originalPositions,
-    },
-    resizing: null,
-    editingTextObjectId: null,
+    x: currentMouseX - dragging.startMouseX,
+    y: currentMouseY - dragging.startMouseY,
   };
-};
+}
 
-export const getDragDelta = (
+export function calculateDragPreview(
   dragging: DragState,
   currentMouseX: number,
   currentMouseY: number,
-): { x: number; y: number } => ({
-  x: currentMouseX - dragging.startMouseX,
-  y: currentMouseY - dragging.startMouseY,
-});
+): DragPreview {
+  if (dragging.type !== 'object') {
+    return { positions: {} };
+  }
 
-export const calculateDragPreview = (
-  dragging: DragState,
-  currentMouseX: number,
-  currentMouseY: number,
-): DragPreview => {
   const delta = getDragDelta(dragging, currentMouseX, currentMouseY);
 
   const positions: Record<string, { x: number; y: number }> = {};
 
-  Object.entries(dragging.originalPositions).forEach(([id, originalPos]) => {
+  Object.entries(dragging.originalPositions).forEach(([id, original]) => {
     positions[id] = {
-      x: originalPos.x + delta.x,
-      y: originalPos.y + delta.y,
+      x: original.x + delta.x,
+      y: original.y + delta.y,
     };
   });
 
   return { positions };
-};
+}
 
-export const applyDrag = (
-  editor: Editor,
-  finalPositions: Record<string, { x: number; y: number }>,
-): Editor => {
-  if (!isObjectSelection(editor.selection)) {
-    return {
-      ...editor,
-      dragging: null,
-    };
-  }
+export function applyDrag(editor: Editor): Editor {
+  if (!editor.dragging) return editor;
 
-  const { slideId } = editor.selection;
+  if (editor.dragging.type === 'object') {
+    const { slideId, originalPositions } = editor.dragging;
 
-  const updatedSlides = editor.presentation.slides.map(slide => {
-    if (slide.id !== slideId) {
-      return slide;
-    }
+    const deltaX = editor.dragging.currentMouseX - editor.dragging.startMouseX;
+    const deltaY = editor.dragging.currentMouseY - editor.dragging.startMouseY;
 
-    const updatedObjects = slide.objects.map(obj => {
-      const newPos = finalPositions[obj.id];
-      if (!newPos) return obj;
+    const updatedSlides = editor.presentation.slides.map(slide => {
+      if (slide.id !== slideId) return slide;
 
       return {
-        ...obj,
-        x: newPos.x,
-        y: newPos.y,
+        ...slide,
+        objects: slide.objects.map(obj => {
+          const original = originalPositions[obj.id];
+          if (!original) return obj;
+
+          return {
+            ...obj,
+            x: original.x + deltaX,
+            y: original.y + deltaY,
+          };
+        }),
       };
     });
 
     return {
-      ...slide,
-      objects: updatedObjects,
+      ...editor,
+      presentation: {
+        ...editor.presentation,
+        slides: updatedSlides,
+      },
+      dragging: null,
     };
-  });
+  }
 
+  if (editor.dragging.type === 'slides') {
+    const { targetIndex } = editor.dragging;
+
+    if (targetIndex == null) {
+      return { ...editor, dragging: null };
+    }
+
+    return moveSlides({ ...editor, dragging: null }, targetIndex);
+  }
+
+  return editor;
+}
+
+export function cancelDragging(editor: Editor): Editor {
   return {
     ...editor,
-    presentation: {
-      ...editor.presentation,
-      slides: updatedSlides,
-    },
     dragging: null,
   };
-};
-
-export const cancelDragging = (editor: Editor): Editor => ({
-  ...editor,
-  dragging: null,
-});
-
-export const isDraggingActive = (editor: Editor): boolean => {
-  return editor.dragging !== null;
-};
-
-export const getDraggingObjectIds = (editor: Editor): string[] => {
-  return editor.dragging?.objectIds ?? [];
-};
-
-export const isObjectBeingDragged = (editor: Editor, objectId: string): boolean => {
-  return editor.dragging?.objectIds.includes(objectId) ?? false;
-};
+}

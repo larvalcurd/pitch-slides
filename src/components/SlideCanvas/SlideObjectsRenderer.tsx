@@ -2,15 +2,25 @@ import type { ResizeHandle, SlideObject } from '../../entities/object/types/Obje
 import DraggableObject from './DraggableObject';
 import TextObjectComponent from './TextObjectComponent';
 import ImageObjectComponent from './ImageObjectComponent';
-import type { ResizePreview } from '../../entities/editor';
+import type { ResizePreview } from '../../entities/editor/types/UIStateTypes';
 
 type Props = {
+  slideId: string;
+
   objects: SlideObject[];
   selectedObjectIds: string[];
   onSelectObject: (objectId: string, multi: boolean) => void;
 
   isDragging: boolean;
-  startDrag: (e: React.MouseEvent, objectIds: string[]) => void;
+  startDrag: (
+    context: {
+      type: 'object';
+      slideId: string;
+      objectIds: string[];
+    },
+    e: React.MouseEvent,
+  ) => void;
+
   getDeltaForObject: (objectId: string) => { x: number; y: number };
 
   isResizing: boolean;
@@ -25,6 +35,7 @@ type Props = {
 };
 
 export default function SlideObjectsRenderer({
+  slideId,
   objects,
   selectedObjectIds,
   onSelectObject,
@@ -75,11 +86,17 @@ export default function SlideObjectsRenderer({
             isDragging={isObjDragging}
             dragDelta={getDeltaForObject(obj.id)}
             onStartDrag={e => {
-              // Если объект уже выделен — тащим все выделенные
-              // Если нет — тащим только этот
               const objectsToMove =
                 isSelected && selectedObjectIds.length > 0 ? selectedObjectIds : [obj.id];
-              startDrag(e, objectsToMove);
+
+              startDrag(
+                {
+                  type: 'object',
+                  slideId,
+                  objectIds: objectsToMove,
+                },
+                e,
+              );
             }}
             isResizing={isObjResizing}
             resizePreview={isObjResizing ? resizePreview : null}

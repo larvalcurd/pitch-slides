@@ -1,8 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import type { Editor } from '../entities/editor/types/EditorTypes';
 import type { Slide } from '../entities/slide';
-import { createEditor } from '../entities/editor/factory/editorFactory';
-import { moveSlides } from '../entities/editor/actions/editorPresentationActions';
 import {
   getSelectedSlideIds,
   getSelectedSlideId,

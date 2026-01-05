@@ -28,6 +28,7 @@ function App() {
     handleAddSlide,
     handleDeleteSlide,
     handleSelectSlide,
+
     handleChangeSlideBackground,
 
     handleAddText,

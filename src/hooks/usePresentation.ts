@@ -2,47 +2,53 @@ import { useCallback, useState } from 'react';
 import type { Editor } from '../entities/editor/types/EditorTypes';
 import type { Slide } from '../entities/slide';
 import { createEditor } from '../entities/editor/factory/editorFactory';
+import { moveSlides } from '../entities/editor/actions/editorPresentationActions';
+import {
+  getSelectedSlideIds,
+  getSelectedSlideId,
+  getSelectedObjectIds,
+} from '../entities/editor/selection/editorSelection';
+
+import useEditorDrag from './useEditorDrag';
+import useEditorResize from './useEditorResize';
+import type { ImagePayload } from '../entities/object/types/ImagePayload';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../store/store';
 import {
   addSlide,
-  deleteSlide,
   changePresentationTitle,
   changeSlideBackground,
-  moveSlides,
-} from '../entities/editor/actions/editorPresentationActions';
-import {
+  deleteSlide,
+  selectSlide,
+  toggleSlideSelection,
+  updateEditor,
+  selectObject,
+  toggleObjectSelection,
+  clearObjectSelection,
+  startEditingText,
+  stopEditingText,
+  clearUIState,
+  addTextObject,
   addImageObject,
   deleteObject,
   updateTextObject,
   updateObjectPosition,
   updateObjectSize,
-  addTextObject,
-} from '../entities/editor/actions/editorObjectActions';
-import {
-  selectSlide,
-  selectObject,
-  getSelectedSlideIds,
-  getSelectedSlideId,
-  getSelectedObjectIds,
-  toggleSlideSelection,
-  toggleObjectSelection,
-} from '../entities/editor/selection/editorSelection';
-
-import useEditorDrag from './useEditorDrag';
-import useEditorResize from './useEditorResize';
-import {
-  clearObjectSelection,
-  clearUIState,
-  startEditingText,
-  stopEditingText,
-} from '../entities/editor/actions/editorUIActions';
-import type { ImagePayload } from '../entities/object/types/ImagePayload';
+} from '../store/editorSlice';
 
 export default function usePresentation() {
-  const [editor, setEditor] = useState<Editor>(() => createEditor());
+  // const [editor, setEditor] = useState<Editor>(() => createEditor());
 
-  const applyEditorUpdate = useCallback((update: (editor: Editor) => Editor) => {
-    setEditor(update);
-  }, []);
+  const editor = useSelector((state: RootState) => state.editor);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const applyEditorUpdate = useCallback(
+    (update: (editor: Editor) => Editor) => {
+      const newEditor = update(editor);
+      dispatch(updateEditor(newEditor));
+    },
+    [dispatch, editor],
+  );
 
   const { isDragging, startDrag, getDeltaForObject } = useEditorDrag({
     editor,
@@ -57,76 +63,159 @@ export default function usePresentation() {
     minHeight: 30,
   });
 
-  const changeTitle = useCallback((newTitle: string) => {
-    setEditor(prev => changePresentationTitle(prev, newTitle));
-  }, []);
+  const changeTitle = useCallback(
+    (newTitle: string) => {
+      dispatch(changePresentationTitle(newTitle));
+    },
+    [dispatch],
+  );
 
   const handleAddSlide = useCallback(() => {
-    setEditor(prev => addSlide(prev));
-  }, []);
+    dispatch(addSlide());
+  }, [dispatch]);
 
   const handleDeleteSlide = useCallback(() => {
-    setEditor(prev => deleteSlide(prev));
-  }, []);
+    dispatch(deleteSlide());
+  }, [dispatch]);
 
-  const handleSelectSlide = useCallback((slideId: string, multi: boolean) => {
-    setEditor(prev => (multi ? toggleSlideSelection(prev, slideId) : selectSlide(prev, slideId)));
-  }, []);
+  const handleSelectSlide = useCallback(
+    (slideId: string, multi: boolean) => {
+      if (multi) {
+        dispatch(toggleSlideSelection(slideId));
+      } else {
+        dispatch(selectSlide(slideId));
+      }
+    },
+    [dispatch],
+  );
 
-  const handleMoveSlides = useCallback((targetIndex: number) => {
-    setEditor(prev => moveSlides(prev, targetIndex));
-  }, []);
+  // const handleMoveSlides = useCallback((targetIndex: number) => {
+  //   setEditor(prev => moveSlides(prev, targetIndex));
+  // }, []);
 
-  const handleChangeSlideBackground = useCallback((background: Slide['background']) => {
-    setEditor(prev => changeSlideBackground(prev, background));
-  }, []);
+  // const handleChangeSlideBackground = useCallback((background: Slide['background']) => {
+  //   setEditor(prev => changeSlideBackground(prev, background));
+  // }, []);
+
+  const handleChangeSlideBackground = useCallback(
+    (background: Slide['background']) => {
+      dispatch(changeSlideBackground(background));
+    },
+    [dispatch],
+  );
+
+  // const handleAddText = useCallback(() => {
+  //   setEditor(prev => addTextObject(prev));
+  // }, []);
 
   const handleAddText = useCallback(() => {
-    setEditor(prev => addTextObject(prev));
-  }, []);
+    dispatch(addTextObject());
+  }, [dispatch]);
 
-  const handleAddImage = useCallback((payload: ImagePayload) => {
-    setEditor(prev => addImageObject(prev, payload));
-  }, []);
+  // const handleAddImage = useCallback((payload: ImagePayload) => {
+  //   setEditor(prev => addImageObject(prev, payload));
+  // }, []);
+
+  const handleAddImage = useCallback(
+    (payload: ImagePayload) => {
+      dispatch(addImageObject(payload));
+    },
+    [dispatch],
+  );
+
+  // const handleDeleteObject = useCallback(() => {
+  //   setEditor(prev => deleteObject(prev));
+  // }, []);
 
   const handleDeleteObject = useCallback(() => {
-    setEditor(prev => deleteObject(prev));
-  }, []);
+    dispatch(deleteObject());
+  }, [dispatch]);
 
-  const handleSelectObject = useCallback((objectId: string, multi: boolean) => {
-    setEditor(prev => {
-      const slideId = getSelectedSlideId(prev);
-      if (!slideId) return prev;
+  // const handleSelectObject = useCallback((objectId: string, multi: boolean) => {
+  //   setEditor(prev => {
+  //     const slideId = getSelectedSlideId(prev);
+  //     if (!slideId) return prev;
 
-      return multi
-        ? toggleObjectSelection(prev, slideId, objectId)
-        : selectObject(prev, slideId, objectId);
-    });
-  }, []);
+  //     return multi
+  //       ? toggleObjectSelection(prev, slideId, objectId)
+  //       : selectObject(prev, slideId, objectId);
+  //   });
+  // }, []);
+
+  const handleSelectObject = useCallback(
+    (objectId: string, multi: boolean) => {
+      const slideId = getSelectedSlideId(editor);
+      if (!slideId) return;
+
+      if (multi) {
+        dispatch(toggleObjectSelection({ slideId, objectId }));
+      } else {
+        dispatch(selectObject({ slideId, objectId }));
+      }
+    },
+    [dispatch, editor],
+  );
+
+  // const handleDeselectAll = useCallback(() => {
+  //   setEditor(prev => clearUIState(clearObjectSelection(prev)));
+  // }, []);
 
   const handleDeselectAll = useCallback(() => {
-    setEditor(prev => clearUIState(clearObjectSelection(prev)));
-  }, []);
+    dispatch(clearUIState());
+    dispatch(clearObjectSelection());
+  }, [dispatch]);
 
-  const handleStartEditingText = useCallback((objectId: string) => {
-    setEditor(prev => startEditingText(prev, objectId));
-  }, []);
+  // const handleStartEditingText = useCallback((objectId: string) => {
+  //   setEditor(prev => startEditingText(prev, objectId));
+  // }, []);
+
+  const handleStartEditingText = useCallback(
+    (objectId: string) => {
+      dispatch(startEditingText(objectId));
+    },
+    [dispatch],
+  );
+
+  // const handleStopEditingText = useCallback(() => {
+  //   setEditor(prev => stopEditingText(prev));
+  // }, []);
 
   const handleStopEditingText = useCallback(() => {
-    setEditor(prev => stopEditingText(prev));
-  }, []);
+    dispatch(stopEditingText());
+  }, [dispatch]);
 
-  const handleUpdateTextContent = useCallback((objectId: string, content: string) => {
-    setEditor(prev => updateTextObject(prev, objectId, content));
-  }, []);
+  // const handleUpdateTextContent = useCallback((objectId: string, content: string) => {
+  //   setEditor(prev => updateTextObject(prev, objectId, content));
+  // }, []);
 
-  const handleUpdateObjectPosition = useCallback((objectId: string, x: number, y: number) => {
-    setEditor(prev => updateObjectPosition(prev, objectId, x, y));
-  }, []);
+  const handleUpdateTextContent = useCallback(
+    (objectId: string, content: string) => {
+      dispatch(updateTextObject({ objectId, content }));
+    },
+    [dispatch],
+  );
 
-  const handleUpdateObjectSize = useCallback((objectId: string, width: number, height: number) => {
-    setEditor(prev => updateObjectSize(prev, objectId, width, height));
-  }, []);
+  // const handleUpdateObjectPosition = useCallback((objectId: string, x: number, y: number) => {
+  //   setEditor(prev => updateObjectPosition(prev, objectId, x, y));
+  // }, []);
+
+  const handleUpdateObjectPosition = useCallback(
+    (objectId: string, x: number, y: number) => {
+      dispatch(updateObjectPosition({ objectId, x, y }));
+    },
+    [dispatch],
+  );
+
+  // const handleUpdateObjectSize = useCallback((objectId: string, width: number, height: number) => {
+  //   setEditor(prev => updateObjectSize(prev, objectId, width, height));
+  // }, []);
+
+  const handleUpdateObjectSize = useCallback(
+    (objectId: string, width: number, height: number) => {
+      dispatch(updateObjectSize({ objectId, width, height }));
+    },
+    [dispatch],
+  );
 
   const selectedSlideIds = getSelectedSlideIds(editor);
   const selectedSlideId = getSelectedSlideId(editor);
@@ -155,7 +244,6 @@ export default function usePresentation() {
     handleAddSlide,
     handleDeleteSlide,
     handleSelectSlide,
-    handleMoveSlides,
     handleChangeSlideBackground,
 
     handleAddText,

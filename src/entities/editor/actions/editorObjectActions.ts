@@ -4,8 +4,8 @@ import { updateSlideInPresentation } from '../../presentation';
 import { addObjectToSlide, removeObjectFromSlide, updateObjectInSlide } from '../../slide';
 import { createImageObject, createTextObject } from '../../object';
 import { calculateTextPosition } from '../../object/utils/objectPositioning';
-import { updateTextContent } from '../../object/utils/TextObjectUtils';
-import { moveObject, resizeObject } from '../../object/utils/ObjectUtils';
+import { updateTextContent } from '../../object';
+import { moveObject, resizeObject } from '../../object';
 import type { ImagePayload } from '../../object/types/ImagePayload';
 import { getSelectedSlideId } from '../selection/editorSelection';
 

@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import type { SlideObject, ResizeHandle } from '../../entities/object';
-import type { ResizePreview } from '../../entities/editor/types/UIStateTypes';
+import type { ResizePreview } from '../../entities/editor';
 import styles from './DraggableObject.module.css';
 
 type Props = {

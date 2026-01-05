@@ -1,5 +1,6 @@
 import type { Slide } from '../../entities/slide';
 import styles from './SlideList.module.css';
+import React from 'react';
 
 type SlideListProps = {
   slides: Slide[];

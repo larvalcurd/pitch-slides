@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { ImagePayload } from '../../entities/object/types/ImagePayload';
 import styles from './ImageSelector.module.css';
 

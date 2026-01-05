@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { SlideBackground } from '../../entities/slide/types/SlideTypes';
+import React, { useState } from 'react';
+import type { SlideBackground } from '../../entities/slide';
 import styles from './BackgroundSelector.module.css';
 
 type BackgroundSelectorProps = {

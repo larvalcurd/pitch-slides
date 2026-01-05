@@ -1,8 +1,9 @@
-import type { ResizeHandle, SlideObject } from '../../entities/object/types/ObjectTypes';
+import type { ResizeHandle, SlideObject } from '../../entities/object';
 import DraggableObject from './DraggableObject';
 import TextObjectComponent from './TextObjectComponent';
 import ImageObjectComponent from './ImageObjectComponent';
-import type { ResizePreview } from '../../entities/editor/types/UIStateTypes';
+import type { ResizePreview } from '../../entities/editor';
+import React from 'react';
 
 type Props = {
   slideId: string;

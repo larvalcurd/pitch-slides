@@ -1,4 +1,4 @@
-import type { ImageObject, SlideObject, TextObject } from '../entities/object/types/ObjectTypes.ts';
+import type { ImageObject, SlideObject, TextObject } from '../entities/object';
 // --- TYPE GUARDS ---
 export function isTextObject(obj: SlideObject): obj is TextObject {
   return obj.type === 'text';

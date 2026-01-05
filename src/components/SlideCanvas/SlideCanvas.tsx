@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import type { Slide } from '../../entities/slide/types/SlideTypes';
+import React, { useMemo } from 'react';
+import type { Slide } from '../../entities/slide';
 import styles from './SlideCanvas.module.css';
 import SlideObjectsRenderer from './SlideObjectsRenderer';
 import type { ResizeHandle } from '../../entities/object';

@@ -87,6 +87,23 @@ describe('SlideUtils (deep immutability)', () => {
     expect(slide).toEqual(snapshot);
   });
 
+  it('removeObjectFromSlide - minimal slide: deletes correct object immutably', () => {
+    const slide = createMinimalSlide();
+    const obj = createMinimalText();
+    const slideWithObj = addObjectToSlide(slide, obj);
+    const snapshot = deepClone(slideWithObj);
+
+    const res = removeObjectFromSlide(slideWithObj, obj.id);
+
+    expect(res.objects.length).toBe(0);
+    expect(res.objects.some(o => o.id === obj.id)).toBe(false);
+
+    expect(res).not.toBe(slideWithObj);
+    expect(res.objects).not.toBe(slideWithObj.objects);
+
+    expect(slideWithObj).toEqual(snapshot);
+  });
+
   it('updateObjectInSlide - replaces correct object immutably', () => {
     const slide = createMaximalSlide();
     const snapshot = deepClone(slide);
@@ -99,11 +116,9 @@ describe('SlideUtils (deep immutability)', () => {
 
     const res = updateObjectInSlide(slide, target.id, updated);
 
-    // replaced correctly
     const found = res.objects.find(o => o.id === target.id);
     expect(found).toEqual(updated);
 
-    // untouched others
     slide.objects.forEach((orig, i) => {
       if (orig.id !== target.id) {
         expect(res.objects[i]).toEqual(orig);
@@ -116,6 +131,30 @@ describe('SlideUtils (deep immutability)', () => {
     expect(slide).toEqual(snapshot);
   });
 
+  it('updateObjectInSlide - minimal slide: replaces correct object immutably', () => {
+    const slide = createMinimalSlide();
+    const obj = createMinimalText();
+    const slideWithObj = addObjectToSlide(slide, obj);
+    const snapshot = deepClone(slideWithObj);
+
+    const updated = {
+      ...obj,
+      x: (obj.x ?? 0) + 50,
+    };
+
+    const res = updateObjectInSlide(slideWithObj, obj.id, updated);
+
+    const found = res.objects.find(o => o.id === obj.id);
+    expect(found).toEqual(updated);
+
+    expect(res.objects.length).toBe(1);
+
+    expect(res).not.toBe(slideWithObj);
+    expect(res.objects).not.toBe(slideWithObj.objects);
+
+    expect(slideWithObj).toEqual(snapshot);
+  });
+
   it('findObjectInSlide - returns object by id', () => {
     const slide = createMaximalSlide();
     const target = slide.objects[0];
@@ -125,6 +164,16 @@ describe('SlideUtils (deep immutability)', () => {
     expect(found).toEqual(target);
   });
 
+  it('findObjectInSlide - minimal slide: returns object by id', () => {
+    const slide = createMinimalSlide();
+    const obj = createMinimalText();
+    const slideWithObj = addObjectToSlide(slide, obj);
+
+    const found = findObjectInSlide(slideWithObj, obj.id);
+
+    expect(found).toEqual(obj);
+  });
+
   it('updateSlideBackground - changes background immutably', () => {
     const slide = createMaximalSlide();
     const snapshot = deepClone(slide);
@@ -132,6 +181,22 @@ describe('SlideUtils (deep immutability)', () => {
     const newBg: SlideBackground = {
       type: 'color',
       value: '#ff0000',
+    };
+    const res = updateSlideBackground(slide, newBg);
+
+    expect(res.background).toEqual(newBg);
+    expect(res).not.toBe(slide);
+
+    expect(slide).toEqual(snapshot);
+  });
+
+  it('updateSlideBackground - minimal slide: changes background immutably', () => {
+    const slide = createMinimalSlide();
+    const snapshot = deepClone(slide);
+
+    const newBg: SlideBackground = {
+      type: 'image',
+      value: 'new-bg.jpg',
     };
     const res = updateSlideBackground(slide, newBg);
 

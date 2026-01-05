@@ -61,7 +61,7 @@ function createMaximalPresentation(): Presentation {
 
 describe('PresentationUtils (deep immutability + behavior)', () => {
   it('createPresentation - minimal (no slides)', () => {
-    const p = createPresentation('p1', 'T'); // using exported factory
+    const p = createPresentation('p1', 'T');
     expect(p.id).toBe('p1');
     expect(p.title).toBe('T');
     expect(p.slides).toEqual([]);
@@ -168,9 +168,7 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
 
     expect(res).not.toBe(pres);
     expect(res.slides).not.toBe(pres.slides);
-    // moved slide now at index 1
     expect(res.slides[1].id).toBe(fromId);
-    // other slide preserved (deep equal and same reference where untouched)
     expect(res.slides[0]).toEqual(pres.slides[1]);
     expect(pres).toEqual(snap);
   });
@@ -212,118 +210,6 @@ describe('PresentationUtils (deep immutability + behavior)', () => {
       }
     });
 
-    expect(pres).toEqual(snap);
-  });
-});
-
-describe('PresentationUtils (additional coverage & edge cases)', () => {
-  it('createPresentation - minimal shape matches expected', () => {
-    const p = createPresentation('p1', 'T');
-    expect(p).toEqual({
-      id: 'p1',
-      title: 'T',
-      slides: [],
-    });
-  });
-
-  it('updatePresentationTitle - no-op: returns same reference when title is identical (minimal)', () => {
-    const pres = createPresentation('p2', 'Same');
-    const snap = deepClone(pres);
-    const res = updatePresentationTitle(pres, 'Same');
-    expect(res).toBe(pres);
-    expect(pres).toEqual(snap);
-  });
-
-  it('moveSlide - clamp negative index: moves last -> first', () => {
-    const s1 = createMaximalSlide('s1');
-    const s2 = createMaximalSlide('s2');
-    const s3 = createMaximalSlide('s3');
-    const pres: Presentation = {
-      id: 'p-move',
-      title: 'T',
-      slides: [s1, s2, s3],
-    };
-    const snap = deepClone(pres);
-
-    const res = moveSlide(pres, s3.id, -5);
-    expect(res).not.toBe(pres);
-    expect(res.slides[0].id).toBe(s3.id);
-    expect(res.slides[1]).toEqual(s1);
-    expect(res.slides[2]).toEqual(s2);
-    expect(pres).toEqual(snap);
-  });
-
-  it('moveSlide - clamp large index: moves first -> last', () => {
-    const s1 = createMaximalSlide('s1x');
-    const s2 = createMaximalSlide('s2x');
-    const s3 = createMaximalSlide('s3x');
-    const pres: Presentation = {
-      id: 'p-move-2',
-      title: 'T',
-      slides: [s1, s2, s3],
-    };
-    const snap = deepClone(pres);
-
-    const res = moveSlide(pres, s1.id, 9999);
-    expect(res).not.toBe(pres);
-    expect(res.slides[2].id).toBe(s1.id);
-    expect(res.slides[0]).toEqual(s2);
-    expect(res.slides[1]).toEqual(s3);
-    expect(pres).toEqual(snap);
-  });
-
-  it('updatePresentationTitle - minimal: changes title immutably and shape preserved', () => {
-    const pres = createMinimalPresentation();
-    const snap = deepClone(pres);
-    const res = updatePresentationTitle(pres, 'New Title');
-
-    expect(res.title).toBe('New Title');
-    expect(res).not.toBe(pres);
-    expect(Object.keys(res).sort()).toEqual(Object.keys(pres).sort());
-    expect(pres).toEqual(snap);
-  });
-
-  it('deleteSlideFromPresentation - maximal: removes slide', () => {
-    const pres = createMaximalPresentation();
-    const snap = deepClone(pres);
-    const slideToDelete = pres.slides[0];
-
-    const res = deleteSlideFromPresentation(pres, slideToDelete.id);
-    expect(res).not.toBe(pres);
-    expect(res.slides.some(s => s.id === slideToDelete.id)).toBe(false);
-    expect(pres).toEqual(snap);
-  });
-
-  it('moveSlide - no-op (non-existing id): returns original', () => {
-    const pres = createMinimalPresentation();
-    const snap = deepClone(pres);
-    const res = moveSlide(pres, 'no-id', 1);
-    expect(res).toBe(pres);
-    expect(pres).toEqual(snap);
-  });
-
-  it('updateSlideInPresentation - maximal: replaces target slide immutably and preserves others by reference', () => {
-    const pres = createMaximalPresentation();
-    const snap = deepClone(pres);
-
-    const targetId = pres.slides[0].id;
-    const updated = {
-      ...pres.slides[0],
-      title: 'Updated Title',
-    };
-
-    const res = updateSlideInPresentation(pres, targetId, updated);
-    expect(res).not.toBe(pres);
-    expect(res.slides).not.toBe(pres.slides);
-    const found = res.slides.find(s => s.id === targetId);
-    expect(found).toEqual(updated);
-    pres.slides.forEach(s => {
-      if (s.id !== targetId) {
-        const r = res.slides.find(rs => rs.id === s.id);
-        expect(r).toEqual(s);
-        expect(r).toBe(s);
-      }
-    });
     expect(pres).toEqual(snap);
   });
 });

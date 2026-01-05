@@ -23,7 +23,7 @@ export function clearUIState(editor: Editor): Editor {
   };
 }
 
-export function clearObjectSelection(editor: Editor): Editor {
+export function clearObjectSelection(editor: Editor): Editor { 
   if (!isObjectSelection(editor.selection)) {
     return editor;
   }

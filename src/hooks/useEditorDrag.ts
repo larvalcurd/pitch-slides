@@ -121,13 +121,20 @@ export default function useEditorDrag({
         const index = current.presentation.slides.findIndex(s => s.id === slideId);
 
         if (index !== -1) {
-          applyEditorUpdate(editor => ({
-            ...editor,
-            dragging: {
-              ...editor.dragging!,
-              targetIndex: index,
-            },
-          }));
+          const rect = slideEl.getBoundingClientRect();
+          const isLowerHalf = e.clientY > rect.top + rect.height / 2;
+          const targetIndex = isLowerHalf ? index + 1 : index;
+
+          applyEditorUpdate(editor => {
+            if (!editor.dragging) return editor;
+            return {
+              ...editor,
+              dragging: {
+                ...editor.dragging,
+                targetIndex,
+              },
+            };
+          });
         }
       }
     },

@@ -22,10 +22,10 @@ describe('TextObjectUtils', () => {
     const updated = updateTextContent(minimal, 'New content');
 
     expect(updated.content).toBe('New content');
-    // other fields preserved
+
     expect(updated.x).toBe(snapshot.x);
     expect(updated.width).toBe(snapshot.width);
-    // immutability
+
     expect(updated).not.toBe(minimal);
     expect(minimal).toEqual(snapshot);
   });
@@ -71,13 +71,11 @@ describe('TextObjectUtils', () => {
       ...minimal,
     };
 
-    // minimal should not have fontSize set
     expect(minimal.fontSize).toBeUndefined();
 
     const updated = updateTextFontSize(minimal, 24);
 
     expect(updated.fontSize).toBe(24);
-    // other fields preserved
     expect(updated.content).toBe(snapshot.content);
     expect(updated).not.toBe(minimal);
     expect(minimal).toEqual(snapshot);

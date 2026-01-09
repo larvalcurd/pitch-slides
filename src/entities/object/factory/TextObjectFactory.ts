@@ -40,6 +40,9 @@ export function createMaximalText(overrides?: Partial<TextObject>) {
     width: 300,
     height: 100,
     content: 'Full Text',
+    fontFamily: 'Arial',
+    fontSize: 16,
+    color: '#000000',
   });
   return overrides ? applyPatchText(t, overrides) : t;
 }

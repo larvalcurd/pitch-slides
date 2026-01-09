@@ -117,12 +117,6 @@ export default function useEditorResize(props: useEditorResizeProps): UseEditorR
     }
   }, [editor.resizing, handleMouseMove, handleMouseUp, handleKeyDown]);
 
-  useEffect(() => {
-    if (!editor.resizing && currentPreview) {
-      setCurrentPreview(null);
-    }
-  }, [editor.resizing, currentPreview]);
-
   return {
     isResizing: editor.resizing !== null,
     resizingObjectId: editor.resizing?.objectId ?? null,

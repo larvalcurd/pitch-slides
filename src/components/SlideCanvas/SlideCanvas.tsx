@@ -64,7 +64,7 @@ export default function SlideCanvas({
         backgroundPosition: 'center',
       };
     }
-  }, [currentSlide?.background]);
+  }, [currentSlide]); // TODO
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { Editor } from '../entities/editor/types/EditorTypes';
+//import type { Editor } from '../entities/editor/types/EditorTypes';
 import type { Slide } from '../entities/slide';
 import {
   getSelectedSlideIds,
@@ -7,8 +7,8 @@ import {
   getSelectedObjectIds,
 } from '../entities/editor/selection/editorSelection';
 
-import useEditorDrag from './useEditorDrag';
-import useEditorResize from './useEditorResize';
+// import useEditorDrag from './useEditorDrag';
+// import useEditorResize from './useEditorResize';
 import type { ImagePayload } from '../entities/object/types/ImagePayload';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store/store';
@@ -19,7 +19,7 @@ import {
   deleteSlide,
   selectSlide,
   toggleSlideSelection,
-  updateEditor,
+  //updateEditor,
   selectObject,
   toggleObjectSelection,
   clearObjectSelection,
@@ -40,26 +40,26 @@ export default function usePresentation() {
   const editor = useSelector((state: RootState) => state.editor);
   const dispatch = useDispatch<AppDispatch>();
 
-  const applyEditorUpdate = useCallback(
-    (update: (editor: Editor) => Editor) => {
-      const newEditor = update(editor);
-      dispatch(updateEditor(newEditor));
-    },
-    [dispatch, editor],
-  );
+  // const applyEditorUpdate = useCallback(
+  //   (update: (editor: Editor) => Editor) => {
+  //     const newEditor = update(editor);
+  //     dispatch(updateEditor(newEditor));
+  //   },
+  //   [dispatch, editor],
+  // );
 
-  const { isDragging, startDrag, getDeltaForObject } = useEditorDrag({
-    editor,
-    applyEditorUpdate,
-    threshold: 3,
-  });
+  // const { isDragging, startDrag, getDeltaForObject } = useEditorDrag({
+  //   editor,
+  //   applyEditorUpdate,
+  //   threshold: 3,
+  // });
 
-  const { isResizing, resizingObjectId, resizePreview, startResize } = useEditorResize({
-    editor,
-    applyEditorUpdate,
-    minWidth: 50,
-    minHeight: 30,
-  });
+  // const { isResizing, resizingObjectId, resizePreview, startResize } = useEditorResize({
+  //   editor,
+  //   applyEditorUpdate,
+  //   minWidth: 50,
+  //   minHeight: 30,
+  // });
 
   const changeTitle = useCallback(
     (newTitle: string) => {
@@ -229,14 +229,14 @@ export default function usePresentation() {
     selectedSlideIds,
     selectedObjectIds,
 
-    isDragging,
-    startDrag,
-    getDeltaForObject,
+    // isDragging,
+    // startDrag,
+    // getDeltaForObject,
 
-    isResizing,
-    resizingObjectId,
-    resizePreview,
-    startResize,
+    // isResizing,
+    // resizingObjectId,
+    // resizePreview,
+    // startResize,
 
     changeTitle,
     handleAddSlide,

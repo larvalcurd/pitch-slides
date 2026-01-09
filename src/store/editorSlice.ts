@@ -1,11 +1,11 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
 import {
   isObjectSelection,
   isSlideSelection,
   type Editor,
   type EditorSelection,
 } from '../entities/editor/types/EditorTypes';
-import { createEditor } from '../entities/editor/factory/editorFactory';
+//import { createEditor } from '../entities/editor/factory/editorFactory';
 import {
   addObjectToSlide,
   createSlide,
@@ -31,7 +31,20 @@ import {
 import type { ImagePayload } from '../entities/object/types/ImagePayload';
 import { calculateTextPosition } from '../entities/object/utils/objectPositioning';
 
-const initialState: Editor = createEditor();
+const initialState: Editor = {
+  presentation: {
+    id: nanoid(),
+    title: 'Untitled Presentation',
+    slides: [createSlide()],
+  },
+  selection: {
+    type: 'slides',
+    slideIds: [createSlide().id],
+  },
+  dragging: null,
+  resizing: null,
+  editingTextObjectId: null,
+};
 
 const editorSlice = createSlice({
   name: 'editor',
@@ -289,12 +302,10 @@ const editorSlice = createSlice({
 
       state.presentation = newPresentation;
     },
-    updateEditor: (state, action) => action.payload,
   },
 });
 
 export const {
-  updateEditor,
   addSlide,
   deleteSlide,
   changePresentationTitle,

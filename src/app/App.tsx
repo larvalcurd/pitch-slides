@@ -9,20 +9,20 @@ import ImageSelector from '../components/ImageSelector/ImageSelector.tsx';
 
 function App() {
   const {
-    presentation,
-    currentSlide,
+    // presentation,
+    // currentSlide,
 
-    selectedSlideIds,
-    selectedObjectIds,
+    // selectedSlideIds,
+    // selectedObjectIds,
 
-    isDragging,
-    startDrag,
-    getDeltaForObject,
+    // isDragging,
+    // startDrag,
+    // getDeltaForObject,
 
-    isResizing,
-    resizingObjectId,
-    resizePreview,
-    startResize,
+    // isResizing,
+    // resizingObjectId,
+    // resizePreview,
+    // startResize,
 
     changeTitle,
     handleAddSlide,
@@ -38,7 +38,7 @@ function App() {
     handleSelectObject,
     handleDeselectAll,
 
-    editingTextObjectId,
+    //editingTextObjectId,
     handleStartEditingText,
     handleStopEditingText,
     handleUpdateTextContent,
@@ -66,12 +66,7 @@ function App() {
       }}
       className="app"
     >
-      <SlideList
-        slides={presentation.slides}
-        selectedSlideIds={selectedSlideIds}
-        onSelect={handleSelectSlide}
-        startDrag={startDrag}
-      />
+      <SlideList onSelect={handleSelectSlide} />
 
       <main
         style={{
@@ -82,7 +77,7 @@ function App() {
           flexDirection: 'column',
         }}
       >
-        <PresentationTitle title={presentation.title} onTitleChange={changeTitle} />
+        <PresentationTitle onTitleChange={changeTitle} />
 
         <Toolbar actions={toolbarActions} onOpenModal={handleOpenModal} />
 
@@ -96,18 +91,15 @@ function App() {
           }}
         >
           <SlideCanvas
-            currentSlide={currentSlide}
-            selectedObjectIds={selectedObjectIds}
             onSelectObject={handleSelectObject}
             onDeselectAll={handleDeselectAll}
-            isDragging={isDragging}
-            startDrag={startDrag}
-            getDeltaForObject={getDeltaForObject}
-            isResizing={isResizing}
-            resizingObjectId={resizingObjectId}
-            resizePreview={resizePreview}
-            startResize={startResize}
-            editingTextObjectId={editingTextObjectId}
+            // isDragging={isDragging}
+            // startDrag={startDrag}
+            // getDeltaForObject={getDeltaForObject}
+            // isResizing={isResizing}
+            // resizingObjectId={resizingObjectId}
+            // resizePreview={resizePreview}
+            // startResize={startResize}
             onStartEditingText={handleStartEditingText}
             onStopEditingText={handleStopEditingText}
             onUpdateTextContent={handleUpdateTextContent}
@@ -127,7 +119,6 @@ function App() {
 
       {activeModal === 'background' && (
         <BackgroundSelector
-          currentBackground={currentSlide?.background}
           onSelect={bg => {
             handleChangeSlideBackground(bg);
             handleCloseModal();

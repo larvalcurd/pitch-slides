@@ -1,25 +1,16 @@
-import type { Slide } from '../../entities/slide';
 import styles from './SlideList.module.css';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
+import { getSelectedSlideIds } from '../../entities/editor/selection/editorSelection';
 
 type SlideListProps = {
-  slides: Slide[];
-  selectedSlideIds: string[];
   onSelect: (slideId: string, multi: boolean) => void;
-  startDrag: (
-    context: {
-      type: 'slides';
-      slideIds: string[];
-    },
-    e: React.MouseEvent,
-  ) => void;
 };
 
-export default function SlideList({
-  slides,
-  selectedSlideIds,
-  onSelect,
-  startDrag,
-}: SlideListProps) {
+export default function SlideList({ onSelect }: SlideListProps) {
+  const slides = useSelector((state: RootState) => state.editor.presentation.slides);
+  const selectedSlideIds = useSelector((state: RootState) => getSelectedSlideIds(state.editor));
+
   const handleMouseDown = (e: React.MouseEvent, slideId: string) => {
     const multi = e.ctrlKey || e.metaKey;
 
@@ -36,13 +27,13 @@ export default function SlideList({
 
     onSelect(slideId, multi);
 
-    startDrag(
-      {
-        type: 'slides',
-        slideIds,
-      },
-      e,
-    );
+    // startDrag(
+    //   {
+    //     type: 'slides',
+    //     slideIds,
+    //   },
+    //   e,
+    // );
   };
 
   return (

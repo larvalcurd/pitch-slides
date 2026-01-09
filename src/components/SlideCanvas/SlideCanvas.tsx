@@ -1,55 +1,57 @@
 import { useMemo } from 'react';
-import type { Slide } from '../../entities/slide/types/SlideTypes';
 import styles from './SlideCanvas.module.css';
 import SlideObjectsRenderer from './SlideObjectsRenderer';
-import type { ResizeHandle } from '../../entities/object';
-import type { ResizePreview } from '../../entities/editor';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
+import {
+  getSelectedSlideId,
+  getSelectedObjectIds,
+} from '../../entities/editor/selection/editorSelection';
 
 type Props = {
-  currentSlide: Slide | null;
-  selectedObjectIds: string[];
   onSelectObject: (objectId: string, multi: boolean) => void;
   onDeselectAll: () => void;
 
-  isDragging: boolean;
-  startDrag: (
-    context: {
-      type: 'object';
-      slideId: string;
-      objectIds: string[];
-    },
-    e: React.MouseEvent,
-  ) => void;
-  getDeltaForObject: (objectId: string) => { x: number; y: number };
+  // isDragging: boolean;
+  // startDrag: (
+  //   context: {
+  //     type: 'object';
+  //     slideId: string;
+  //     objectIds: string[];
+  //   },
+  //   e: React.MouseEvent,
+  // ) => void;
+  // getDeltaForObject: (objectId: string) => { x: number; y: number };
 
-  isResizing: boolean;
-  resizingObjectId: string | null;
-  resizePreview: ResizePreview | null;
-  startResize: (e: React.MouseEvent, objectId: string, handle: ResizeHandle) => void;
+  // isResizing: boolean;
+  // resizingObjectId: string | null;
+  // resizePreview: ResizePreview | null;
+  // startResize: (e: React.MouseEvent, objectId: string, handle: ResizeHandle) => void;
 
-  editingTextObjectId?: string | null;
   onStartEditingText: (objectId: string) => void;
   onStopEditingText: () => void;
   onUpdateTextContent: (objectId: string, content: string) => void;
 };
 
 export default function SlideCanvas({
-  currentSlide,
-  selectedObjectIds,
   onSelectObject,
   onDeselectAll,
-  isDragging,
-  startDrag,
-  getDeltaForObject,
-  isResizing,
-  resizingObjectId,
-  resizePreview,
-  startResize,
-  editingTextObjectId,
+  // isDragging,
+  // startDrag,
+  // getDeltaForObject,
+  // isResizing,
+  // resizingObjectId,
+  // resizePreview,
+  // startResize,
   onStartEditingText,
   onStopEditingText,
   onUpdateTextContent,
 }: Props) {
+  const editor = useSelector((state: RootState) => state.editor);
+  const selectedSlideId = getSelectedSlideId(editor);
+  const currentSlide = editor.presentation.slides.find(s => s.id === selectedSlideId) ?? null;
+  const selectedObjectIds = getSelectedObjectIds(editor);
+  const editingTextObjectId = editor.editingTextObjectId;
   const backgroundStyle = useMemo(() => {
     if (!currentSlide?.background) return undefined;
 
@@ -85,13 +87,13 @@ export default function SlideCanvas({
               objects={currentSlide.objects}
               selectedObjectIds={selectedObjectIds}
               onSelectObject={onSelectObject}
-              isDragging={isDragging}
-              startDrag={startDrag}
-              getDeltaForObject={getDeltaForObject}
-              isResizing={isResizing}
-              resizingObjectId={resizingObjectId}
-              resizePreview={resizePreview}
-              startResize={startResize}
+              // isDragging={isDragging}
+              // startDrag={startDrag}
+              // getDeltaForObject={getDeltaForObject}
+              // isResizing={isResizing}
+              // resizingObjectId={resizingObjectId}
+              // resizePreview={resizePreview}
+              // startResize={startResize}
               editingTextObjectId={editingTextObjectId}
               onStartEditingText={onStartEditingText}
               onStopEditingText={onStopEditingText}

@@ -1,17 +1,18 @@
 import React from 'react';
 import styles from './PresentationTitle.module.css';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
 
 type PresentationTitleProps = {
-  title: string;
   onTitleChange: (newTitle: string) => void;
   disabled?: boolean;
 };
 
 export default function PresentationTitle({
-  title,
   onTitleChange,
   disabled = false,
 }: PresentationTitleProps) {
+  const title = useSelector((state: RootState) => state.editor.presentation.title);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onTitleChange(e.target.value);
     console.log(e.target.value);

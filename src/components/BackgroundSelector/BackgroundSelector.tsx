@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import type { SlideBackground } from '../../entities/slide/types/SlideTypes';
 import styles from './BackgroundSelector.module.css';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/store';
+import { getSelectedSlideId } from '../../entities/editor/selection/editorSelection';
 
 type BackgroundSelectorProps = {
-  currentBackground?: SlideBackground;
   onSelect: (background: SlideBackground) => void;
   onClose: () => void;
 };
 
-export default function BackgroundSelector({
-  currentBackground,
-  onSelect,
-  onClose,
-}: BackgroundSelectorProps) {
+export default function BackgroundSelector({ onSelect, onClose }: BackgroundSelectorProps) {
+  const editor = useSelector((state: RootState) => state.editor);
+  const selectedSlideId = getSelectedSlideId(editor);
+  const currentSlide = editor.presentation.slides.find(s => s.id === selectedSlideId) ?? null;
+  const currentBackground = currentSlide?.background;
   type BackgroundType = SlideBackground['type'];
   const [type, setType] = useState<BackgroundType>(currentBackground?.type ?? 'color');
   const [color, setColor] = useState(

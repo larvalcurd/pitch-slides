@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store/store';
-import { startDrag, updateDragPosition, finishDrag } from '../store/editorSlice';
+import { startDrag, updateDragPosition, finishDrag } from '../store/editor';
 
 type UseEditorDragReduxProps = {
   onTargetIndex?: (mouseX: number, mouseY: number) => number | undefined;

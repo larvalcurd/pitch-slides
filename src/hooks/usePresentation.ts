@@ -28,7 +28,7 @@ import {
   updateTextObject,
   updateObjectPosition,
   updateObjectSize,
-} from '../store/editorSlice';
+} from '../store/editor';
 
 export default function usePresentation() {
   const dispatch = useDispatch<AppDispatch>();

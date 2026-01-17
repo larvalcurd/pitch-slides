@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import type { SlideObject, ResizeHandle } from '../../entities/object';
-import type { ResizePreview } from '../../entities/editor/types/UIStateTypes';
 import styles from './DraggableObject.module.css';
+import useEditorDragRedux from '../../hooks/useEditorDragRedux';
+import { useSelector } from 'react-redux';
+import { selectDragPreview } from '../../store/selectors';
 
 type Props = {
   object: SlideObject;
@@ -44,6 +46,10 @@ export default function DraggableObject({
   children,
   onDoubleClick,
 }: Props) {
+  const { handleMouseDown: handleDragMouseDown } = useEditorDragRedux();
+  const preview = useSelector(selectDragPreview);
+  const delta = preview?.positions[object.id];
+
   // const currentX = isResizing && resizePreview ? resizePreview.x : object.x + dragDelta.x;
   // const currentY = isResizing && resizePreview ? resizePreview.y : object.y + dragDelta.y;
   // const currentWidth = isResizing && resizePreview ? resizePreview.width : object.width;
@@ -53,7 +59,7 @@ export default function DraggableObject({
     e.stopPropagation();
     const multi = e.ctrlKey || e.metaKey;
     onSelectObject(object.id, multi);
-    //onStartDrag(e);
+    handleDragMouseDown(e);
   };
 
   // const getCursor = () => {
@@ -76,11 +82,11 @@ export default function DraggableObject({
       className={classNames}
       style={
         {
-          // left: currentX,
-          // top: currentY,
-          // width: currentWidth,
-          // height: currentHeight,
-          // zIndex: isDragging || isResizing ? 1000 : object.zIndex,
+          left: object.x + (delta?.x || 0),
+          top: object.y + (delta?.y || 0),
+          width: object.width,
+          height: object.height,
+          zIndex: object.zIndex,
           // cursor: getCursor(),
         }
       }

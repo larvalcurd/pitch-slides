@@ -1,5 +1,6 @@
 import type { Slide } from '../types/SlideTypes.ts';
 import type { SlideObject } from '../../object';
+import { moveObject } from '../../object/utils/ObjectUtils';
 
 export function addObjectToSlide(slide: Slide, object: SlideObject): Slide {
   return {
@@ -34,5 +35,22 @@ export function updateSlideBackground(slide: Slide, background: Slide['backgroun
   return {
     ...slide,
     background,
+  };
+}
+
+export function updateObjectsPositions(
+  slide: Slide,
+  objectIds: string[],
+  deltaX: number,
+  deltaY: number,
+): Slide {
+  return {
+    ...slide,
+    objects: slide.objects.map(obj => {
+      if (objectIds.includes(obj.id)) {
+        return moveObject(obj, obj.x + deltaX, obj.y + deltaY);
+      }
+      return obj;
+    }),
   };
 }

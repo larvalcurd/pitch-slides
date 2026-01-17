@@ -2,6 +2,8 @@ import styles from './SlideList.module.css';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import { getSelectedSlideIds } from '../../entities/editor/selection/editorSelection';
+import { useCallback } from 'react';
+import useEditorDragRedux from '../../hooks/useEditorDragRedux';
 
 type SlideListProps = {
   onSelect: (slideId: string, multi: boolean) => void;
@@ -11,29 +13,22 @@ export default function SlideList({ onSelect }: SlideListProps) {
   const slides = useSelector((state: RootState) => state.editor.presentation.slides);
   const selectedSlideIds = useSelector((state: RootState) => getSelectedSlideIds(state.editor));
 
+  const onTargetIndex = useCallback((mouseX: number, mouseY: number) => {
+    const el = document.elementFromPoint(mouseX, mouseY);
+    const slideEl = el?.closest('[data-slide-id]');
+    if (!slideEl) return undefined;
+    const slideId = slideEl.getAttribute('data-slide-id');
+    if (!slideId) return undefined;
+    return slides.findIndex(s => s.id === slideId);
+  }, [slides]);
+
+  const { handleMouseDown: handleDragMouseDown } = useEditorDragRedux({ onTargetIndex });
+
   const handleMouseDown = (e: React.MouseEvent, slideId: string) => {
     const multi = e.ctrlKey || e.metaKey;
 
-    let slideIds: string[];
-    if (multi) {
-      if (selectedSlideIds.includes(slideId)) {
-        slideIds = selectedSlideIds.filter(id => id !== slideId);
-      } else {
-        slideIds = [...selectedSlideIds, slideId];
-      }
-    } else {
-      slideIds = [slideId];
-    }
-
     onSelect(slideId, multi);
-
-    // startDrag(
-    //   {
-    //     type: 'slides',
-    //     slideIds,
-    //   },
-    //   e,
-    // );
+    handleDragMouseDown(e);
   };
 
   return (

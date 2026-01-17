@@ -36,6 +36,12 @@ export function startDragging(
     const validObjectIds = Object.keys(originalPositions);
     if (validObjectIds.length === 0) return editor;
 
+    const primaryObject = currentSlide.objects.find(o => o.id === validObjectIds[0]);
+    if (!primaryObject) return editor;
+
+    const dragOffsetX = mouseX - primaryObject.x;
+    const dragOffsetY = mouseY - primaryObject.y;
+
     return {
       ...editor,
       dragging: {
@@ -47,6 +53,9 @@ export function startDragging(
         currentMouseX: mouseX,
         currentMouseY: mouseY,
         originalPositions,
+        dragOffsetX,
+        dragOffsetY,
+        thresholdPassed: false,
       },
       resizing: null,
       editingTextObjectId: null,
@@ -64,6 +73,58 @@ export function startDragging(
         startMouseY: mouseY,
         currentMouseY: mouseY,
         targetIndex: null,
+        thresholdPassed: false,
+      },
+    };
+  }
+
+  return editor;
+}
+
+export function updateDragging(
+  editor: Editor,
+  mouseX: number,
+  mouseY: number,
+  targetIndex?: number,
+): Editor {
+  if (!editor.dragging) return editor;
+
+  const threshold = 3;
+  let thresholdPassed = editor.dragging.thresholdPassed;
+
+  if (!thresholdPassed) {
+    if (editor.dragging.type === 'object') {
+      const dx = mouseX - editor.dragging.startMouseX;
+      const dy = mouseY - editor.dragging.startMouseY;
+      if (Math.sqrt(dx * dx + dy * dy) >= threshold) {
+        thresholdPassed = true;
+      }
+    } else if (editor.dragging.type === 'slides') {
+      const dy = mouseY - editor.dragging.startMouseY;
+      if (Math.abs(dy) >= threshold) {
+        thresholdPassed = true;
+      }
+    }
+  }
+
+  if (editor.dragging.type === 'object') {
+    return {
+      ...editor,
+      dragging: {
+        ...editor.dragging,
+        currentMouseX: mouseX,
+        currentMouseY: mouseY,
+        thresholdPassed,
+      },
+    };
+  } else if (editor.dragging.type === 'slides') {
+    return {
+      ...editor,
+      dragging: {
+        ...editor.dragging,
+        currentMouseY: mouseY,
+        targetIndex: targetIndex ?? editor.dragging.targetIndex,
+        thresholdPassed,
       },
     };
   }
@@ -95,14 +156,21 @@ export function calculateDragPreview(
     return { positions: {} };
   }
 
-  const delta = getDragDelta(dragging, currentMouseX, currentMouseY);
+  const deltaX = currentMouseX - dragging.startMouseX;
+  const deltaY = currentMouseY - dragging.startMouseY;
+
+  const primaryId = dragging.objectIds[0];
+  const primaryOriginal = dragging.originalPositions[primaryId];
+
+  const baseX = dragging.startMouseX + deltaX - dragging.dragOffsetX;
+  const baseY = dragging.startMouseY + deltaY - dragging.dragOffsetY;
 
   const positions: Record<string, { x: number; y: number }> = {};
 
-  Object.entries(dragging.originalPositions).forEach(([id, original]) => {
+  Object.entries(dragging.originalPositions).forEach(([id, _original]) => {
     positions[id] = {
-      x: original.x + delta.x,
-      y: original.y + delta.y,
+      x: baseX - primaryOriginal.x,
+      y: baseY - primaryOriginal.y,
     };
   });
 
@@ -113,28 +181,36 @@ export function applyDrag(editor: Editor): Editor {
   if (!editor.dragging) return editor;
 
   if (editor.dragging.type === 'object') {
-    const { slideId, originalPositions } = editor.dragging;
+    const { slideId, originalPositions, currentMouseX, startMouseX, currentMouseY, startMouseY, dragOffsetX, dragOffsetY, objectIds } = editor.dragging;
 
-    const deltaX = editor.dragging.currentMouseX - editor.dragging.startMouseX;
-    const deltaY = editor.dragging.currentMouseY - editor.dragging.startMouseY;
+    const deltaX = currentMouseX - startMouseX;
+    const deltaY = currentMouseY - startMouseY;
 
-    const updatedSlides = editor.presentation.slides.map(slide => {
-      if (slide.id !== slideId) return slide;
+    const primaryId = objectIds[0];
+    const primaryOriginal = originalPositions[primaryId];
 
-      return {
-        ...slide,
-        objects: slide.objects.map(obj => {
-          const original = originalPositions[obj.id];
-          if (!original) return obj;
+    const baseX = startMouseX + deltaX - dragOffsetX;
+    const baseY = startMouseY + deltaY - dragOffsetY;
 
-          return {
-            ...obj,
-            x: original.x + deltaX,
-            y: original.y + deltaY,
-          };
-        }),
-      };
+    const slideIndex = editor.presentation.slides.findIndex(s => s.id === slideId);
+    if (slideIndex === -1) return { ...editor, dragging: null };
+
+    const slide = editor.presentation.slides[slideIndex];
+    const updatedObjects = slide.objects.map(obj => {
+      if (objectIds.includes(obj.id)) {
+        const original = originalPositions[obj.id];
+        if (original) {
+          const newX = original.x + (baseX - primaryOriginal.x);
+          const newY = original.y + (baseY - primaryOriginal.y);
+          return { ...obj, x: newX, y: newY };
+        }
+      }
+      return obj;
     });
+
+    const updatedSlide = { ...slide, objects: updatedObjects };
+    const updatedSlides = [...editor.presentation.slides];
+    updatedSlides[slideIndex] = updatedSlide;
 
     return {
       ...editor,

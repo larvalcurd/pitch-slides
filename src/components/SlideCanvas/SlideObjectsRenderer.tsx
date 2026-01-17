@@ -1,12 +1,9 @@
-import type { ResizeHandle, SlideObject } from '../../entities/object/types/ObjectTypes';
+import type { SlideObject } from '../../entities/object/types/ObjectTypes';
 import DraggableObject from './DraggableObject';
 import TextObjectComponent from './TextObjectComponent';
 import ImageObjectComponent from './ImageObjectComponent';
-import type { ResizePreview } from '../../entities/editor/types/UIStateTypes';
 
 type Props = {
-  slideId: string;
-
   objects: SlideObject[];
   selectedObjectIds: string[];
   onSelectObject: (objectId: string, multi: boolean) => void;
@@ -35,7 +32,6 @@ type Props = {
 };
 
 export default function SlideObjectsRenderer({
-  slideId,
   objects,
   selectedObjectIds,
   onSelectObject,
@@ -60,7 +56,7 @@ export default function SlideObjectsRenderer({
             isEditing={editingTextObjectId === obj.id}
             onStartEditing={() => onStartEditingText(obj.id)}
             onStopEditing={onStopEditingText}
-            onUpdateContent={content => onUpdateTextContent(obj.id, content)}
+            onUpdateContent={(content: string) => onUpdateTextContent(obj.id, content)}
           />
         );
       case 'image':

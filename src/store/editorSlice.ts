@@ -5,7 +5,7 @@ import {
   type Editor,
   type EditorSelection,
 } from '../entities/editor/types/EditorTypes';
-//import { createEditor } from '../entities/editor/factory/editorFactory';
+import { startDragging, updateDragging, applyDrag, cancelDragging } from '../entities/editor';
 import {
   addObjectToSlide,
   createSlide,
@@ -17,6 +17,7 @@ import {
 import {
   addSlideToPresentation,
   deleteSlideFromPresentation,
+  moveSlides as moveSlidesInPresentation,
   updatePresentationTitle,
   updateSlideInPresentation,
 } from '../entities/presentation';
@@ -31,25 +32,35 @@ import {
 import type { ImagePayload } from '../entities/object/types/ImagePayload';
 import { calculateTextPosition } from '../entities/object/utils/objectPositioning';
 
-const initialState: Editor = {
-  presentation: {
-    id: nanoid(),
-    title: 'Untitled Presentation',
-    slides: [createSlide()],
-  },
-  selection: {
-    type: 'slides',
-    slideIds: [createSlide().id],
-  },
-  dragging: null,
-  resizing: null,
-  editingTextObjectId: null,
+const findSlideById = (state: Editor, slideId: string): Slide | null =>
+  state.presentation.slides.find(s => s.id === slideId) || null;
+
+const createInitialState = (): Editor => {
+  const firstSlide = createSlide();
+  return {
+    presentation: {
+      id: nanoid(),
+      title: 'Untitled Presentation',
+      slides: [firstSlide],
+    },
+    selection: {
+      type: 'slides',
+      slideIds: [firstSlide.id],
+    },
+    dragging: null,
+    resizing: null,
+    editingTextObjectId: null,
+  };
 };
+
+const initialState: Editor = createInitialState();
 
 const editorSlice = createSlice({
   name: 'editor',
   initialState,
   reducers: {
+    resetEditor: () => createInitialState(),
+
     addSlide(state) {
       const newSlide = createSlide();
       const newPresentation = addSlideToPresentation(state.presentation, newSlide);
@@ -60,6 +71,7 @@ const editorSlice = createSlice({
       state.resizing = null;
       state.editingTextObjectId = null;
     },
+
     deleteSlide(state) {
       if (!isSlideSelection(state.selection) || state.selection.slideIds.length === 0) {
         return;
@@ -88,6 +100,7 @@ const editorSlice = createSlice({
       state.resizing = null;
       state.editingTextObjectId = null;
     },
+
     changePresentationTitle(state, action: PayloadAction<string>) {
       const newPresentation = updatePresentationTitle(state.presentation, action.payload);
 
@@ -97,23 +110,26 @@ const editorSlice = createSlice({
 
       state.presentation = newPresentation;
     },
+
     changeSlideBackground(state, action: PayloadAction<Slide['background']>) {
       const slideId = getSelectedSlideId(state);
       if (!slideId) return;
 
-      const slide = state.presentation.slides.find(s => s.id === slideId);
+      const slide = findSlideById(state, slideId);
       if (!slide) return;
 
       const updatedSlide = updateSlideBackground(slide, action.payload);
       const newPresentation = updateSlideInPresentation(state.presentation, slideId, updatedSlide);
       state.presentation = newPresentation;
     },
+
     selectSlide(state, action: PayloadAction<string>) {
       state.selection = { type: 'slides', slideIds: [action.payload] };
       state.dragging = null;
       state.resizing = null;
       state.editingTextObjectId = null;
     },
+
     toggleSlideSelection(state, action: PayloadAction<string>) {
       if (!isSlideSelection(state.selection)) {
         state.selection = { type: 'slides', slideIds: [action.payload] };
@@ -136,6 +152,7 @@ const editorSlice = createSlice({
 
       state.selection = { type: 'slides', slideIds: newIds };
     },
+
     selectObject(state, action: PayloadAction<{ slideId: string; objectId: string }>) {
       state.selection = {
         type: 'objects',
@@ -143,6 +160,7 @@ const editorSlice = createSlice({
         objectIds: [action.payload.objectId],
       };
     },
+
     toggleObjectSelection(state, action: PayloadAction<{ slideId: string; objectId: string }>) {
       if (
         !isObjectSelection(state.selection) ||
@@ -173,34 +191,40 @@ const editorSlice = createSlice({
         };
       }
     },
+
     clearSelection(state) {
       state.selection = null;
       state.dragging = null;
       state.resizing = null;
       state.editingTextObjectId = null;
     },
+
     clearObjectSelection(state) {
       if (isObjectSelection(state.selection)) {
         state.selection = { type: 'slides', slideIds: [state.selection.slideId] };
         state.editingTextObjectId = null;
       }
     },
+
     startEditingText(state, action: PayloadAction<string>) {
       state.editingTextObjectId = action.payload;
     },
+
     stopEditingText(state) {
       state.editingTextObjectId = null;
     },
+
     clearUIState(state) {
       state.editingTextObjectId = null;
       state.dragging = null;
       state.resizing = null;
     },
+
     addTextObject(state) {
       const selectedSlideId = getSelectedSlideId(state);
       if (!selectedSlideId) return;
 
-      const slide = state.presentation.slides.find(s => s.id === selectedSlideId);
+      const slide = findSlideById(state, selectedSlideId);
       if (!slide) return;
 
       const position = calculateTextPosition();
@@ -216,11 +240,12 @@ const editorSlice = createSlice({
       state.selection = { type: 'objects', slideId: selectedSlideId, objectIds: [textObject.id] };
       state.editingTextObjectId = textObject.id;
     },
+
     addImageObject(state, action: PayloadAction<ImagePayload>) {
       const selectedSlideId = getSelectedSlideId(state);
       if (!selectedSlideId) return;
 
-      const slide = state.presentation.slides.find(s => s.id === selectedSlideId);
+      const slide = findSlideById(state, selectedSlideId);
       if (!slide) return;
 
       const imageObject = createImageObject(action.payload);
@@ -234,11 +259,12 @@ const editorSlice = createSlice({
       state.presentation = newPresentation;
       state.selection = { type: 'objects', slideId: selectedSlideId, objectIds: [imageObject.id] };
     },
+
     deleteObject(state) {
       if (!isObjectSelection(state.selection)) return;
 
       const { slideId, objectIds } = state.selection;
-      const slide = state.presentation.slides.find(s => s.id === slideId);
+      const slide = findSlideById(state, slideId);
       if (!slide) return;
 
       const updatedSlide = objectIds.reduce(
@@ -251,11 +277,12 @@ const editorSlice = createSlice({
       state.selection = { type: 'slides', slideIds: [slideId] };
       state.editingTextObjectId = null;
     },
+
     updateTextObject(state, action: PayloadAction<{ objectId: string; content: string }>) {
       if (!isObjectSelection(state.selection)) return;
 
       const { slideId } = state.selection;
-      const slide = state.presentation.slides.find(s => s.id === slideId);
+      const slide = findSlideById(state, slideId);
       if (!slide) return;
 
       const object = slide.objects.find(o => o.id === action.payload.objectId);
@@ -267,11 +294,12 @@ const editorSlice = createSlice({
 
       state.presentation = newPresentation;
     },
+
     updateObjectPosition(state, action: PayloadAction<{ objectId: string; x: number; y: number }>) {
       if (!isObjectSelection(state.selection)) return;
 
       const { slideId } = state.selection;
-      const slide = state.presentation.slides.find(s => s.id === slideId);
+      const slide = findSlideById(state, slideId);
       if (!slide) return;
 
       const object = slide.objects.find(o => o.id === action.payload.objectId);
@@ -283,6 +311,7 @@ const editorSlice = createSlice({
 
       state.presentation = newPresentation;
     },
+    
     updateObjectSize(
       state,
       action: PayloadAction<{ objectId: string; width: number; height: number }>,
@@ -290,7 +319,7 @@ const editorSlice = createSlice({
       if (!isObjectSelection(state.selection)) return;
 
       const { slideId } = state.selection;
-      const slide = state.presentation.slides.find(s => s.id === slideId);
+      const slide = findSlideById(state, slideId);
       if (!slide) return;
 
       const object = slide.objects.find(o => o.id === action.payload.objectId);
@@ -301,6 +330,63 @@ const editorSlice = createSlice({
       const newPresentation = updateSlideInPresentation(state.presentation, slideId, updatedSlide);
 
       state.presentation = newPresentation;
+    },
+    
+    moveSlides(state, action: PayloadAction<number>) {
+      if (!isSlideSelection(state.selection)) return;
+      
+      const selectedIds = state.selection.slideIds;
+      if (selectedIds.length === 0) return;
+
+      const newPresentation = moveSlidesInPresentation(
+        state.presentation,
+        selectedIds,
+        action.payload,
+      );
+
+      if (newPresentation === state.presentation) {
+        return;
+      }
+
+      state.presentation = newPresentation;
+    },
+
+    startDrag(state, action: PayloadAction<{ mouseX: number; mouseY: number }>) {
+      if (!state.selection) return;
+
+      let context:
+        | { type: 'object'; slideId: string; objectIds: string[] }
+        | { type: 'slides'; slideIds: string[] }
+        | null = null;
+
+      if (isSlideSelection(state.selection)) {
+        context = { type: 'slides', slideIds: state.selection.slideIds };
+      } else if (isObjectSelection(state.selection)) {
+        const selection = state.selection as { slideId: string; objectIds: string[] };
+        context = { type: 'object', slideId: selection.slideId, objectIds: selection.objectIds };
+      }
+
+      if (!context) return;
+
+      return startDragging(state, context, action.payload.mouseX, action.payload.mouseY);
+    },
+
+    updateDragPosition(state, action: PayloadAction<{ mouseX: number; mouseY: number; targetIndex?: number }>) {
+      return updateDragging(state, action.payload.mouseX, action.payload.mouseY, action.payload.targetIndex);
+    },
+
+    finishDrag(state) {
+      if (!state.dragging) return state;
+
+      if (!state.dragging.thresholdPassed) {
+        return cancelDragging(state);
+      }
+
+      return applyDrag(state);
+    },
+
+    cancelDrag(state) {
+      return cancelDragging(state);
     },
   },
 });
@@ -322,8 +408,14 @@ export const {
   addTextObject,
   addImageObject,
   deleteObject,
+  moveSlides,
+  startDrag,
+  updateDragPosition,
+  finishDrag,
+  cancelDrag,
   updateTextObject,
   updateObjectPosition,
   updateObjectSize,
 } = editorSlice.actions;
+
 export const editorReducer = editorSlice.reducer;

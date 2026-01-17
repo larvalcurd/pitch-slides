@@ -1,4 +1,5 @@
 import { isObjectSelection, isSlideSelection, type Editor } from '../types/EditorTypes.ts';
+import type { Slide } from '../../slide/types/SlideTypes.ts';
 
 export function selectSlide(editor: Editor, slideId: string): Editor {
   return {
@@ -133,4 +134,9 @@ export function getSelectedObjectIds(editor: Editor): string[] {
     return editor.selection.objectIds;
   }
   return [];
+}
+
+export function getSelectedSlide(editor: Editor): Slide | null {
+  const slideId = getSelectedSlideId(editor);
+  return slideId ? editor.presentation.slides.find(s => s.id === slideId) || null : null;
 }

@@ -10,6 +10,9 @@ export type DragState =
       currentMouseX: number;
       currentMouseY: number;
       originalPositions: Record<string, { x: number; y: number }>;
+      dragOffsetX: number;
+      dragOffsetY: number;
+      thresholdPassed: boolean;
     }
   | {
       type: 'slides';
@@ -17,6 +20,7 @@ export type DragState =
       startMouseY: number;
       currentMouseY: number;
       targetIndex: number | null;
+      thresholdPassed: boolean;
     };
 
 export type ResizeState = {

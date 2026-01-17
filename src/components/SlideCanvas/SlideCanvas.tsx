@@ -4,8 +4,8 @@ import SlideObjectsRenderer from './SlideObjectsRenderer';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import {
-  getSelectedSlideId,
   getSelectedObjectIds,
+  getSelectedSlide,
 } from '../../entities/editor/selection/editorSelection';
 
 type Props = {
@@ -48,8 +48,7 @@ export default function SlideCanvas({
   onUpdateTextContent,
 }: Props) {
   const editor = useSelector((state: RootState) => state.editor);
-  const selectedSlideId = getSelectedSlideId(editor);
-  const currentSlide = editor.presentation.slides.find(s => s.id === selectedSlideId) ?? null;
+  const currentSlide = getSelectedSlide(editor);
   const selectedObjectIds = getSelectedObjectIds(editor);
   const editingTextObjectId = editor.editingTextObjectId;
   const backgroundStyle = useMemo(() => {
@@ -83,7 +82,6 @@ export default function SlideCanvas({
 
           <div className={styles.viewport} style={backgroundStyle} onClick={handleCanvasClick}>
             <SlideObjectsRenderer
-              slideId={currentSlide.id}
               objects={currentSlide.objects}
               selectedObjectIds={selectedObjectIds}
               onSelectObject={onSelectObject}

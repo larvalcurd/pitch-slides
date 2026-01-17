@@ -8,49 +8,15 @@ import BackgroundSelector from '../components/BackgroundSelector/BackgroundSelec
 import ImageSelector from '../components/ImageSelector/ImageSelector.tsx';
 
 function App() {
-  const {
-    // presentation,
-    // currentSlide,
-
-    // selectedSlideIds,
-    // selectedObjectIds,
-
-    // isDragging,
-    // startDrag,
-    // getDeltaForObject,
-
-    // isResizing,
-    // resizingObjectId,
-    // resizePreview,
-    // startResize,
-
-    changeTitle,
-    handleAddSlide,
-    handleDeleteSlide,
-    handleSelectSlide,
-
-    handleChangeSlideBackground,
-
-    handleAddText,
-    handleAddImage,
-    handleDeleteObject,
-
-    handleSelectObject,
-    handleDeselectAll,
-
-    //editingTextObjectId,
-    handleStartEditingText,
-    handleStopEditingText,
-    handleUpdateTextContent,
-  } = usePresentation();
+  const { actions } = usePresentation();
 
   const { activeModal, handleOpenModal, handleCloseModal } = useEditorUI();
 
   const toolbarActions = {
-    onAddSlide: handleAddSlide,
-    onDeleteSlide: handleDeleteSlide,
-    onAddText: handleAddText,
-    onDeleteObject: handleDeleteObject,
+    onAddSlide: actions.handleAddSlide,
+    onDeleteSlide: actions.handleDeleteSlide,
+    onAddText: actions.handleAddText,
+    onDeleteObject: actions.handleDeleteObject,
     onMoveObject: () => console.log('Move object'),
     onResizeObject: () => console.log('Resize object'),
     onBringForward: () => console.log('Bring forward'),
@@ -66,7 +32,7 @@ function App() {
       }}
       className="app"
     >
-      <SlideList onSelect={handleSelectSlide} />
+      <SlideList onSelect={actions.handleSelectSlide} />
 
       <main
         style={{
@@ -77,7 +43,7 @@ function App() {
           flexDirection: 'column',
         }}
       >
-        <PresentationTitle onTitleChange={changeTitle} />
+        <PresentationTitle onTitleChange={actions.changeTitle} />
 
         <Toolbar actions={toolbarActions} onOpenModal={handleOpenModal} />
 
@@ -91,18 +57,11 @@ function App() {
           }}
         >
           <SlideCanvas
-            onSelectObject={handleSelectObject}
-            onDeselectAll={handleDeselectAll}
-            // isDragging={isDragging}
-            // startDrag={startDrag}
-            // getDeltaForObject={getDeltaForObject}
-            // isResizing={isResizing}
-            // resizingObjectId={resizingObjectId}
-            // resizePreview={resizePreview}
-            // startResize={startResize}
-            onStartEditingText={handleStartEditingText}
-            onStopEditingText={handleStopEditingText}
-            onUpdateTextContent={handleUpdateTextContent}
+            onSelectObject={actions.handleSelectObject}
+            onDeselectAll={actions.handleDeselectAll}
+            onStartEditingText={actions.handleStartEditingText}
+            onStopEditingText={actions.handleStopEditingText}
+            onUpdateTextContent={actions.handleUpdateTextContent}
           />
         </div>
       </main>
@@ -110,7 +69,7 @@ function App() {
       {activeModal === 'addImage' && (
         <ImageSelector
           onSelect={payload => {
-            handleAddImage(payload);
+            actions.handleAddImage(payload);
             handleCloseModal();
           }}
           onClose={handleCloseModal}
@@ -120,7 +79,7 @@ function App() {
       {activeModal === 'background' && (
         <BackgroundSelector
           onSelect={bg => {
-            handleChangeSlideBackground(bg);
+            actions.handleChangeSlideBackground(bg);
             handleCloseModal();
           }}
           onClose={handleCloseModal}
